@@ -49,7 +49,7 @@ func main() {
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 
 		if !Contains([]string{"-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(webhookRequest.Message.Chat.Id, 10)) {
-			sendMessage(webhookRequest.Message.Chat.Id, "Не пеши мне вообще, понял?")
+			sendMessage(webhookRequest.Message.Chat.Id, "Не пиши мне вообще, понял?")
 			return
 		}
 		if strings.EqualFold(webhookRequest.Message.Text, "gg") {
