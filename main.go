@@ -64,6 +64,22 @@ func main() {
 				return
 			}
 		}
+		if webhookRequest.Message.Text == "нет" {
+			requestBody, _ := json.Marshal(map[string]string{
+				"chat_id": "-1001733786877",
+				"text":    "пидора ответ",
+			})
+			client := http.Client{Timeout: 5 * time.Second}
+			url := "https://api.telegram.org/bot" + *token + "/sendMessage"
+			fmt.Printf("Request to: %s\n", url)
+			request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+			request.Header.Set("Content-Type", "application/json")
+			_, err := client.Do(request)
+			if err != nil {
+				fmt.Printf("Request error: %s\n", err)
+				return
+			}
+		}
 	})
 
 	log.Println("Http server started on port " + *httpPort)
