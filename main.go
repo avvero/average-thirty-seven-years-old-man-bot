@@ -11,6 +11,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -50,10 +51,10 @@ func main() {
 		//	fmt.Printf("Foreigner message, would be ignored")
 		//	return
 		//}
-		if webhookRequest.Message.Text == "gg" {
+		if strings.EqualFold(webhookRequest.Message.Text, "gg") {
 			sendMessage(webhookRequest.Message.Chat.Id, "gg")
 		}
-		if webhookRequest.Message.Text == "нет" {
+		if strings.EqualFold(webhookRequest.Message.Text, "нет") {
 			sendMessage(webhookRequest.Message.Chat.Id, "пидора ответ")
 		}
 	})
