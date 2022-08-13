@@ -1,7 +1,7 @@
-FROM golang:1.14.14-stretch
+FROM golang:latest
 LABEL maintainer avvero
 
 ADD . /app
 WORKDIR /app
 RUN go build -o main .
-CMD ["/app/main", "-httpPort=8080"]
+CMD ["/app/main"]

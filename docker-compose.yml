@@ -1,10 +1,10 @@
 version: '2'
 services:
   gg_bot:
-    image: avvero/gg_bot:latest
+    build: .
     container_name: gg_bot
     environment:
-      - HTTP_PORT=8080
+      - token=token
     ports:
-      - "80:8080"
+      - "8080:8080"
     network_mode: "bridge"
