@@ -1,0 +1,8 @@
+language: go
+sudo: required
+services:
+  - docker
+script:
+  - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+  - docker build --pull -t avvero/gg_bot:latest .
+  - docker push avvero/gg_bot:latest
