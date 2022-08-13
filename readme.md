@@ -2,6 +2,6 @@
 
 ## Launch
 ```bash
-go build app
-./camel-graph -httpPort=8080
+go build
+./main -httpPort=8080
 ```
