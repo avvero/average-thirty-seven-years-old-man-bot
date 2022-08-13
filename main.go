@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 	"time"
 )
 
@@ -19,6 +20,11 @@ var (
 
 func main() {
 	flag.Parse()
+
+	tokenEnv, found := os.LookupEnv("token")
+	if found {
+		token = &tokenEnv
+	}
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
