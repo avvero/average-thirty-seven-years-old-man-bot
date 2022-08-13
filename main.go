@@ -54,8 +54,6 @@ func main() {
 				return
 			}
 		}
-
-		w.Header().Set("Content-Type", "application/json")
 	})
 
 	log.Println("Http server started on port " + *httpPort)
