@@ -44,6 +44,10 @@ func main() {
 			return
 		}
 		fmt.Println("Chat message: " + webhookRequest.Message.Text)
+		//if webhookRequest.Message.Chat.Id != "-1001733786877" {
+		//	fmt.Printf("Foreigner message, would be ignored")
+		//	return
+		//}
 		if webhookRequest.Message.Text == "gg" {
 			requestBody, _ := json.Marshal(map[string]string{
 				"chat_id": "-1001733786877",
@@ -71,5 +75,10 @@ type WebhookRequest struct {
 }
 
 type WebhookRequestMessage struct {
-	Text string `json:"text"`
+	Chat *WebhookRequestMessageChat `json:"chat"`
+	Text string                     `json:"text"`
+}
+
+type WebhookRequestMessageChat struct {
+	Id string `json:"id"`
 }
