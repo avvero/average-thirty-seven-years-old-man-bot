@@ -10,6 +10,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -43,42 +44,17 @@ func main() {
 			fmt.Printf("could not unmarshal body\n")
 			return
 		}
-		fmt.Println("Chat message: " + webhookRequest.Message.Text)
+		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
+			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 		//if webhookRequest.Message.Chat.Id != "-1001733786877" {
 		//	fmt.Printf("Foreigner message, would be ignored")
 		//	return
 		//}
 		if webhookRequest.Message.Text == "gg" {
-			requestBody, _ := json.Marshal(map[string]string{
-				"chat_id": "-1001733786877",
-				"text":    "gg",
-			})
-			client := http.Client{Timeout: 5 * time.Second}
-			url := "https://api.telegram.org/bot" + *token + "/sendMessage"
-			fmt.Printf("Request to: %s\n", url)
-			request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-			request.Header.Set("Content-Type", "application/json")
-			_, err := client.Do(request)
-			if err != nil {
-				fmt.Printf("Request error: %s\n", err)
-				return
-			}
+			sendMessage(webhookRequest.Message.Chat.Id, "gg")
 		}
 		if webhookRequest.Message.Text == "нет" {
-			requestBody, _ := json.Marshal(map[string]string{
-				"chat_id": "-1001733786877",
-				"text":    "пидора ответ",
-			})
-			client := http.Client{Timeout: 5 * time.Second}
-			url := "https://api.telegram.org/bot" + *token + "/sendMessage"
-			fmt.Printf("Request to: %s\n", url)
-			request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-			request.Header.Set("Content-Type", "application/json")
-			_, err := client.Do(request)
-			if err != nil {
-				fmt.Printf("Request error: %s\n", err)
-				return
-			}
+			sendMessage(webhookRequest.Message.Chat.Id, "пидора ответ")
 		}
 	})
 
@@ -96,5 +72,23 @@ type WebhookRequestMessage struct {
 }
 
 type WebhookRequestMessageChat struct {
-	Id string `json:"id"`
+	Id    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func sendMessage(chatId int64, message string) {
+	requestBody, _ := json.Marshal(map[string]string{
+		"chat_id": strconv.FormatInt(chatId, 10),
+		"text":    message,
+	})
+	client := http.Client{Timeout: 5 * time.Second}
+	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
+	fmt.Printf("Request to: %s\n", url)
+	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request.Header.Set("Content-Type", "application/json")
+	_, err := client.Do(request)
+	if err != nil {
+		fmt.Printf("Request error: %s\n", err)
+		return
+	}
 }
