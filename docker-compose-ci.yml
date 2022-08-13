@@ -1,0 +1,15 @@
+version: '2'
+services:
+  heartbeats:
+    image: docreg.fxclub.org/fxbank/gg_bot:latest
+    container_name: heartbeats
+    environment:
+      - HTTP_PORT=8080
+      - INFO_UPDATE_INTERVAL=5
+      - HERALD_ENDPOINT=https://avvero.pw/bot/kid/api/message
+      - METRICS_PULL_INTERVAL=5
+      - GRAPHITE_URL=172.16.81.155:2003
+      - GRAPHITE_DASHBOARD=http://172.16.81.155:8181
+    ports:
+      - "80:8080"
+    network_mode: "bridge"
