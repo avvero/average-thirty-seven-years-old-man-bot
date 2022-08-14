@@ -54,6 +54,7 @@ func main() {
 	})
 
 	log.Println("Http server started on port " + *httpPort)
+	sendMessage(245851441, "Bot is redeployed")
 	http.ListenAndServe(":"+*httpPort, nil)
 }
 

@@ -20,7 +20,7 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	if text == "gg" {
 		return true, "gg"
 	}
-	if text == "нет" {
+	if text == "нет" || text == "нeт" || text == "hет" || text == "heт" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||

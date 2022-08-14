@@ -42,6 +42,8 @@ func Test_returnsOnNet(t *testing.T) {
 		"НЕТ": "пидора ответ",
 		"Нет": "пидора ответ",
 		"НеТ": "пидора ответ",
+		"Heт": "пидора ответ",
+		"Нeт": "пидора ответ",
 	}
 	for k, expected := range data {
 		respond, response := decision(0, k)
