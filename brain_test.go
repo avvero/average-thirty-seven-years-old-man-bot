@@ -12,11 +12,11 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 		"-578279468":     "gg",
 		"1":              "Хули нада, пес?",
 	}
-	for k, v := range data {
+	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
 		respond, response := decision(chatId, "gg")
-		if !respond || response != v {
-			t.Error("Expected and got:", v, " != ", response)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
 		}
 	}
 }
@@ -28,10 +28,10 @@ func Test_returnsOnGG(t *testing.T) {
 		"gG": "gg",
 		"Gg": "gg",
 	}
-	for k, v := range data {
+	for k, expected := range data {
 		respond, response := decision(0, k)
-		if !respond || response != v {
-			t.Error("Expected and got:", v, " != ", response)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
 		}
 	}
 }
@@ -43,10 +43,60 @@ func Test_returnsOnNet(t *testing.T) {
 		"Нет": "пидора ответ",
 		"НеТ": "пидора ответ",
 	}
-	for k, v := range data {
+	for k, expected := range data {
 		respond, response := decision(0, k)
-		if !respond || response != v {
-			t.Error("Expected and got:", v, " != ", response)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
+		}
+	}
+}
+
+func Test_returnsOnMorrowind(t *testing.T) {
+	data := []string{
+		"morrowind",
+		"моровинд",
+		"морровинд",
+		"морровинд",
+		"бла бла бла morrowind",
+		"бла бла бла morrowind бла бла бла ",
+	}
+	expected := "Morrowind - одна из лучших игр эва"
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
+		}
+	}
+}
+
+func Test_returnsOnBuy(t *testing.T) {
+	data := []string{
+		"купил",
+		"бла бла бла купил",
+		"бла бла бла купил бла бла бла",
+	}
+	expected := "А не пиздишь? Аренда это не покупка"
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
+		}
+	}
+}
+
+func Test_returnsOnSpotify(t *testing.T) {
+	data := []string{
+		"spotify",
+		"Spotify",
+		"спотифай",
+		"бла бла бла spotify бла бла бла",
+		"бла бла бла спотифай бла бла бла",
+	}
+	expected := "Эти пидоры Антону косарик должны за подписку"
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
 		}
 	}
 }
