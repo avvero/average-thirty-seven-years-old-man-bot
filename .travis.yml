@@ -8,4 +8,4 @@ script:
   - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
   - docker build --pull -t avvero/gg_bot:latest .
   - docker push avvero/gg_bot:latest
-  - curl http://213.183.51.37:9000/hooks/redeploy-webhook
+  - curl --header "X-Webhook-Token: $REDEPLOY_TOKEN" http://213.183.51.37:9000/hooks/redeploy-webhook
