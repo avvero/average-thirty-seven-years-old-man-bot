@@ -29,7 +29,7 @@ func main() {
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, "{\"name\": \"TheGamerGuildBot\", \"version\": \"1.1\"}")
+		io.WriteString(w, "{\"name\": \"TheGamerGuildBot\", \"version\": \"1.2\"}")
 	})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
