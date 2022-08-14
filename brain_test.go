@@ -100,3 +100,19 @@ func Test_returnsOnSpotify(t *testing.T) {
 		}
 	}
 }
+
+func Test_returnsForLucky(t *testing.T) {
+	expected := "хуйню не неси"
+	respond := false
+	response := ""
+	for i := 0; i < 500; i++ {
+		thisRespond, thisResponse := decision(0, "any")
+		if thisRespond {
+			respond = thisRespond
+			response = thisResponse
+		}
+	}
+	if !respond || response != expected {
+		t.Error("Expected and got:", expected, " != ", response)
+	}
+}
