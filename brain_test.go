@@ -151,7 +151,7 @@ func Test_returnsForLucky(t *testing.T) {
 			response = thisResponse
 		}
 	}
-	if !respond || response != expected {
+	if !respond || !Contains(senselessPhrases, response) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }

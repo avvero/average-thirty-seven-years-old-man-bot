@@ -8,9 +8,9 @@ import (
 )
 
 func decision(chatId int64, text string) (respond bool, response string) {
-	// Lucky if random returns 0
-	if rand.New(rand.NewSource(time.Now().UnixNano())).Intn(100) == 0 {
-		return true, "хуйню не неси"
+	if randomUpTo(100) == 0 {
+		phrase := senselessPhrases[randomUpTo(len(senselessPhrases))]
+		return true, phrase
 	}
 	//
 	text = strings.ToLower(text)
@@ -50,6 +50,10 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	return false, ""
 }
 
+func randomUpTo(max int) int {
+	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
+}
+
 var charMap = map[string]string{
 	"e": "е",
 	"o": "о",
@@ -78,6 +82,4 @@ func normalizeEn(text string) string {
 	return result
 }
 
-func senselessPhrases() []string {
-	return []string{"хуйню не неси", "база"}
-}
+var senselessPhrases = []string{"хуйню не неси", "база", "мда", "вообще похую", "ничего нового"}
