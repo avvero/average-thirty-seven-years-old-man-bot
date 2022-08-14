@@ -80,6 +80,8 @@ func Test_returnsOnElderRing(t *testing.T) {
 		"бла бла бла ER бла бла бла",
 		"ЕР",
 		"бла бла бла ЕР бла бла бла",
+		"ЭР",
+		"бла бла бла ЭР бла бла бла",
 	}
 	expected := "Elden Ring - это величие"
 	for _, text := range data {

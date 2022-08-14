@@ -30,9 +30,11 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	}
 	if text == "er" ||
 		text == "ер" ||
+		text == "эр" ||
 		strings.Contains(text, "elden ring") ||
 		strings.Contains(text, " er ") ||
-		strings.Contains(text, " ер ") {
+		strings.Contains(text, " ер ") ||
+		strings.Contains(text, " эр ") {
 		return true, "Elden Ring - это величие"
 	}
 	if strings.Contains(text, "купил") {
