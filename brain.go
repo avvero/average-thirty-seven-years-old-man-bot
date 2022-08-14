@@ -28,6 +28,13 @@ func decision(chatId int64, text string) (respond bool, response string) {
 		strings.Contains(text, "моровинд") {
 		return true, "Morrowind - одна из лучших игр эва"
 	}
+	if text == "er" ||
+		text == "ер" ||
+		strings.Contains(text, "elden ring") ||
+		strings.Contains(text, " er ") ||
+		strings.Contains(text, " ер ") {
+		return true, "Elden Ring - это величие"
+	}
 	if strings.Contains(text, "купил") {
 		return true, "А не пиздишь? Аренда это не покупка"
 	}
@@ -35,4 +42,8 @@ func decision(chatId int64, text string) (respond bool, response string) {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
 	return false, ""
+}
+
+func senselessPhrases() []string {
+	return []string{"хуйню не неси", "база"}
 }

@@ -69,6 +69,41 @@ func Test_returnsOnMorrowind(t *testing.T) {
 	}
 }
 
+func Test_returnsOnElderRing(t *testing.T) {
+	data := []string{
+		"Elden Ring",
+		"elden ring",
+		"бла бла бла Elden Ring бла бла бла",
+		"elden ring",
+		"бла бла бла elden ring бла бла бла",
+		"ER",
+		"бла бла бла ER бла бла бла",
+		"ЕР",
+		"бла бла бла ЕР бла бла бла",
+	}
+	expected := "Elden Ring - это величие"
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
+		}
+	}
+}
+
+func Test_returnsOnNotElderRing(t *testing.T) {
+	data := []string{
+		"pERt",
+		"sdfERdfd",
+		"аааЕРваа",
+	}
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if respond {
+			t.Error("Not expected: ", response)
+		}
+	}
+}
+
 func Test_returnsOnBuy(t *testing.T) {
 	data := []string{
 		"купил",
