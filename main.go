@@ -11,7 +11,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -52,11 +51,9 @@ func main() {
 			sendMessage(webhookRequest.Message.Chat.Id, "Хули нада, пес?")
 			return
 		}
-		if strings.EqualFold(webhookRequest.Message.Text, "gg") {
-			sendMessage(webhookRequest.Message.Chat.Id, "gg")
-		}
-		if strings.EqualFold(webhookRequest.Message.Text, "нет") {
-			sendMessage(webhookRequest.Message.Chat.Id, "пидора ответ")
+		respond, response := decision(webhookRequest.Message.Text)
+		if respond {
+			sendMessage(webhookRequest.Message.Chat.Id, response)
 		}
 	})
 
@@ -93,13 +90,4 @@ func sendMessage(chatId int64, message string) {
 		fmt.Printf("Request error: %s\n", err)
 		return
 	}
-}
-
-func Contains[T comparable](s []T, e T) bool {
-	for _, v := range s {
-		if v == e {
-			return true
-		}
-	}
-	return false
 }
