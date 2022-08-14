@@ -47,11 +47,7 @@ func main() {
 		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 
-		if !Contains([]string{"-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(webhookRequest.Message.Chat.Id, 10)) {
-			sendMessage(webhookRequest.Message.Chat.Id, "Хули нада, пес?")
-			return
-		}
-		respond, response := decision(webhookRequest.Message.Text)
+		respond, response := decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
 			sendMessage(webhookRequest.Message.Chat.Id, response)
 		}

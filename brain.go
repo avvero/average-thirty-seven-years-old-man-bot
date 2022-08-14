@@ -1,8 +1,14 @@
 package main
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
-func decision(text string) (respond bool, response string) {
+func decision(chatId int64, text string) (respond bool, response string) {
+	if !Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
+		return true, "Хули нада, пес?"
+	}
 	if strings.EqualFold(text, "gg") {
 		return true, "gg"
 	}
