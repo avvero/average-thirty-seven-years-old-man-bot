@@ -6,36 +6,47 @@ import (
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
-	for _, chatIdString := range []string{"-1001733786877", "245851441", "-578279468"} {
-		chatId, _ := strconv.ParseInt(chatIdString, 10, 64)
-		respond, response := decision(chatId, "gg")
-		if !respond || response != "gg" {
-			t.Error("Expected: gg, got", response)
-		}
+	data := map[string]string{
+		"-1001733786877": "gg",
+		"245851441":      "gg",
+		"-578279468":     "gg",
+		"1":              "Хули нада, пес?",
 	}
-	for _, chatIdString := range []string{"123"} {
-		chatId, _ := strconv.ParseInt(chatIdString, 10, 64)
+	for k, v := range data {
+		chatId, _ := strconv.ParseInt(k, 10, 64)
 		respond, response := decision(chatId, "gg")
-		if !respond || response != "Хули нада, пес?" {
-			t.Error("Expected: Хули нада, пес?, got", chatId, response)
+		if !respond || response != v {
+			t.Error("Expected and got:", v, " != ", response)
 		}
 	}
 }
 
 func Test_returnsOnGG(t *testing.T) {
-	for _, text := range []string{"gg", "GG"} {
-		respond, response := decision(0, text)
-		if !respond || response != "gg" {
-			t.Error("Expected: gg, got", response)
+	data := map[string]string{
+		"gg": "gg",
+		"GG": "gg",
+		"gG": "gg",
+		"Gg": "gg",
+	}
+	for k, v := range data {
+		respond, response := decision(0, k)
+		if !respond || response != v {
+			t.Error("Expected and got:", v, " != ", response)
 		}
 	}
 }
 
 func Test_returnsOnNet(t *testing.T) {
-	for _, text := range []string{"нет", "Нет", "НЕТ"} {
-		respond, response := decision(0, text)
-		if !respond || response != "пидора ответ" {
-			t.Error("Expected: пидора ответ, got", response)
+	data := map[string]string{
+		"нет": "пидора ответ",
+		"НЕТ": "пидора ответ",
+		"Нет": "пидора ответ",
+		"НеТ": "пидора ответ",
+	}
+	for k, v := range data {
+		respond, response := decision(0, k)
+		if !respond || response != v {
+			t.Error("Expected and got:", v, " != ", response)
 		}
 	}
 }
