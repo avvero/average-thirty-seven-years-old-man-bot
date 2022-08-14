@@ -20,7 +20,7 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	if text == "gg" {
 		return true, "gg"
 	}
-	if text == "нет" || text == "нeт" || text == "hет" || text == "heт" {
+	if normalizeRu(text) == "нет" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||
@@ -43,10 +43,39 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
-	if strings.Contains(text, "devops") || strings.Contains(text, "девопс") {
+	if strings.Contains(normalizeEn(text), "devops") ||
+		strings.Contains(normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
 	return false, ""
+}
+
+var charMap = map[string]string{
+	"e": "е",
+	"o": "о",
+	"h": "н",
+	"a": "а",
+	"t": "т",
+	"k": "к",
+	"c": "с",
+	"b": "б",
+	"m": "м",
+}
+
+func normalizeRu(text string) string {
+	result := text
+	for k, v := range charMap {
+		result = strings.Replace(result, k, v, -1)
+	}
+	return result
+}
+
+func normalizeEn(text string) string {
+	result := text
+	for k, v := range charMap {
+		result = strings.Replace(result, v, k, -1)
+	}
+	return result
 }
 
 func senselessPhrases() []string {
