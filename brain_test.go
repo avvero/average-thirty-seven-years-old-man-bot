@@ -10,7 +10,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 		"-1001733786877": "gg",
 		"245851441":      "gg",
 		"-578279468":     "gg",
-		"1":              "Хули нада, пес?",
+		"1":              "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business.",
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
