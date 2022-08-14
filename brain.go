@@ -43,6 +43,9 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
+	if strings.Contains(text, "devops") || strings.Contains(text, "девопс") {
+		return true, "Девопсы не нужны"
+	}
 	return false, ""
 }
 

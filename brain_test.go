@@ -153,3 +153,17 @@ func Test_returnsForLucky(t *testing.T) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
+
+func Test_returnsOnDevops(t *testing.T) {
+	data := []string{
+		"devops",
+		"девопс",
+	}
+	expected := "Девопсы не нужны"
+	for _, text := range data {
+		respond, response := decision(0, text)
+		if !respond || response != expected {
+			t.Error("Expected and got:", expected, " != ", response)
+		}
+	}
+}

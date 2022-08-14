@@ -7,7 +7,7 @@ LABEL maintainer avvero
 
 WORKDIR /app
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test *.go
+RUN #CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test *.go
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/main
 
 ####
