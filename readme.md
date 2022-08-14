@@ -6,6 +6,11 @@ go build
 ./main -httpPort=8080
 ```
 
+## CI
+```bash
+docker-compose down --rmi all && docker-compose up -d
+```
+
 ## https://go-telegram-bot-api.dev/getting-started/index.html
 
 Let's use: https://go-telegram-bot-api.dev/getting-started/index.html

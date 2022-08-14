@@ -62,8 +62,15 @@ type WebhookRequest struct {
 }
 
 type WebhookRequestMessage struct {
-	Chat *WebhookRequestMessageChat `json:"chat"`
-	Text string                     `json:"text"`
+	From *WebhookRequestMessageSender `json:"from"`
+	Chat *WebhookRequestMessageChat   `json:"chat"`
+	Text string                       `json:"text"`
+}
+
+type WebhookRequestMessageSender struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	username  string `json:"username"`
 }
 
 type WebhookRequestMessageChat struct {
