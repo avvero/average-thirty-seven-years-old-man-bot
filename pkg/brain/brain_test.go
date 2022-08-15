@@ -1,12 +1,15 @@
-package main
+package brain
 
 import (
 	"strconv"
 	"testing"
+
+	m "github.com/AdVocem/the_gamers_guild_bot/pkg/memory"
+	u "github.com/AdVocem/the_gamers_guild_bot/pkg/utils"
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	data := map[string]string{
 		"-1001733786877": "gg",
 		"245851441":      "gg",
@@ -15,7 +18,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
-		respond, response := brain.decision(chatId, "gg")
+		respond, response := brain.Decision(chatId, "gg", true)
 		if !respond || response != expected {
 			t.Error("Expected and got:", expected, " != ", response)
 		}
@@ -23,7 +26,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 }
 
 func Test_returnsOnSomeText(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	data := map[string]string{
 		"gg": "gg",
 		"GG": "gg",
@@ -68,22 +71,22 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"девопс": "Девопсы не нужны",
 	}
 	for k, expected := range data {
-		respond, response := brain.decision(0, k)
+		respond, response := brain.Decision(0, k, false)
 		if !respond || response != expected {
-			t.Error("Expected and got:", expected, " != ", response)
+			t.Errorf("Expected: %s but got: %s", expected, response)
 		}
 	}
 }
 
 func Test_returnsOnNotElderRing(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	data := []string{
 		"pERt",
 		"sdfERdfd",
 		"аааЕРваа",
 	}
 	for _, text := range data {
-		respond, response := brain.decision(0, text)
+		respond, response := brain.Decision(0, text, false)
 		if respond {
 			t.Error("Not expected: ", response)
 		}
@@ -91,23 +94,23 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 }
 
 func Test_returnsForLuckySenselessPhrase(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	respond := false
 	response := ""
 	for i := 0; i < 500; i++ {
-		thisRespond, thisResponse := brain.decision(0, "any")
+		thisRespond, thisResponse := brain.Decision(0, "any", true)
 		if thisRespond {
 			respond = thisRespond
 			response = thisResponse
 		}
 	}
-	if !respond || !Contains(brain.memory.senselessPhrases, response) {
+	if !respond || !u.Contains(brain.memory.GetSenslessPhrases(), response) {
 		t.Error("Expected and got: something from senselessPhrases != ", response)
 	}
 }
 
 func Test_khaleesifiesText(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	data := map[string]string{
 		"Позвольте мне сражаться за Вас, Кхалиси":                                   "позвойти мени слязяться зя вяс, кхялиси",
 		"дерись за меня, дракон":                                                    "делись зя миня, дляконь",
@@ -124,12 +127,12 @@ func Test_khaleesifiesText(t *testing.T) {
 }
 
 func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
-	brain := NewBrain(NewMemory())
+	brain := NewBrain(m.NewMemory())
 	respond := false
 	response := ""
 	expected := "делись зя миня, дляконь"
 	for i := 0; i < 500; i++ {
-		thisRespond, thisResponse := brain.decision(0, "дерись за меня, дракон")
+		thisRespond, thisResponse := brain.Decision(0, "дерись за меня, дракон", true)
 		if thisRespond && thisResponse == expected {
 			respond = thisRespond
 			response = thisResponse
