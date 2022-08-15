@@ -23,7 +23,7 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
 		return true, phrase
 	}
-	if randomUpTo(50) == 0 {
+	if len(text) > 14 && randomUpTo(50) == 0 {
 		phrase := brain.khaleesify(text)
 		return true, phrase
 	}
