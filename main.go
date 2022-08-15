@@ -26,6 +26,7 @@ func main() {
 	if found {
 		token = &tokenEnv
 	}
+	brain := NewBrain(NewMemory())
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -47,7 +48,7 @@ func main() {
 		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 
-		respond, response := decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
+		respond, response := brain.decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
 			sendMessage(webhookRequest.Message.Chat.Id, response)
 		}

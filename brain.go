@@ -7,20 +7,35 @@ import (
 	"time"
 )
 
-func decision(chatId int64, text string) (respond bool, response string) {
+type Brain struct {
+	memory *Memory
+}
+
+func NewBrain(memory *Memory) *Brain {
+	brain := &Brain{
+		memory: memory,
+	}
+	return brain
+}
+
+func (brain Brain) decision(chatId int64, text string) (respond bool, response string) {
 	if randomUpTo(50) == 0 {
-		phrase := senselessPhrases[randomUpTo(len(senselessPhrases))]
+		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
 		return true, phrase
 	}
-	//
-	text = strings.ToLower(text)
+	if randomUpTo(50) == 0 {
+		phrase := brain.khaleesify(text)
+		return true, phrase
+	}
 	if !Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
 		return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
 	}
+	//
+	text = strings.ToLower(text)
 	if text == "gg" {
 		return true, "gg"
 	}
-	if normalizeRu(text) == "нет" {
+	if brain.normalizeRu(text) == "нет" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||
@@ -43,8 +58,8 @@ func decision(chatId int64, text string) (respond bool, response string) {
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
-	if strings.Contains(normalizeEn(text), "devops") ||
-		strings.Contains(normalizeRu(text), "девопс") {
+	if strings.Contains(brain.normalizeEn(text), "devops") ||
+		strings.Contains(brain.normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
 	return false, ""
@@ -54,38 +69,26 @@ func randomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }
 
-var charMap = map[string]string{
-	"e": "е",
-	"o": "о",
-	"h": "н",
-	"a": "а",
-	"t": "т",
-	"k": "к",
-	"c": "с",
-	"b": "б",
-	"m": "м",
-}
-
-func normalizeRu(text string) string {
+func (brain Brain) normalizeRu(text string) string {
 	result := text
-	for k, v := range charMap {
+	for k, v := range brain.memory.normalisationMap {
 		result = strings.Replace(result, k, v, -1)
 	}
 	return result
 }
 
-func normalizeEn(text string) string {
+func (brain Brain) normalizeEn(text string) string {
 	result := text
-	for k, v := range charMap {
+	for k, v := range brain.memory.normalisationMap {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
 }
 
-var senselessPhrases = []string{"хуйню не неси", "база", "мда", "вообще похую", "ничего нового", "хули нам кабанам",
-	"кринж", "норм", "такое себе", "априори", "не комильфо от слова совсем", "ебаный цирк", "болие лимение", "оп-хуй",
-	"вишенка на торте", "мякотка", "пруфай", "найс", "несолоно хлебавши", "и что не так?",
-	"имеет место быть", "с моей колокольни", "рабочий кейс", "лалка", "я тебя услышал", "ну такое", "внимательно",
-	"сам-то понял что сказал?", "шта", "ржомба", "литерали", "провёл ресеч", "бывает", "частый кейс", "по факту",
-	"двачую", "охуел с твоей истории", "это другое", "ну это провал", "храни тебя господь", "твою бога душу мать",
-	"претенциозно", "вот раньше лучше было", "рил", "по кд", "тоси-боси", "ор"}
+func (brain Brain) khaleesify(text string) string {
+	result := strings.ToLower(text)
+	for _, k := range brain.memory.mockingMapKeys {
+		result = strings.Replace(result, k, brain.memory.mockingMap[k], -1)
+	}
+	return result
+}

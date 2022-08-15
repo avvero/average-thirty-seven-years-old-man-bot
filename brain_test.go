@@ -6,6 +6,7 @@ import (
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
+	brain := NewBrain(NewMemory())
 	data := map[string]string{
 		"-1001733786877": "gg",
 		"245851441":      "gg",
@@ -14,7 +15,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
-		respond, response := decision(chatId, "gg")
+		respond, response := brain.decision(chatId, "gg")
 		if !respond || response != expected {
 			t.Error("Expected and got:", expected, " != ", response)
 		}
@@ -22,6 +23,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 }
 
 func Test_returnsOnSomeText(t *testing.T) {
+	brain := NewBrain(NewMemory())
 	data := map[string]string{
 		"gg": "gg",
 		"GG": "gg",
@@ -66,7 +68,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"девопс": "Девопсы не нужны",
 	}
 	for k, expected := range data {
-		respond, response := decision(0, k)
+		respond, response := brain.decision(0, k)
 		if !respond || response != expected {
 			t.Error("Expected and got:", expected, " != ", response)
 		}
@@ -74,30 +76,66 @@ func Test_returnsOnSomeText(t *testing.T) {
 }
 
 func Test_returnsOnNotElderRing(t *testing.T) {
+	brain := NewBrain(NewMemory())
 	data := []string{
 		"pERt",
 		"sdfERdfd",
 		"аааЕРваа",
 	}
 	for _, text := range data {
-		respond, response := decision(0, text)
+		respond, response := brain.decision(0, text)
 		if respond {
 			t.Error("Not expected: ", response)
 		}
 	}
 }
 
-func Test_returnsForLucky(t *testing.T) {
+func Test_returnsForLuckySenselessPhrase(t *testing.T) {
+	brain := NewBrain(NewMemory())
 	respond := false
 	response := ""
 	for i := 0; i < 500; i++ {
-		thisRespond, thisResponse := decision(0, "any")
+		thisRespond, thisResponse := brain.decision(0, "any")
 		if thisRespond {
 			respond = thisRespond
 			response = thisResponse
 		}
 	}
-	if !respond || !Contains(senselessPhrases, response) {
+	if !respond || !Contains(brain.memory.senselessPhrases, response) {
 		t.Error("Expected and got: something from senselessPhrases != ", response)
+	}
+}
+
+func Test_khaleesifiesText(t *testing.T) {
+	brain := NewBrain(NewMemory())
+	data := map[string]string{
+		"Позвольте мне сражаться за Вас, Кхалиси":                                   "позвойти мени слязяться зя вяс, кхялиси",
+		"дерись за меня, дракон":                                                    "делись зя миня, дляконь",
+		"Мне кажется ягодки это какой-то сайт для секс знакомств должен быть":       "мени кязется якходки это кякой-то сяйт для сикс знякомств дойзен быть",
+		"не время бухтеть":                                                          "ни влемя бухтить",
+		"Сегодня был созвон со всеми разработчиками и всем осветили будущую модель": "сикходня быль созвонь со фсими лязляботчикями и фсим осветили будущую модей",
+	}
+	for k, expected := range data {
+		result := brain.khaleesify(k)
+		if result != expected {
+			t.Error("Expected and got:", expected, " != ", result)
+		}
+	}
+}
+
+func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
+	brain := NewBrain(NewMemory())
+	respond := false
+	response := ""
+	expected := "делись зя миня, дляконь"
+	for i := 0; i < 500; i++ {
+		thisRespond, thisResponse := brain.decision(0, "дерись за меня, дракон")
+		if thisRespond && thisResponse == expected {
+			respond = thisRespond
+			response = thisResponse
+		}
+	}
+	if !respond {
+		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
