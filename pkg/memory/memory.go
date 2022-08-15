@@ -1,4 +1,4 @@
-package main
+package memory
 
 import "sort"
 
@@ -70,4 +70,20 @@ func NewMemory() *Memory {
 		normalisationMap: normalisationMap,
 	}
 	return memory
+}
+
+func (m *Memory) GetSenslessPhrases() []string {
+	return m.senselessPhrases
+}
+
+func (m *Memory) GetMockingMap() map[string]string {
+	return m.mockingMap
+}
+
+func (m *Memory) GetMokingMapKeys() []string {
+	return m.mockingMapKeys
+}
+
+func (m *Memory) GetNormalizationMap() map[string]string {
+	return m.normalisationMap
 }

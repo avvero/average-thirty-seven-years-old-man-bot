@@ -1,41 +1,43 @@
-package main
+package brain
 
 import (
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
+
+	m "github.com/avvero/the_gamers_guild_bot/pkg/memory"
+	u "github.com/avvero/the_gamers_guild_bot/pkg/utils"
 )
 
 type Brain struct {
-	memory *Memory
+	memory *m.Memory
 }
 
-func NewBrain(memory *Memory) *Brain {
-	brain := &Brain{
-		memory: memory,
-	}
-	return brain
+func NewBrain(memory *m.Memory) *Brain {
+	return &Brain{memory: memory}
 }
 
-func (brain Brain) decision(chatId int64, text string) (respond bool, response string) {
-	if randomUpTo(50) == 0 {
-		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
-		return true, phrase
-	}
-	if len(text) > 14 && randomUpTo(50) == 0 {
-		phrase := brain.khaleesify(text)
-		return true, phrase
-	}
-	if !Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
-		return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
+func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, response string) {
+	if rnd {
+		if randomUpTo(50) == 0 {
+			phrase := b.memory.GetSenslessPhrases()[randomUpTo(len(b.memory.GetSenslessPhrases()))]
+			return true, phrase
+		}
+		if len(text) > 14 && randomUpTo(50) == 0 {
+			phrase := b.khaleesify(text)
+			return true, phrase
+		}
+		if !u.Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
+			return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
+		}
 	}
 	//
 	text = strings.ToLower(text)
 	if text == "gg" {
 		return true, "gg"
 	}
-	if brain.normalizeRu(text) == "нет" {
+	if b.normalizeRu(text) == "нет" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||
@@ -58,8 +60,8 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
-	if strings.Contains(brain.normalizeEn(text), "devops") ||
-		strings.Contains(brain.normalizeRu(text), "девопс") {
+	if strings.Contains(b.normalizeEn(text), "devops") ||
+		strings.Contains(b.normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
 	return false, ""
@@ -69,17 +71,17 @@ func randomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }
 
-func (brain Brain) normalizeRu(text string) string {
+func (b *Brain) normalizeRu(text string) string {
 	result := text
-	for k, v := range brain.memory.normalisationMap {
+	for k, v := range b.memory.GetNormalizationMap() {
 		result = strings.Replace(result, k, v, -1)
 	}
 	return result
 }
 
-func (brain Brain) normalizeEn(text string) string {
+func (b *Brain) normalizeEn(text string) string {
 	result := text
-	for k, v := range brain.memory.normalisationMap {
+	for k, v := range b.memory.GetNormalizationMap() {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
@@ -87,8 +89,8 @@ func (brain Brain) normalizeEn(text string) string {
 
 func (brain Brain) khaleesify(text string) string {
 	result := strings.ToLower(text)
-	for _, k := range brain.memory.mockingMapKeys {
-		result = strings.Replace(result, k, brain.memory.mockingMap[k], -1)
+	for _, k := range brain.memory.GetMokingMapKeys() {
+		result = strings.Replace(result, k, brain.memory.GetMockingMap()[k], -1)
 	}
 	return result
 }
