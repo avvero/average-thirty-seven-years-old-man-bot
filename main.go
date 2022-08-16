@@ -50,7 +50,10 @@ func main() {
 
 		respond, response := brain.decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
-			sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
+			go func() {
+				time.Sleep(time.Duration(randomUpTo(15)) * time.Second)
+				sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
+			}()
 		}
 	})
 

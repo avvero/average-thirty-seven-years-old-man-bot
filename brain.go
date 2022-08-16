@@ -1,10 +1,8 @@
 package main
 
 import (
-	"math/rand"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Brain struct {
@@ -80,10 +78,6 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		return true, result
 	}
 	return false, ""
-}
-
-func randomUpTo(max int) int {
-	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }
 
 func (brain Brain) normalizeRu(text string) string {
