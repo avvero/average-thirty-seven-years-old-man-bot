@@ -86,6 +86,7 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 		"pERt",
 		"sdfERdfd",
 		"аааЕРваа",
+		"трансформационный",
 	}
 	for _, text := range data {
 		respond, response := brain.decision(0, text)
