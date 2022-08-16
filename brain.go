@@ -62,6 +62,20 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		strings.Contains(brain.normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
+	if strings.Contains(brain.normalizeRu(text), "трансформация") ||
+		strings.Contains(brain.normalizeRu(text), "трансформацию") ||
+		strings.Contains(brain.normalizeRu(text), "трансформации") {
+		tokens := map[string]string{
+			"трансформация": "оргия гомогеев",
+			"трансформацию": "оргию гомогеев",
+			"трансформации": "оргии гомогеев",
+		}
+		result := text
+		for k, v := range tokens {
+			result = strings.Replace(result, k, v, -1)
+		}
+		return true, result
+	}
 	return false, ""
 }
 
