@@ -14,6 +14,15 @@ func Contains[T comparable](s []T, e T) bool {
 	return false
 }
 
+func ContainsRune(s []rune, e rune) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func randomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }

@@ -154,3 +154,32 @@ func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
+
+func Test_huefyText(t *testing.T) {
+	brain := NewBrain(NewMemory())
+	data := map[string]string{
+		"":                    "",
+		"джо":                 "джо",
+		"джок":                "джок",
+		"Джокер":              "хуёкер",
+		"слышно":              "хуишно",
+		"чекнуть":             "хуекнуть",
+		"рулетка":             "хуетка",
+		"трансформация":       "хуяция",
+		"реакция":             "хуеакция",
+		"сообщения":           "хуения",
+		"сениоры":             "хуиоры",
+		"Шутки по времени":    "хуютки по хуемини",
+		"бинарные опционы":    "хуярные хуионы",
+		"несет":               "хуесет",
+		"интересно":           "хуесно",
+		"ну бля время теряем": "ну бля хуемя хуеряем",
+		"Потому что надо было не шифры ваши писать": "ну бля хуемя хуеряем",
+	}
+	for k, expected := range data {
+		result := brain.huefy(k)
+		if result != expected {
+			t.Error("huefyed ", k, ": ", expected, " != ", result)
+		}
+	}
+}

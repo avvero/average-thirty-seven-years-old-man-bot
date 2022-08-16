@@ -108,3 +108,71 @@ func (brain Brain) khaleesify(text string) string {
 	}
 	return result
 }
+
+var vowels = []rune{'а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я'}
+var vowelsSoftenMap = map[rune]rune{
+	//'о': 'ё',
+	'ы': 'и',
+	'а': 'я',
+	'у': 'ю',
+}
+var delimiters = []rune{' ', '.', ',', ':', '!', '?', '/', ';', '\'', '"', '#', '$', '(', ')'}
+
+func (brain Brain) huefy(text string) string {
+	length := len(text)
+	if length <= 6 {
+		return text
+	}
+	result := make([]rune, length*2)
+	resultPosition := length*2 - 1
+	runes := []rune(text)
+	vowelsNumber := 0
+	for i := len(runes) - 1; i >= 0; i-- {
+		if ContainsRune(delimiters, runes[i]) {
+			vowelsNumber = 0
+		}
+		// treat two vowels as one
+		if ContainsRune(vowels, runes[i]) && i > 0 && !ContainsRune(vowels, runes[i-1]) {
+			vowelsNumber++
+		}
+		if vowelsNumber == 2 {
+			softRune := vowelsSoftenMap[runes[i]]
+			if softRune != 0 {
+				result[resultPosition] = softRune
+			} else {
+				result[resultPosition] = runes[i]
+			}
+			resultPosition--
+			result[resultPosition] = 'у'
+			resultPosition--
+			result[resultPosition] = 'х'
+			resultPosition--
+			// skip
+			vowelsNumber = 0
+			for i > 0 && !ContainsRune(delimiters, runes[i-1]) {
+				i--
+			}
+			//break
+		} else {
+			result[resultPosition] = runes[i]
+			resultPosition--
+		}
+	}
+	//trim
+	payloadPosition := 0
+	for ; payloadPosition < len(result); payloadPosition++ {
+		if result[payloadPosition] != 0 {
+			break
+		}
+	}
+	if payloadPosition > 0 {
+		trimmedResult := make([]rune, len(result)-payloadPosition)
+
+		for i := 0; i < len(trimmedResult); i++ {
+			trimmedResult[i] = result[payloadPosition]
+			payloadPosition++
+		}
+		return string(trimmedResult)
+	}
+	return string(result)
+}
