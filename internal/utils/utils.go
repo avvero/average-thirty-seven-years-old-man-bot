@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"math/rand"
@@ -14,6 +14,6 @@ func Contains[T comparable](s []T, e T) bool {
 	return false
 }
 
-func randomUpTo(max int) int {
+func RandomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }
