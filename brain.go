@@ -77,6 +77,11 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		}
 		return true, result
 	}
+	if strings.Contains(text, "java") ||
+		strings.Contains(text, "джаба") ||
+		strings.Contains(text, "джава") {
+		return true, "джава-хуява, а я работаю на го"
+	}
 	return false, ""
 }
 
