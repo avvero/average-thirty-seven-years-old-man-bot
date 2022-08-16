@@ -21,6 +21,10 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
 		return true, phrase
 	}
+	if len(text) > 5 && randomUpTo(50) == 0 {
+		phrase := brain.huefy(text)
+		return true, phrase
+	}
 	if len(text) > 14 && randomUpTo(100) == 0 {
 		phrase := brain.khaleesify(text)
 		return true, phrase
@@ -120,22 +124,41 @@ var delimiters = []rune{' ', '.', ',', ':', '!', '?', '/', ';', '\'', '"', '#', 
 
 func (brain Brain) huefy(text string) string {
 	length := len(text)
-	if length <= 6 {
-		return text
-	}
 	result := make([]rune, length*2)
 	resultPosition := length*2 - 1
 	runes := []rune(text)
 	vowelsNumber := 0
+	wordLength := 0
 	for i := len(runes) - 1; i >= 0; i-- {
 		if ContainsRune(delimiters, runes[i]) {
 			vowelsNumber = 0
+			wordLength = 0
+			result[resultPosition] = runes[i]
+			resultPosition--
+			continue
+		} else {
+			wordLength++
 		}
 		// treat two vowels as one
 		if ContainsRune(vowels, runes[i]) && i > 0 && !ContainsRune(vowels, runes[i-1]) {
 			vowelsNumber++
 		}
+		// look forward and take word length
 		if vowelsNumber == 2 {
+			//wordLength--
+			for f := i; f >= 0 && !ContainsRune(delimiters, runes[f]); f-- {
+				wordLength++
+			}
+		}
+		if vowelsNumber == 2 && wordLength < 5 {
+			// skip
+			vowelsNumber = 0
+			for i >= 0 && !ContainsRune(delimiters, runes[i]) {
+				result[resultPosition] = runes[i]
+				i--
+				resultPosition--
+			}
+		} else if vowelsNumber == 2 {
 			softRune := vowelsSoftenMap[runes[i]]
 			if softRune != 0 {
 				result[resultPosition] = softRune
@@ -143,8 +166,10 @@ func (brain Brain) huefy(text string) string {
 				result[resultPosition] = runes[i]
 			}
 			resultPosition--
+
 			result[resultPosition] = 'у'
 			resultPosition--
+
 			result[resultPosition] = 'х'
 			resultPosition--
 			// skip
@@ -152,7 +177,6 @@ func (brain Brain) huefy(text string) string {
 			for i > 0 && !ContainsRune(delimiters, runes[i-1]) {
 				i--
 			}
-			//break
 		} else {
 			result[resultPosition] = runes[i]
 			resultPosition--
