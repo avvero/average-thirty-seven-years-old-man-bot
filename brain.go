@@ -86,6 +86,9 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 		strings.Contains(text, "джава") {
 		return true, "джава-хуява, а я работаю на го"
 	}
+	if strings.Contains(text, "блокир") {
+		return true, "пусть себе анус заблокируют"
+	}
 	return false, ""
 }
 
@@ -120,7 +123,7 @@ var vowelsSoftenMap = map[rune]rune{
 	'а': 'я',
 	'у': 'ю',
 }
-var delimiters = []rune{' ', '.', ',', ':', '!', '?', '/', ';', '\'', '"', '#', '$', '(', ')'}
+var delimiters = []rune{' ', '.', ',', ':', '!', '?', '/', ';', '\'', '"', '#', '$', '(', ')', '-'}
 
 func (brain Brain) huefy(text string) string {
 	length := len(text)
