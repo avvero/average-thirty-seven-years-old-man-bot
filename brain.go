@@ -65,9 +65,9 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 	if text == "трансформация" ||
 		text == "трансформацию" ||
 		text == "трансформации" ||
-		strings.Contains(brain.normalizeRu(text), " трансформация ") ||
-		strings.Contains(brain.normalizeRu(text), " трансформацию ") ||
-		strings.Contains(brain.normalizeRu(text), " трансформации ") {
+		strings.Contains(brain.normalizeRu(text), "трансформация ") ||
+		strings.Contains(brain.normalizeRu(text), "трансформацию ") ||
+		strings.Contains(brain.normalizeRu(text), "трансформации ") {
 		tokens := map[string]string{
 			"трансформация": "оргия гомогеев",
 			"трансформацию": "оргию гомогеев",
