@@ -19,11 +19,11 @@ func NewBrain(memory *Memory) *Brain {
 }
 
 func (brain Brain) decision(chatId int64, text string) (respond bool, response string) {
-	if randomUpTo(50) == 0 {
+	if randomUpTo(100) == 0 {
 		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
 		return true, phrase
 	}
-	if len(text) > 14 && randomUpTo(50) == 0 {
+	if len(text) > 14 && randomUpTo(100) == 0 {
 		phrase := brain.khaleesify(text)
 		return true, phrase
 	}
