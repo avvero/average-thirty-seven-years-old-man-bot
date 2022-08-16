@@ -50,12 +50,12 @@ func main() {
 
 		respond, response := brain.decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
-			sendMessage(webhookRequest.Message.Chat.Id, response)
+			sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
 		}
 	})
 
 	log.Println("Http server started on port " + *httpPort)
-	sendMessage(245851441, "Bot is redeployed")
+	sendMessage(245851441, 0, "Bot is redeployed")
 	http.ListenAndServe(":"+*httpPort, nil)
 }
 
@@ -64,9 +64,10 @@ type WebhookRequest struct {
 }
 
 type WebhookRequestMessage struct {
-	From *WebhookRequestMessageSender `json:"from"`
-	Chat *WebhookRequestMessageChat   `json:"chat"`
-	Text string                       `json:"text"`
+	MessageId int64                        `json:"message_id"`
+	From      *WebhookRequestMessageSender `json:"from"`
+	Chat      *WebhookRequestMessageChat   `json:"chat"`
+	Text      string                       `json:"text"`
 }
 
 type WebhookRequestMessageSender struct {
@@ -80,10 +81,15 @@ type WebhookRequestMessageChat struct {
 	Title string `json:"title"`
 }
 
-func sendMessage(chatId int64, message string) {
+func sendMessage(chatId int64, receivedMessageId int64, message string) {
+	replyToMessageId := ""
+	if receivedMessageId != 0 {
+		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
+	}
 	requestBody, _ := json.Marshal(map[string]string{
-		"chat_id": strconv.FormatInt(chatId, 10),
-		"text":    message,
+		"reply_to_message_id": replyToMessageId,
+		"chat_id":             strconv.FormatInt(chatId, 10),
+		"text":                message,
 	})
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
