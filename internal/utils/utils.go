@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"math/rand"
@@ -23,6 +23,6 @@ func ContainsRune(s []rune, e rune) bool {
 	return false
 }
 
-func randomUpTo(max int) int {
+func RandomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
 }

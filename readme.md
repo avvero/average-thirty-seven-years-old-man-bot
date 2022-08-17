@@ -1,5 +1,10 @@
 # The GamersGuild Bot
 
+## Run tests
+```bash
+go test ./...
+```
+
 ## Launch
 ```bash
 go build
