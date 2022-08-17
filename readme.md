@@ -1,4 +1,4 @@
-# The GamersGuild Bot
+# Average Thirty Seven Years Old Man (bot)
 
 ## Run tests
 ```bash
