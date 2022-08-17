@@ -30,11 +30,22 @@ Different ways of answering does call here as "skills".
 ```bash
 go test ./...
 ```
+## View test coverage
+
+```bash
+go test ./... -coverprofile cp.out
+go tool cover -func cp.out | grep total | awk '{print $3}'
+```
+
+## Build
+
+```bash
+go build -o ./main ./cmd/bot/main.go
+```
 
 ## Launch
 
 ```bash
-go build
 ./main -httpPort=8080
 ```
 
