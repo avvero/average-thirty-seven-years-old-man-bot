@@ -29,11 +29,11 @@ func main() {
 	if found {
 		token = &tokenEnv
 	}
-	brain := brain.NewBrain()
+	brain := brain.NewBrain(true)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, "{\"name\": \"TheGamerGuildBot\", \"version\": \"1.2\"}")
+		io.WriteString(w, "{\"name\": \"TheGamerGuildBot\", \"version\": \"1.3\"}")
 	})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,7 @@ func main() {
 		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 
-		respond, response := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text, true)
+		respond, response := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
 			go func() {
 				time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)

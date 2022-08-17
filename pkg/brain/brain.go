@@ -9,25 +9,26 @@ import (
 )
 
 type Brain struct {
-	memory *Memory
+	memory       *Memory
+	randomFactor bool
 }
 
-func NewBrain() *Brain {
-	return &Brain{memory: NewMemory()}
+func NewBrain(randomFactor bool) *Brain {
+	return &Brain{memory: NewMemory(), randomFactor: randomFactor}
 }
 
-func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, response string) {
-	if rnd {
+func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
+	if brain.randomFactor {
 		if utils.RandomUpTo(100) == 0 {
-			phrase := b.GetSenslessPhrases()[utils.RandomUpTo(len(b.GetSenslessPhrases()))]
+			phrase := brain.GetSenselessPhrases()[utils.RandomUpTo(len(brain.GetSenselessPhrases()))]
 			return true, phrase
 		}
 		if len(text) > 5 && utils.RandomUpTo(50) == 0 {
-			phrase := b.huefy(text)
+			phrase := brain.huefy(text)
 			return true, phrase
 		}
 		if len(text) > 14 && utils.RandomUpTo(100) == 0 {
-			phrase := b.khaleesify(text)
+			phrase := brain.khaleesify(text)
 			return true, phrase
 		}
 		if !utils.Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
@@ -39,7 +40,7 @@ func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, res
 	if text == "gg" {
 		return true, "gg"
 	}
-	if b.normalizeRu(text) == "нет" {
+	if brain.normalizeRu(text) == "нет" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||
@@ -62,16 +63,16 @@ func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, res
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
-	if strings.Contains(b.normalizeEn(text), "devops") ||
-		strings.Contains(b.normalizeRu(text), "девопс") {
+	if strings.Contains(brain.normalizeEn(text), "devops") ||
+		strings.Contains(brain.normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
 	if text == "трансформация" ||
 		text == "трансформацию" ||
 		text == "трансформации" ||
-		strings.Contains(b.normalizeRu(text), "трансформация ") ||
-		strings.Contains(b.normalizeRu(text), "трансформацию ") ||
-		strings.Contains(b.normalizeRu(text), "трансформации ") {
+		strings.Contains(brain.normalizeRu(text), "трансформация ") ||
+		strings.Contains(brain.normalizeRu(text), "трансформацию ") ||
+		strings.Contains(brain.normalizeRu(text), "трансформации ") {
 		tokens := map[string]string{
 			"трансформация": "оргия гомогеев",
 			"трансформацию": "оргию гомогеев",
@@ -97,54 +98,54 @@ func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, res
 	return false, ""
 }
 
-func (b *Brain) normalizeRu(text string) string {
+func (brain *Brain) normalizeRu(text string) string {
 	result := text
-	for k, v := range b.GetNormalizationMap() {
+	for k, v := range brain.GetNormalizationMap() {
 		result = strings.Replace(result, k, v, -1)
 	}
 	return result
 }
 
-func (b *Brain) normalizeEn(text string) string {
+func (brain *Brain) normalizeEn(text string) string {
 	result := text
-	for k, v := range b.GetNormalizationMap() {
+	for k, v := range brain.GetNormalizationMap() {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
 }
 
-func (b *Brain) khaleesify(text string) string {
+func (brain *Brain) khaleesify(text string) string {
 	result := strings.ToLower(text)
-	for _, k := range b.GetMokingMapKeys() {
-		result = strings.Replace(result, k, b.GetMockingMap()[k], -1)
+	for _, k := range brain.GetMockingMapKeys() {
+		result = strings.Replace(result, k, brain.GetMockingMap()[k], -1)
 	}
 	return result
 }
 
-func (b *Brain) GetSenslessPhrases() []string {
-	return b.memory.senselessPhrases
+func (brain *Brain) GetSenselessPhrases() []string {
+	return brain.memory.senselessPhrases
 }
 
-func (b *Brain) GetMockingMap() map[string]string {
-	return b.memory.mockingMap
+func (brain *Brain) GetMockingMap() map[string]string {
+	return brain.memory.mockingMap
 }
 
-func (b *Brain) GetMokingMapKeys() []string {
-	return b.memory.mockingMapKeys
+func (brain *Brain) GetMockingMapKeys() []string {
+	return brain.memory.mockingMapKeys
 }
 
-func (b *Brain) GetNormalizationMap() map[string]string {
-	return b.memory.normalisationMap
+func (brain *Brain) GetNormalizationMap() map[string]string {
+	return brain.memory.normalisationMap
 }
 
-func (b *Brain) RememberAll() *Brain {
-	b.memory.SetSenslessPhrases(knowledge.SenselessPhrases)
-	b.memory.SetMockingMap(knowledge.MockingMap)
-	b.memory.SetNormalizationMap(knowledge.NormalisationMap)
-	return b
+func (brain *Brain) RememberAll() *Brain {
+	brain.memory.SetSenslessPhrases(knowledge.SenselessPhrases)
+	brain.memory.SetMockingMap(knowledge.MockingMap)
+	brain.memory.SetNormalizationMap(knowledge.NormalisationMap)
+	return brain
 }
 
-func (b *Brain) huefy(text string) string {
+func (brain *Brain) huefy(text string) string {
 	length := len(text)
 	result := make([]rune, length*2)
 	resultPosition := length*2 - 1
