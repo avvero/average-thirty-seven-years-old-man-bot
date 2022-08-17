@@ -5,7 +5,7 @@ services:
     pull_policy: always
     container_name: gg_bot
     environment:
-      - token=5498172100:AAFBEYFhnN8oJmW_9dkxXZ6fWUUOa5119TY
+      - token=token
     ports:
       - "8066:8080"
     network_mode: "bridge"
