@@ -20,6 +20,12 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	if !allowed {
 		return true, message
 	}
+	text = strings.ToLower(text)
+	for _, word := range []string{"росси", "путин", "украин", "аллах", "мухаммед", "бог", "иисус"} {
+		if strings.Contains(text, word) {
+			return false, ""
+		}
+	}
 	if brain.randomFactor {
 		if utils.RandomUpTo(100) == 0 {
 			return new(SenselessPhrasesIntention).Express(text)
@@ -33,7 +39,6 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			return NewKhaleesifyIntention().Express(text)
 		}
 	}
-	text = strings.ToLower(text)
 	if text == "gg" {
 		return true, "gg"
 	}

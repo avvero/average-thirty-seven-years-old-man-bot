@@ -129,3 +129,26 @@ func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
+
+func Test_avoidsSomeWords(t *testing.T) {
+	brain := NewBrain(NewMemory(), true)
+	data := []string{
+		"Россия",
+		"Россию",
+		"Путин",
+		"Украина",
+		"Украине",
+		"Аллах",
+		"Мухаммед",
+		"бог",
+		"Иисус",
+	}
+	for i := 0; i < 500; i++ {
+		for _, text := range data {
+			respond, response := brain.Decision(0, text)
+			if respond {
+				t.Error("Response for ", text, ": not expected != ", response)
+			}
+		}
+	}
+}
