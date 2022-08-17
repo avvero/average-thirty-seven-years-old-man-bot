@@ -7,7 +7,7 @@ Piece of digital art, telegram bot which acts like average thirty-seven years ol
 - arrogant
 - spontaneous
 - answers out of place
-- user bad words
+- uses bad words
 
 ## Run tests
 ```bash
