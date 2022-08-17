@@ -16,16 +16,15 @@ func NewBrain(memory *Memory, randomFactor bool) *Brain {
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
-	allowed, message := Whitelist{}.Check(chatId)
-	if !allowed {
-		return true, message
-	}
-	text = strings.ToLower(text)
-	for _, word := range []string{"росси", "путин", "украин", "аллах", "мухаммед", "бог", "иисус"} {
-		if strings.Contains(text, word) {
+	for _, protector := range []Protector{&Whitelist{}, &SensitiveTopic{}} {
+		forbidden, message := protector.Check(chatId, text)
+		if forbidden && message != "" {
+			return true, message
+		} else if forbidden {
 			return false, ""
 		}
 	}
+	text = strings.ToLower(text)
 	if brain.randomFactor {
 		if utils.RandomUpTo(100) == 0 {
 			return new(SenselessPhrasesIntention).Express(text)
