@@ -26,7 +26,10 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			phrase := brain.GetSenselessPhrases()[utils.RandomUpTo(len(brain.GetSenselessPhrases()))]
 			return true, phrase
 		}
-		if len(text) > 5 && utils.RandomUpTo(50) == 0 {
+		if len(text) > 5 && !strings.Contains(text, " ") && utils.RandomUpTo(10) == 0 {
+			phrase := brain.huefyLastWord(text)
+			return true, phrase
+		} else if len(text) > 5 && utils.RandomUpTo(50) == 0 {
 			phrase := brain.huefy(text)
 			return true, phrase
 		}
@@ -189,6 +192,66 @@ func (brain *Brain) huefy(text string) string {
 			for i > 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
 				i--
 			}
+		} else {
+			result[resultPosition] = runes[i]
+			resultPosition--
+		}
+	}
+	//trim
+	payloadPosition := 0
+	for ; payloadPosition < len(result); payloadPosition++ {
+		if result[payloadPosition] != 0 {
+			break
+		}
+	}
+	if payloadPosition > 0 {
+		trimmedResult := make([]rune, len(result)-payloadPosition)
+
+		for i := 0; i < len(trimmedResult); i++ {
+			trimmedResult[i] = result[payloadPosition]
+			payloadPosition++
+		}
+		return string(trimmedResult)
+	}
+	return string(result)
+}
+
+func (brain *Brain) huefyLastWord(text string) string {
+	length := len(text)
+	result := make([]rune, length*2)
+	resultPosition := length*2 - 1
+	runes := []rune(text)
+	vowelsNumber := 0
+	replaced := false
+	for i := len(runes) - 1; i >= 0; i-- {
+		if utils.ContainsRune(knowledge.Delimiters, runes[i]) {
+			result[resultPosition] = runes[i]
+			resultPosition--
+			continue
+		}
+		// treat two vowels as one
+		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i > 0 && !utils.ContainsRune(knowledge.Vowels, runes[i-1]) {
+			vowelsNumber++
+		}
+		if !replaced && vowelsNumber == 2 {
+			softRune := knowledge.VowelsSoftenMap[runes[i]]
+			if softRune != 0 {
+				result[resultPosition] = softRune
+			} else {
+				result[resultPosition] = runes[i]
+			}
+			resultPosition--
+
+			result[resultPosition] = 'у'
+			resultPosition--
+
+			result[resultPosition] = 'х'
+			resultPosition--
+			// skip runes that are replaced
+			for i > 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
+				i--
+			}
+			replaced = true
 		} else {
 			result[resultPosition] = runes[i]
 			resultPosition--
