@@ -8,7 +8,7 @@ import (
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), false)
 	data := map[string]string{
 		"-1001733786877": "gg",
 		"245851441":      "gg",
@@ -19,13 +19,13 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
 		respond, response := brain.Decision(chatId, "gg")
 		if !respond || response != expected {
-			t.Error("Expected and got:", expected, " != ", response)
+			t.Error("Response for ", k, ": ", expected, " != ", response)
 		}
 	}
 }
 
 func Test_returnsOnSomeText(t *testing.T) {
-	brain := NewBrain(false).RememberAll()
+	brain := NewBrain(NewMemory(), false)
 	data := map[string]string{
 		"gg": "gg",
 		"GG": "gg",
@@ -98,7 +98,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 }
 
 func Test_returnsOnNotElderRing(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), true)
 	data := []string{
 		"pERt",
 		"sdfERdfd",
@@ -114,7 +114,7 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 }
 
 func Test_returnsForLuckySenselessPhrase(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), true)
 	respond := false
 	response := ""
 	for i := 0; i < 500; i++ {
@@ -130,7 +130,7 @@ func Test_returnsForLuckySenselessPhrase(t *testing.T) {
 }
 
 func Test_khaleesifiesText(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), true)
 	data := map[string]string{
 		"Позвольте мне сражаться за Вас, Кхалиси":                                   "позвойти мени слязяться зя вяс, кхялиси",
 		"дерись за меня, дракон":                                                    "делись зя миня, дляконь",
@@ -147,7 +147,7 @@ func Test_khaleesifiesText(t *testing.T) {
 }
 
 func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), true)
 	respond := false
 	response := ""
 	expected := "делись зя миня, дляконь"
@@ -164,7 +164,7 @@ func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 }
 
 func Test_huefyText(t *testing.T) {
-	brain := NewBrain(true).RememberAll()
+	brain := NewBrain(NewMemory(), true)
 	data := map[string]string{
 		"":                     "",
 		"джо":                  "джо",

@@ -13,11 +13,14 @@ type Brain struct {
 	randomFactor bool
 }
 
-func NewBrain(randomFactor bool) *Brain {
-	return &Brain{memory: NewMemory(), randomFactor: randomFactor}
+func NewBrain(memory *Memory, randomFactor bool) *Brain {
+	return &Brain{memory: memory, randomFactor: randomFactor}
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
+	if !utils.Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
+		return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
+	}
 	if brain.randomFactor {
 		if utils.RandomUpTo(100) == 0 {
 			phrase := brain.GetSenselessPhrases()[utils.RandomUpTo(len(brain.GetSenselessPhrases()))]
@@ -31,11 +34,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			phrase := brain.khaleesify(text)
 			return true, phrase
 		}
-		if !utils.Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
-			return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
-		}
 	}
-	//
 	text = strings.ToLower(text)
 	if text == "gg" {
 		return true, "gg"
@@ -136,13 +135,6 @@ func (brain *Brain) GetMockingMapKeys() []string {
 
 func (brain *Brain) GetNormalizationMap() map[string]string {
 	return brain.memory.normalisationMap
-}
-
-func (brain *Brain) RememberAll() *Brain {
-	brain.memory.SetSenslessPhrases(knowledge.SenselessPhrases)
-	brain.memory.SetMockingMap(knowledge.MockingMap)
-	brain.memory.SetNormalizationMap(knowledge.NormalisationMap)
-	return brain
 }
 
 func (brain *Brain) huefy(text string) string {

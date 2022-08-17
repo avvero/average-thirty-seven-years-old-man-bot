@@ -29,7 +29,7 @@ func main() {
 	if found {
 		token = &tokenEnv
 	}
-	brain := brain.NewBrain(true)
+	brain := brain.NewBrain(brain.NewMemory(), true)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
