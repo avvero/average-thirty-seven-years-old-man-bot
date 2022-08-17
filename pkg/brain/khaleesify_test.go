@@ -5,7 +5,7 @@ import (
 )
 
 func Test_khaleesifiesText(t *testing.T) {
-	intention := &KhaleesifyIntention{memory: NewMemory()}
+	intention := NewKhaleesifyIntention()
 	data := map[string]string{
 		"Позвольте мне сражаться за Вас, Кхалиси":                                   "позвойти мени слязяться зя вяс, кхялиси",
 		"дерись за меня, дракон":                                                    "делись зя миня, дляконь",

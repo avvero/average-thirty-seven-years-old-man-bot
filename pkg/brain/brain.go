@@ -22,8 +22,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	}
 	if brain.randomFactor {
 		if utils.RandomUpTo(100) == 0 {
-			phrase := brain.GetSenselessPhrases()[utils.RandomUpTo(len(brain.GetSenselessPhrases()))]
-			return true, phrase
+			return new(SenselessPhrasesIntention).Express(text)
 		}
 		if len(text) > 5 && !strings.Contains(text, " ") && utils.RandomUpTo(10) == 0 {
 			return new(HuefyLastWordIntention).Express(text)
@@ -31,7 +30,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			return new(HuefyIntention).Express(text)
 		}
 		if len(text) > 14 && utils.RandomUpTo(100) == 0 {
-			return NewKhaleesifyIntention(brain.memory).Express(text)
+			return NewKhaleesifyIntention().Express(text)
 		}
 	}
 	text = strings.ToLower(text)
@@ -107,10 +106,6 @@ func (brain *Brain) normalizeEn(text string) string {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
-}
-
-func (brain *Brain) GetSenselessPhrases() []string {
-	return brain.memory.senselessPhrases
 }
 
 func (brain *Brain) GetNormalizationMap() map[string]string {
