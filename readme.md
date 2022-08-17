@@ -1,7 +1,7 @@
 # Average Thirty-seven Years Old Man (bot)
 
 Piece of digital art, telegram bot which acts like average thirty-seven years old man (by the author opinion):
-- don't give a shet
+- don't give a shit
 - tries to be humorous 
 - dumb
 - arrogant
