@@ -47,7 +47,7 @@ var NormalisationMap = map[string]string{
 
 var Vowels = []rune{'а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я'}
 var VowelsSoftenMap = map[rune]rune{
-	//'о': 'ё',
+	'о': 'ё',
 	'ы': 'и',
 	'а': 'я',
 	'у': 'ю',

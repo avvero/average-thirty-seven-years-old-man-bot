@@ -155,7 +155,10 @@ func (brain *Brain) huefy(text string) string {
 			wordLength++
 		}
 		// treat two vowels as one
-		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i > 0 && !utils.ContainsRune(knowledge.Vowels, runes[i-1]) {
+		if utils.ContainsRune(knowledge.Vowels, runes[i]) &&
+			i > 0 &&
+			!utils.ContainsRune(knowledge.Vowels, runes[i-1]) &&
+			!utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
 			vowelsNumber++
 		}
 		// look forward and take word length
@@ -231,6 +234,10 @@ func (brain *Brain) huefyLastWord(text string) string {
 		}
 		// treat two vowels as one
 		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i > 0 && !utils.ContainsRune(knowledge.Vowels, runes[i-1]) {
+			vowelsNumber++
+		}
+		// treat two vowels as one if text contains only two vowels and start from one of it
+		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i == 0 {
 			vowelsNumber++
 		}
 		if !replaced && vowelsNumber == 2 {
