@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type KhaleesifyIntention struct {
-	mockingMap     map[string]string
-	mockingMapKeys []string
-}
-
 var mockingMap = map[string]string{
 	"ль": "й",
 	"ри": "и",
@@ -33,6 +28,11 @@ var mockingMap = map[string]string{
 	"ж": "з",
 	//"в": "ф",
 	"": "",
+}
+
+type KhaleesifyIntention struct {
+	mockingMap     map[string]string
+	mockingMapKeys []string
 }
 
 func NewKhaleesifyIntention() *KhaleesifyIntention {
