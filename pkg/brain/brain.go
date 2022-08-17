@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 )
 
@@ -27,15 +26,12 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			return true, phrase
 		}
 		if len(text) > 5 && !strings.Contains(text, " ") && utils.RandomUpTo(10) == 0 {
-			phrase := brain.huefyLastWord(text)
-			return true, phrase
+			return new(HuefyLastWordIntention).Express(text)
 		} else if len(text) > 5 && utils.RandomUpTo(50) == 0 {
-			phrase := brain.huefy(text)
-			return true, phrase
+			return new(HuefyIntention).Express(text)
 		}
 		if len(text) > 14 && utils.RandomUpTo(100) == 0 {
-			phrase := brain.khaleesify(text)
-			return true, phrase
+			return NewKhaleesifyIntention(brain.memory).Express(text)
 		}
 	}
 	text = strings.ToLower(text)
@@ -113,172 +109,10 @@ func (brain *Brain) normalizeEn(text string) string {
 	return result
 }
 
-func (brain *Brain) khaleesify(text string) string {
-	result := strings.ToLower(text)
-	for _, k := range brain.GetMockingMapKeys() {
-		result = strings.Replace(result, k, brain.GetMockingMap()[k], -1)
-	}
-	return result
-}
-
 func (brain *Brain) GetSenselessPhrases() []string {
 	return brain.memory.senselessPhrases
 }
 
-func (brain *Brain) GetMockingMap() map[string]string {
-	return brain.memory.mockingMap
-}
-
-func (brain *Brain) GetMockingMapKeys() []string {
-	return brain.memory.mockingMapKeys
-}
-
 func (brain *Brain) GetNormalizationMap() map[string]string {
 	return brain.memory.normalisationMap
-}
-
-func (brain *Brain) huefy(text string) string {
-	length := len(text)
-	result := make([]rune, length*2)
-	resultPosition := length*2 - 1
-	runes := []rune(text)
-	vowelsNumber := 0
-	wordLength := 0
-	for i := len(runes) - 1; i >= 0; i-- {
-		if utils.ContainsRune(knowledge.Delimiters, runes[i]) {
-			vowelsNumber = 0
-			wordLength = 0
-			result[resultPosition] = runes[i]
-			resultPosition--
-			continue
-		} else {
-			wordLength++
-		}
-		// treat two vowels as one
-		if utils.ContainsRune(knowledge.Vowels, runes[i]) &&
-			i > 0 &&
-			!utils.ContainsRune(knowledge.Vowels, runes[i-1]) &&
-			!utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
-			vowelsNumber++
-		}
-		// look forward and take word length
-		if vowelsNumber == 2 {
-			//wordLength--
-			for f := i; f >= 0 && !utils.ContainsRune(knowledge.Delimiters, runes[f]); f-- {
-				wordLength++
-			}
-		}
-		if vowelsNumber == 2 && wordLength < 5 {
-			// skip
-			vowelsNumber = 0
-			for i >= 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i]) {
-				result[resultPosition] = runes[i]
-				i--
-				resultPosition--
-			}
-		} else if vowelsNumber == 2 {
-			softRune := knowledge.VowelsSoftenMap[runes[i]]
-			if softRune != 0 {
-				result[resultPosition] = softRune
-			} else {
-				result[resultPosition] = runes[i]
-			}
-			resultPosition--
-
-			result[resultPosition] = 'у'
-			resultPosition--
-
-			result[resultPosition] = 'х'
-			resultPosition--
-			// skip
-			vowelsNumber = 0
-			for i > 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
-				i--
-			}
-		} else {
-			result[resultPosition] = runes[i]
-			resultPosition--
-		}
-	}
-	//trim
-	payloadPosition := 0
-	for ; payloadPosition < len(result); payloadPosition++ {
-		if result[payloadPosition] != 0 {
-			break
-		}
-	}
-	if payloadPosition > 0 {
-		trimmedResult := make([]rune, len(result)-payloadPosition)
-
-		for i := 0; i < len(trimmedResult); i++ {
-			trimmedResult[i] = result[payloadPosition]
-			payloadPosition++
-		}
-		return string(trimmedResult)
-	}
-	return string(result)
-}
-
-func (brain *Brain) huefyLastWord(text string) string {
-	length := len(text)
-	result := make([]rune, length*2)
-	resultPosition := length*2 - 1
-	runes := []rune(text)
-	vowelsNumber := 0
-	replaced := false
-	for i := len(runes) - 1; i >= 0; i-- {
-		if utils.ContainsRune(knowledge.Delimiters, runes[i]) {
-			result[resultPosition] = runes[i]
-			resultPosition--
-			continue
-		}
-		// treat two vowels as one
-		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i > 0 && !utils.ContainsRune(knowledge.Vowels, runes[i-1]) {
-			vowelsNumber++
-		}
-		// treat two vowels as one if text contains only two vowels and start from one of it
-		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i == 0 {
-			vowelsNumber++
-		}
-		if !replaced && vowelsNumber == 2 {
-			softRune := knowledge.VowelsSoftenMap[runes[i]]
-			if softRune != 0 {
-				result[resultPosition] = softRune
-			} else {
-				result[resultPosition] = runes[i]
-			}
-			resultPosition--
-
-			result[resultPosition] = 'у'
-			resultPosition--
-
-			result[resultPosition] = 'х'
-			resultPosition--
-			// skip runes that are replaced
-			for i > 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
-				i--
-			}
-			replaced = true
-		} else {
-			result[resultPosition] = runes[i]
-			resultPosition--
-		}
-	}
-	//trim
-	payloadPosition := 0
-	for ; payloadPosition < len(result); payloadPosition++ {
-		if result[payloadPosition] != 0 {
-			break
-		}
-	}
-	if payloadPosition > 0 {
-		trimmedResult := make([]rune, len(result)-payloadPosition)
-
-		for i := 0; i < len(trimmedResult); i++ {
-			trimmedResult[i] = result[payloadPosition]
-			payloadPosition++
-		}
-		return string(trimmedResult)
-	}
-	return string(result)
 }
