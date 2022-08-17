@@ -9,3 +9,6 @@ script:
   - docker build --pull -t avvero/gg_bot:latest .
   - docker push avvero/gg_bot:latest
   - ./redeploy.sh
+branches:
+  only:
+    - master
