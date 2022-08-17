@@ -1,4 +1,4 @@
-# Average Thirty-seven Years Old Man (bot)
+# Average Thirty-Seven Years Old Man (bot)
 
 Piece of digital art, telegram bot which acts like average thirty-seven years old man (by the author opinion):
 - doesn't give a shit
