@@ -1,43 +1,45 @@
-package main
+package brain
 
 import (
 	"strconv"
 	"strings"
+
+	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
+	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 )
 
 type Brain struct {
 	memory *Memory
 }
 
-func NewBrain(memory *Memory) *Brain {
-	brain := &Brain{
-		memory: memory,
-	}
-	return brain
+func NewBrain() *Brain {
+	return &Brain{memory: NewMemory()}
 }
 
-func (brain Brain) decision(chatId int64, text string) (respond bool, response string) {
-	if randomUpTo(100) == 0 {
-		phrase := brain.memory.senselessPhrases[randomUpTo(len(brain.memory.senselessPhrases))]
-		return true, phrase
-	}
-	if len(text) > 5 && randomUpTo(50) == 0 {
-		phrase := brain.huefy(text)
-		return true, phrase
-	}
-	if len(text) > 14 && randomUpTo(100) == 0 {
-		phrase := brain.khaleesify(text)
-		return true, phrase
-	}
-	if !Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
-		return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
+func (b *Brain) Decision(chatId int64, text string, rnd bool) (respond bool, response string) {
+	if rnd {
+		if utils.RandomUpTo(100) == 0 {
+			phrase := b.GetSenslessPhrases()[utils.RandomUpTo(len(b.GetSenslessPhrases()))]
+			return true, phrase
+		}
+		if len(text) > 5 && utils.RandomUpTo(50) == 0 {
+			phrase := b.huefy(text)
+			return true, phrase
+		}
+		if len(text) > 14 && utils.RandomUpTo(100) == 0 {
+			phrase := b.khaleesify(text)
+			return true, phrase
+		}
+		if !utils.Contains([]string{"0", "-1001733786877", "245851441", "-578279468"}, strconv.FormatInt(chatId, 10)) {
+			return true, "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business."
+		}
 	}
 	//
 	text = strings.ToLower(text)
 	if text == "gg" {
 		return true, "gg"
 	}
-	if brain.normalizeRu(text) == "нет" {
+	if b.normalizeRu(text) == "нет" {
 		return true, "пидора ответ"
 	}
 	if strings.Contains(text, "morrowind") ||
@@ -60,16 +62,16 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 	if strings.Contains(text, "spotify") || strings.Contains(text, "спотифай") {
 		return true, "Эти пидоры Антону косарик должны за подписку"
 	}
-	if strings.Contains(brain.normalizeEn(text), "devops") ||
-		strings.Contains(brain.normalizeRu(text), "девопс") {
+	if strings.Contains(b.normalizeEn(text), "devops") ||
+		strings.Contains(b.normalizeRu(text), "девопс") {
 		return true, "Девопсы не нужны"
 	}
 	if text == "трансформация" ||
 		text == "трансформацию" ||
 		text == "трансформации" ||
-		strings.Contains(brain.normalizeRu(text), "трансформация ") ||
-		strings.Contains(brain.normalizeRu(text), "трансформацию ") ||
-		strings.Contains(brain.normalizeRu(text), "трансформации ") {
+		strings.Contains(b.normalizeRu(text), "трансформация ") ||
+		strings.Contains(b.normalizeRu(text), "трансформацию ") ||
+		strings.Contains(b.normalizeRu(text), "трансформации ") {
 		tokens := map[string]string{
 			"трансформация": "оргия гомогеев",
 			"трансформацию": "оргию гомогеев",
@@ -95,40 +97,54 @@ func (brain Brain) decision(chatId int64, text string) (respond bool, response s
 	return false, ""
 }
 
-func (brain Brain) normalizeRu(text string) string {
+func (b *Brain) normalizeRu(text string) string {
 	result := text
-	for k, v := range brain.memory.normalisationMap {
+	for k, v := range b.GetNormalizationMap() {
 		result = strings.Replace(result, k, v, -1)
 	}
 	return result
 }
 
-func (brain Brain) normalizeEn(text string) string {
+func (b *Brain) normalizeEn(text string) string {
 	result := text
-	for k, v := range brain.memory.normalisationMap {
+	for k, v := range b.GetNormalizationMap() {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
 }
 
-func (brain Brain) khaleesify(text string) string {
+func (b *Brain) khaleesify(text string) string {
 	result := strings.ToLower(text)
-	for _, k := range brain.memory.mockingMapKeys {
-		result = strings.Replace(result, k, brain.memory.mockingMap[k], -1)
+	for _, k := range b.GetMokingMapKeys() {
+		result = strings.Replace(result, k, b.GetMockingMap()[k], -1)
 	}
 	return result
 }
 
-var vowels = []rune{'а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я'}
-var vowelsSoftenMap = map[rune]rune{
-	//'о': 'ё',
-	'ы': 'и',
-	'а': 'я',
-	'у': 'ю',
+func (b *Brain) GetSenslessPhrases() []string {
+	return b.memory.senselessPhrases
 }
-var delimiters = []rune{' ', '.', ',', ':', '!', '?', '/', ';', '\'', '"', '#', '$', '(', ')', '-'}
 
-func (brain Brain) huefy(text string) string {
+func (b *Brain) GetMockingMap() map[string]string {
+	return b.memory.mockingMap
+}
+
+func (b *Brain) GetMokingMapKeys() []string {
+	return b.memory.mockingMapKeys
+}
+
+func (b *Brain) GetNormalizationMap() map[string]string {
+	return b.memory.normalisationMap
+}
+
+func (b *Brain) RememberAll() *Brain {
+	b.memory.SetSenslessPhrases(knowledge.SenselessPhrases)
+	b.memory.SetMockingMap(knowledge.MockingMap)
+	b.memory.SetNormalizationMap(knowledge.NormalisationMap)
+	return b
+}
+
+func (b *Brain) huefy(text string) string {
 	length := len(text)
 	result := make([]rune, length*2)
 	resultPosition := length*2 - 1
@@ -136,7 +152,7 @@ func (brain Brain) huefy(text string) string {
 	vowelsNumber := 0
 	wordLength := 0
 	for i := len(runes) - 1; i >= 0; i-- {
-		if ContainsRune(delimiters, runes[i]) {
+		if utils.ContainsRune(knowledge.Delimiters, runes[i]) {
 			vowelsNumber = 0
 			wordLength = 0
 			result[resultPosition] = runes[i]
@@ -146,26 +162,26 @@ func (brain Brain) huefy(text string) string {
 			wordLength++
 		}
 		// treat two vowels as one
-		if ContainsRune(vowels, runes[i]) && i > 0 && !ContainsRune(vowels, runes[i-1]) {
+		if utils.ContainsRune(knowledge.Vowels, runes[i]) && i > 0 && !utils.ContainsRune(knowledge.Vowels, runes[i-1]) {
 			vowelsNumber++
 		}
 		// look forward and take word length
 		if vowelsNumber == 2 {
 			//wordLength--
-			for f := i; f >= 0 && !ContainsRune(delimiters, runes[f]); f-- {
+			for f := i; f >= 0 && !utils.ContainsRune(knowledge.Delimiters, runes[f]); f-- {
 				wordLength++
 			}
 		}
 		if vowelsNumber == 2 && wordLength < 5 {
 			// skip
 			vowelsNumber = 0
-			for i >= 0 && !ContainsRune(delimiters, runes[i]) {
+			for i >= 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i]) {
 				result[resultPosition] = runes[i]
 				i--
 				resultPosition--
 			}
 		} else if vowelsNumber == 2 {
-			softRune := vowelsSoftenMap[runes[i]]
+			softRune := knowledge.VowelsSoftenMap[runes[i]]
 			if softRune != 0 {
 				result[resultPosition] = softRune
 			} else {
@@ -180,7 +196,7 @@ func (brain Brain) huefy(text string) string {
 			resultPosition--
 			// skip
 			vowelsNumber = 0
-			for i > 0 && !ContainsRune(delimiters, runes[i-1]) {
+			for i > 0 && !utils.ContainsRune(knowledge.Delimiters, runes[i-1]) {
 				i--
 			}
 		} else {
