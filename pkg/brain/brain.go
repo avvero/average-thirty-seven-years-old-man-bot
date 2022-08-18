@@ -53,6 +53,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		text == "ер" ||
 		text == "эр" ||
 		strings.Contains(text, "elden ring") ||
+		strings.Contains(text, "элден ринг") ||
 		strings.Contains(text, " er ") ||
 		strings.Contains(text, " ер ") ||
 		strings.Contains(text, " эр ") {
