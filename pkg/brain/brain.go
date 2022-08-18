@@ -96,6 +96,9 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	if utils.RandomUpTo(10) == 0 && strings.Contains(text, "опять") {
 		return true, "не опять, а снова"
 	}
+	if strings.Contains(text, "проблем") {
+		return true, "у меня есть 5-10 солюшенов этой проблемы"
+	}
 	return false, ""
 }
 
