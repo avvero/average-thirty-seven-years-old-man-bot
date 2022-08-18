@@ -75,10 +75,9 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		strings.Contains(brain.normalizeRu(text), "трансформацию") ||
 		strings.Contains(brain.normalizeRu(text), "трансформации") {
 		tokens := map[string]string{
-			"трансформация":   "оргия гомогеев",
-			"трансформацию":   "оргию гомогеев",
-			"трансформации":   "оргии гомогеев",
-			"трансформациями": "оргиями гомогеев",
+			"трансформация": "оргия гомогеев",
+			"трансформацию": "оргию гомогеев",
+			"трансформации": "оргии гомогеев",
 		}
 		result := text
 		for k, v := range tokens {
