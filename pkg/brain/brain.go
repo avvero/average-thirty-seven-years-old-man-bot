@@ -93,7 +93,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	if strings.Contains(text, "блокир") {
 		return true, "пусть себе анус заблокируют"
 	}
-	if strings.Contains(text, "опять") {
+	if utils.RandomUpTo(10) == 0 && strings.Contains(text, "опять") {
 		return true, "не опять, а снова"
 	}
 	return false, ""
