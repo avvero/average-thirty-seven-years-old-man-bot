@@ -29,7 +29,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		if utils.RandomUpTo(100) == 0 {
 			return new(SenselessPhrasesIntention).Express(text)
 		}
-		if len(text) > 5 && !strings.Contains(text, " ") && utils.RandomUpTo(5) == 0 {
+		if len(text) > 5 && !strings.Contains(text, " ") && utils.RandomUpTo(10) == 0 {
 			return new(HuefyLastWordIntention).Express(text)
 		} else if len(text) > 5 && utils.RandomUpTo(100) == 0 {
 			return new(HuefyIntention).Express(text)
