@@ -100,7 +100,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 	for k, expected := range data {
 		respond, response := brain.Decision(0, k)
 		if !respond || response != expected {
-			t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
+			t.Error("Response for ", k, ": ", expected, " != ", response)
 		}
 	}
 }
@@ -138,7 +138,7 @@ func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 	}
 }
 
-func _Test_avoidsSensitiveTopics(t *testing.T) {
+func Test_censorTests(t *testing.T) {
 	brain := NewBrain(NewMemory(), true)
 	data := []string{
 		"Россия",
@@ -156,12 +156,10 @@ func _Test_avoidsSensitiveTopics(t *testing.T) {
 		"Иисус",
 		"Исус",
 	}
-	for i := 0; i < 500; i++ {
-		for _, text := range data {
-			respond, response := brain.Decision(0, text)
-			if respond {
-				t.Error("Response for ", text, ": not expected != ", response)
-			}
+	for _, text := range data {
+		respond, response := brain.Decision(0, text)
+		if respond {
+			t.Error("Response for ", text, ": not expected != ", response)
 		}
 	}
 }

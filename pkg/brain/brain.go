@@ -16,7 +16,7 @@ func NewBrain(memory *Memory, randomFactor bool) *Brain {
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
-	for _, protector := range []Protector{&Whitelist{}, &SensitiveTopic{}} {
+	for _, protector := range []Protector{&Whitelist{}, &Censor{}} {
 		forbidden, message := protector.Check(chatId, text)
 		if forbidden && message != "" {
 			return true, message
@@ -54,6 +54,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		text == "эр" ||
 		strings.Contains(text, "elden ring") ||
 		strings.Contains(text, "элден ринг") ||
+		strings.Contains(text, "eлден ринг") ||
 		strings.Contains(text, " er ") ||
 		strings.Contains(text, " ер ") ||
 		strings.Contains(text, " эр ") {

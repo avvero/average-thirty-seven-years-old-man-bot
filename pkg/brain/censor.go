@@ -4,10 +4,10 @@ import (
 	"strings"
 )
 
-type SensitiveTopic struct {
+type Censor struct {
 }
 
-func (this SensitiveTopic) Check(chatId int64, text string) (forbidden bool, response string) {
+func (this Censor) Check(chatId int64, text string) (forbidden bool, response string) {
 	//text = normalize(text)
 	for _, word := range []string{"роси", "путин", "украин", "алах", "мухамед", "бог", "исус"} {
 		if strings.Contains(text, word) {
