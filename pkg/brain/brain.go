@@ -34,21 +34,21 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		})),
 		when(text == "gg", say("gg")),
 		when(brain.normalizeRu(text) == "нет", say("пидора ответ")),
-		when(has(text, []string{"morrowind", "морровинд", "моровинд"}), say("Morrowind - одна из лучших игр эва")),
-		when(isOf(text, []string{"er", "ер", "эр"}), say("Elden Ring - это величие")),
-		when(has(text, []string{"elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр "}), say("Elden Ring - это величие")),
-		when(has(text, []string{"купил"}), say("А не пиздишь? Аренда это не покупка")),
-		when(has(text, []string{"spotify", "спотифай"}), say("Эти пидоры Антону косарик должны за подписку")),
-		when(has(brain.normalizeEn(text), []string{"devops"}), say("Девопсы не нужны")),
-		when(has(brain.normalizeRu(text), []string{"девопс"}), say("Девопсы не нужны")),
-		when(has(brain.normalizeRu(text), []string{"трансформациями"}), replace(text, "трансформациями", "оргиями гомогеев")),
-		when(has(brain.normalizeRu(text), []string{"трансформация"}), replace(text, "трансформация", "оргия гомогеев")),
-		when(has(brain.normalizeRu(text), []string{"трансформацию"}), replace(text, "трансформацию", "оргию гомогеев")),
-		when(has(brain.normalizeRu(text), []string{"трансформации"}), replace(text, "трансформации", "оргии гомогеев")),
-		when(has(text, []string{"java", "джаба", "джава"}), say("джава-хуява, а я работаю на го")),
-		when(has(text, []string{"блокир"}), say("пусть себе анус заблокируют")),
-		random(10, when(has(text, []string{"опять"}), say("не опять, а снова"))),
-		when(has(text, []string{"проблем"}), say("у меня есть 5-10 солюшенов этой проблемы")),
+		when(has(text, "morrowind", "морровинд", "моровинд"), say("Morrowind - одна из лучших игр эва")),
+		when(isOf(text, "er", "ер", "эр"), say("Elden Ring - это величие")),
+		when(has(text, "elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр "), say("Elden Ring - это величие")),
+		when(has(text, "купил"), say("А не пиздишь? Аренда это не покупка")),
+		when(has(text, "spotify", "спотифай"), say("Эти пидоры Антону косарик должны за подписку")),
+		when(has(brain.normalizeEn(text), "devops"), say("Девопсы не нужны")),
+		when(has(brain.normalizeRu(text), "девопс"), say("Девопсы не нужны")),
+		when(has(brain.normalizeRu(text), "трансформациями"), replace(text, "трансформациями", "оргиями гомогеев")),
+		when(has(brain.normalizeRu(text), "трансформация"), replace(text, "трансформация", "оргия гомогеев")),
+		when(has(brain.normalizeRu(text), "трансформацию"), replace(text, "трансформацию", "оргию гомогеев")),
+		when(has(brain.normalizeRu(text), "трансформации"), replace(text, "трансформации", "оргии гомогеев")),
+		when(has(text, "java", "джаба", "джава"), say("джава-хуява, а я работаю на го")),
+		when(has(text, "блокир"), say("пусть себе анус заблокируют")),
+		random(10, when(has(text, "опять"), say("не опять, а снова"))),
+		when(has(text, "проблем"), say("у меня есть 5-10 солюшенов этой проблемы")),
 	} {
 		has, message := opinion.Express(text)
 		if has && message != "" {
@@ -132,7 +132,7 @@ func replace(text string, from string, to string) *TextOpinion {
 	return &TextOpinion{text: strings.Replace(text, from, to, -1)}
 }
 
-func has(text string, values []string) bool {
+func has(text string, values ...string) bool {
 	for _, value := range values {
 		if strings.Contains(text, value) {
 			return true
@@ -146,7 +146,7 @@ func has(text string, values []string) bool {
 	return false
 }
 
-func isOf(text string, values []string) bool {
+func isOf(text string, values ...string) bool {
 	for _, value := range values {
 		if text == value {
 			return true
