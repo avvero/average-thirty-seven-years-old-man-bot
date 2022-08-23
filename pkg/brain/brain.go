@@ -1,6 +1,7 @@
 package brain
 
 import (
+	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"strings"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -25,32 +26,94 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		}
 	}
 	text = strings.ToLower(text)
-	for _, opinion := range []Opinion{
-		when(brain.randomFactor, compose([]Opinion{
+
+	return with(strings.ToLower(text)).
+		when(func(origin string) bool { return brain.randomFactor }, compose([]Opinion{
 			random(100, &SenselessPhrasesIntention{}),
 			when(len(text) > 5 && !strings.Contains(text, " "), random(200, &HuefyLastWordIntention{})),
 			when(len(text) > 5 && !strings.Contains(text, " "), random(200, &HuefyIntention{})),
 			when(len(text) > 14, random(200, NewKhaleesifyIntention())),
-		})),
-		when(text == "gg", say("gg")),
-		when(brain.normalizeRu(text) == "нет", say("пидора ответ")),
-		when(has(text, "morrowind", "морровинд", "моровинд"), say("Morrowind - одна из лучших игр эва")),
-		when(isOf(text, "er", "ер", "эр"), say("Elden Ring - это величие")),
-		when(has(text, "elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр "), say("Elden Ring - это величие")),
-		when(has(text, "купил"), say("А не пиздишь? Аренда это не покупка")),
-		when(has(text, "spotify", "спотифай"), say("Эти пидоры Антону косарик должны за подписку")),
-		when(has(brain.normalizeEn(text), "devops"), say("Девопсы не нужны")),
-		when(has(brain.normalizeRu(text), "девопс"), say("Девопсы не нужны")),
-		when(has(brain.normalizeRu(text), "трансформациями"), replace(text, "трансформациями", "оргиями гомогеев")),
-		when(has(brain.normalizeRu(text), "трансформация"), replace(text, "трансформация", "оргия гомогеев")),
-		when(has(brain.normalizeRu(text), "трансформацию"), replace(text, "трансформацию", "оргию гомогеев")),
-		when(has(brain.normalizeRu(text), "трансформации"), replace(text, "трансформации", "оргии гомогеев")),
-		when(has(text, "java", "джаба", "джава"), say("джава-хуява, а я работаю на го")),
-		when(has(text, "блокир"), say("пусть себе анус заблокируют")),
-		random(10, when(has(text, "опять"), say("не опять, а снова"))),
-		when(has(text, "проблем"), say("у меня есть 5-10 солюшенов этой проблемы")),
-	} {
-		has, message := opinion.Express(text)
+		})).
+		when(is("gg"), say("gg")).
+		when(is("нет"), say("пидора ответ")).
+		when(contains("morrowind", "морровинд", "моровинд"), say("Morrowind - одна из лучших игр эва")).
+		when(oneOf("er", "ер", "эр"), say("Elden Ring - это величие")).
+		when(contains("elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр "), say("Elden Ring - это величие")).
+		when(contains("купил"), say("А не пиздишь? Аренда это не покупка")).
+		when(contains("spotify", "спотифай"), say("Эти пидоры Антону косарик должны за подписку")).
+		when(contains("devops", "девопс"), say("Девопсы не нужны")).
+		when(contains("devops"), say("Девопсы не нужны")).
+		when(contains("трансформациями"), replace(text, "трансформациями", "оргиями гомогеев")).
+		when(contains("трансформация"), replace(text, "трансформация", "оргия гомогеев")).
+		when(contains("трансформацию"), replace(text, "трансформацию", "оргию гомогеев")).
+		when(contains("трансформации"), replace(text, "трансформации", "оргии гомогеев")).
+		when(contains("java", "джаба", "джава", "ява"), say("джава-хуява, а я работаю на го")).
+		when(contains("блокир"), say("пусть себе анус заблокируют")).
+		//random(10, when(has(text, "опять"), say("не опять, а снова"))),
+		when(contains("проблем"), say("у меня есть 5-10 солюшенов этой проблемы")).
+		run()
+}
+
+func with(text string) *Chain {
+	return &Chain{text: text}
+}
+
+type Chain struct {
+	text     string
+	opinions []Opinion
+}
+
+func (this *Chain) when(condition func(origin string) bool, opinion Opinion) *Chain {
+	this.opinions = append(this.opinions, &ConditionOpinion{condition: condition, opinion: opinion})
+	return this
+}
+
+func is(value string) func(origin string) bool {
+	return func(origin string) bool {
+		if origin == value {
+			return true
+		}
+		if normalizeRu(origin) == value {
+			return true
+		}
+		if normalizeEn(origin) == value {
+			return true
+		}
+		return false
+	}
+}
+
+func contains(values ...string) func(origin string) bool {
+	return func(origin string) bool {
+		for _, value := range values {
+			if strings.Contains(origin, value) {
+				return true
+			}
+			if strings.Contains(normalizeRu(origin), value) {
+				return true
+			}
+			if strings.Contains(normalizeEn(origin), value) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func oneOf(values ...string) func(origin string) bool {
+	return func(origin string) bool {
+		for _, value := range values {
+			if is(value)(origin) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func (this *Chain) run() (bool, string) {
+	for _, opinion := range this.opinions {
+		has, message := opinion.Express(this.text)
 		if has && message != "" {
 			return true, message
 		}
@@ -58,24 +121,20 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	return false, ""
 }
 
-func (brain *Brain) normalizeRu(text string) string {
+func normalizeRu(text string) string {
 	result := text
-	for k, v := range brain.GetNormalizationMap() {
+	for k, v := range knowledge.NormalisationMap {
 		result = strings.Replace(result, k, v, -1)
 	}
 	return result
 }
 
-func (brain *Brain) normalizeEn(text string) string {
+func normalizeEn(text string) string {
 	result := text
-	for k, v := range brain.GetNormalizationMap() {
+	for k, v := range knowledge.NormalisationMap {
 		result = strings.Replace(result, v, k, -1)
 	}
 	return result
-}
-
-func (brain *Brain) GetNormalizationMap() map[string]string {
-	return brain.memory.normalisationMap
 }
 
 type Opinion interface {
@@ -100,12 +159,12 @@ func random(factor int, opinion Opinion) *RandomizedOpinion {
 }
 
 type ConditionOpinion struct {
-	condition bool
+	condition func(origin string) bool
 	opinion   Opinion
 }
 
 func (this ConditionOpinion) Express(text string) (has bool, response string) {
-	if this.condition {
+	if this.condition(text) {
 		return this.opinion.Express(text)
 	} else {
 		return false, ""
@@ -113,7 +172,7 @@ func (this ConditionOpinion) Express(text string) (has bool, response string) {
 }
 
 func when(condition bool, opinion Opinion) *ConditionOpinion {
-	return &ConditionOpinion{condition: condition, opinion: opinion}
+	return &ConditionOpinion{condition: func(origin string) bool { return condition }, opinion: opinion}
 }
 
 type TextOpinion struct {
@@ -130,29 +189,6 @@ func say(text string) *TextOpinion {
 
 func replace(text string, from string, to string) *TextOpinion {
 	return &TextOpinion{text: strings.Replace(text, from, to, -1)}
-}
-
-func has(text string, values ...string) bool {
-	for _, value := range values {
-		if strings.Contains(text, value) {
-			return true
-		}
-	}
-	for _, value := range values {
-		if strings.Contains(text, value) {
-			return true
-		}
-	}
-	return false
-}
-
-func isOf(text string, values ...string) bool {
-	for _, value := range values {
-		if text == value {
-			return true
-		}
-	}
-	return false
 }
 
 type ComposeOpinion struct {
