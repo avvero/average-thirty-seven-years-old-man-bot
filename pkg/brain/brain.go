@@ -27,11 +27,11 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	}
 	text = strings.ToLower(text)
 
-	return with(strings.ToLower(text)).
+	return with(strings.ToLower(strings.TrimSpace(text))).
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
-		when(truth(brain.randomFactor), random(200), func(origin string) bool { return len(origin) > 5 && !strings.Contains(origin, " ") }).then(&HuefyLastWordIntention{}).
-		when(truth(brain.randomFactor), random(200), func(origin string) bool { return len(origin) > 14 && !strings.Contains(origin, " ") }).then(&HuefyIntention{}).
-		when(truth(brain.randomFactor), random(200), func(origin string) bool { return len(origin) > 14 }).then(NewKhaleesifyIntention()).
+		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
+		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
+		when(truth(brain.randomFactor), random(200), length(14)).then(NewKhaleesifyIntention()).
 		when(truth(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
 		when(is("gg")).say("gg").
 		when(is("нет")).say("пидора ответ").
@@ -112,6 +112,12 @@ func is(values ...string) func(origin string) bool {
 			}
 		}
 		return false
+	}
+}
+
+func length(size int) func(origin string) bool {
+	return func(origin string) bool {
+		return len(origin) >= size
 	}
 }
 

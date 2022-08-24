@@ -107,6 +107,8 @@ func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
 	brain := NewBrain(NewMemory(), true)
 	data := map[string]string{
 		"я думал сначала Медведев это опять. А тут какой то давыдов": "не опять, а снова",
+		"двуличие": "хуичие",
+		"Потому что надо было не шифры ваши писать": "хуёму что хуядо хуило не хуифры хуяши хуисать",
 	}
 	for origin, expected := range data {
 		respond := false
