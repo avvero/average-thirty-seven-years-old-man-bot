@@ -25,8 +25,6 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			return false, ""
 		}
 	}
-	text = strings.ToLower(text)
-
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
