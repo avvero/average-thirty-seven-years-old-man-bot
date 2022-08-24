@@ -56,9 +56,9 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"Элден ринг":                 "Elden Ring - это величие",
 		"Елден РИНГ":                 "Elden Ring - это величие",
 
-		"купил":             "А не пиздишь? Аренда это не покупка",
-		"бла бла бла купил": "А не пиздишь? Аренда это не покупка",
-		"бла бла бла купил бла бла бла": "А не пиздишь? Аренда это не покупка",
+		//"купил":             "А не пиздишь? Аренда это не покупка",
+		//"бла бла бла купил": "А не пиздишь? Аренда это не покупка",
+		//"бла бла бла купил бла бла бла": "А не пиздишь? Аренда это не покупка",
 
 		"spotify":  "Эти пидоры Антону косарик должны за подписку",
 		"Spotify":  "Эти пидоры Антону косарик должны за подписку",
@@ -90,17 +90,36 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"они это вчера заблокировали и ждут":                           "пусть себе анус заблокируют",
 		"это меня блокирует сильно":                                    "пусть себе анус заблокируют",
 
-		"я думал сначала Медведев это опять. А тут какой то давыдов": "не опять, а снова",
-
 		"у нас проблема":           "у меня есть 5-10 солюшенов этой проблемы",
 		"у нас проблема, товарищи": "у меня есть 5-10 солюшенов этой проблемы",
 		"проблема в том":           "у меня есть 5-10 солюшенов этой проблемы",
 		"куча проблем":             "у меня есть 5-10 солюшенов этой проблемы",
 	}
-	for k, expected := range data {
-		respond, response := brain.Decision(0, k)
+	for origin, expected := range data {
+		respond, response := brain.Decision(0, origin)
 		if !respond || response != expected {
-			t.Error("Response for ", k, ": ", expected, " != ", response)
+			t.Error("Response for ", origin, ": ", expected, " != ", response)
+		}
+	}
+}
+
+func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
+	brain := NewBrain(NewMemory(), true)
+	data := map[string]string{
+		"я думал сначала Медведев это опять. А тут какой то давыдов": "не опять, а снова",
+	}
+	for origin, expected := range data {
+		respond := false
+		response := ""
+		for i := 0; i < 500; i++ {
+			thisRespond, thisResponse := brain.Decision(0, origin)
+			if thisRespond && thisResponse == expected {
+				respond = thisRespond
+				response = thisResponse
+			}
+		}
+		if !respond || response != expected {
+			t.Error("Response for ", origin, ": ", expected, " != ", response)
 		}
 	}
 }
