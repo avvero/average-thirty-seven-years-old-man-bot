@@ -40,6 +40,8 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(contains("spotify", "спотифай")).say("Эти пидоры Антону косарик должны за подписку").
 		when(contains("devops", "девопс")).say("Девопсы не нужны").
 		when(contains("devops")).say("Девопсы не нужны").
+		when(contains("scrum")).say("Скрам - это пережиток").
+		when(contains("скрам")).say("Скрам - это пережиток").
 		when(contains("трансформациями")).replace("трансформациями", "оргиями гомогеев").
 		when(contains("трансформация")).replace("трансформация", "оргия гомогеев").
 		when(contains("трансформацию")).replace("трансформацию", "оргию гомогеев").
