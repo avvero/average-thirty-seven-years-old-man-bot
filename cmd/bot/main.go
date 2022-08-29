@@ -73,11 +73,14 @@ func sendMessage(chatId int64, receivedMessageId int64, message string) {
 	if receivedMessageId != 0 {
 		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
 	}
-	requestBody, _ := json.Marshal(map[string]string{
+	requestBody, marshalError := json.Marshal(map[string]string{
 		"reply_to_message_id": replyToMessageId,
 		"chat_id":             strconv.FormatInt(chatId, 10),
 		"text":                message,
 	})
+	if marshalError != nil {
+		fmt.Printf("could not marshal body: %s\n", marshalError)
+	}
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
 	fmt.Printf("Request to: %s\n", url)
