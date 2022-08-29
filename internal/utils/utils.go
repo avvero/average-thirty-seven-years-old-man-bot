@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -31,4 +32,12 @@ func RandomUpTo(max int) int {
 func PrintJson(value any) string {
 	js, _ := json.Marshal(value)
 	return string(js)
+}
+
+func PrettyPrint(value any) string {
+	result := PrintJson(value)
+	result = strings.ReplaceAll(result, "\"", "")
+	//result = strings.ReplaceAll(result, "{", ",")
+	//result = strings.ReplaceAll(result, "}", ",")
+	return result
 }
