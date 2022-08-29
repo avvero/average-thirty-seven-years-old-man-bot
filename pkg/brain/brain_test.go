@@ -23,6 +23,15 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 	}
 }
 
+func Test_responseOnCommandInfo(t *testing.T) {
+	brain := NewBrain(NewMemory(), false, statistics.NewScriber())
+	respond, response := brain.Decision(0, "info")
+	expected := "I'm bot"
+	if !respond || response != expected {
+		t.Error("Response for : ", expected, " != ", response)
+	}
+}
+
 func Test_returnsOnSomeText(t *testing.T) {
 	brain := NewBrain(NewMemory(), false, statistics.NewScriber())
 	data := map[string]string{

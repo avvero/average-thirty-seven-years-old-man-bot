@@ -29,8 +29,8 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	}
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
-		when(is("/info")).say("I'm bot").
-		when(is("/statistics")).say(utils.PrettyPrint(brain.scriber.GetStatistics())).
+		when(is("info")).say("I'm bot").
+		when(is("statistics")).say(utils.PrettyPrint(brain.scriber.GetStatistics())).
 		//
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
