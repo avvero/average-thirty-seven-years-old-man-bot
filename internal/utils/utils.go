@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"math/rand"
 	"time"
 )
@@ -25,4 +26,9 @@ func ContainsRune(s []rune, e rune) bool {
 
 func RandomUpTo(max int) int {
 	return rand.New(rand.NewSource(time.Now().UnixNano())).Intn(max)
+}
+
+func PrintJson(value any) string {
+	js, _ := json.Marshal(value)
+	return string(js)
 }

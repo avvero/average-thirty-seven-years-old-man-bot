@@ -2,6 +2,7 @@ package brain
 
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
+	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"strings"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -10,10 +11,11 @@ import (
 type Brain struct {
 	memory       *Memory
 	randomFactor bool
+	scriber      *statistics.Scriber
 }
 
-func NewBrain(memory *Memory, randomFactor bool) *Brain {
-	return &Brain{memory: memory, randomFactor: randomFactor}
+func NewBrain(memory *Memory, randomFactor bool, scriber *statistics.Scriber) *Brain {
+	return &Brain{memory: memory, randomFactor: randomFactor, scriber: scriber}
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
@@ -26,6 +28,9 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		}
 	}
 	return with(strings.ToLower(strings.TrimSpace(text))).
+		// Commands
+		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics())).
+		//
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).

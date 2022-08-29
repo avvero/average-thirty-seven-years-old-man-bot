@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"io"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"github.com/avvero/the_gamers_guild_bot/pkg/brain"
 )
@@ -29,7 +31,8 @@ func main() {
 	if found {
 		token = &tokenEnv
 	}
-	brain := brain.NewBrain(brain.NewMemory(), true)
+	scriber := statistics.NewScriber()
+	brain := brain.NewBrain(brain.NewMemory(), true, scriber)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -42,7 +45,7 @@ func main() {
 			fmt.Printf("could not read body: %s\n", err)
 			return
 		}
-		webhookRequest := &WebhookRequest{}
+		webhookRequest := &telegram.WebhookRequest{}
 		json.Unmarshal(body, webhookRequest)
 		if webhookRequest == nil || webhookRequest.Message == nil {
 			fmt.Printf("could not unmarshal body\n")
@@ -50,7 +53,7 @@ func main() {
 		}
 		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
-
+		scriber.Keep(webhookRequest.Message)
 		respond, response := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		if respond {
 			go func() {
@@ -63,28 +66,6 @@ func main() {
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is redeployed")
 	http.ListenAndServe(":"+*httpPort, nil)
-}
-
-type WebhookRequest struct {
-	Message *WebhookRequestMessage `json:"message"`
-}
-
-type WebhookRequestMessage struct {
-	MessageId int64                        `json:"message_id"`
-	From      *WebhookRequestMessageSender `json:"from"`
-	Chat      *WebhookRequestMessageChat   `json:"chat"`
-	Text      string                       `json:"text"`
-}
-
-type WebhookRequestMessageSender struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	username  string `json:"username"`
-}
-
-type WebhookRequestMessageChat struct {
-	Id    int64  `json:"id"`
-	Title string `json:"title"`
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
