@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
+	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"testing"
 	"time"
 )
@@ -19,7 +20,7 @@ func Test_messageCounter(t *testing.T) {
 		}
 		firstMessageCounter := scriber.statistics.UsersStatistics["first"].MessageCounter
 		if firstMessageCounter != 100 {
-			t.Errorf("Expected messages: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
+			t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 		}
 	}
 	// SECOND USERNAME
@@ -33,16 +34,27 @@ func Test_messageCounter(t *testing.T) {
 		}
 		secondMessageCounter := scriber.statistics.UsersStatistics["second"].MessageCounter
 		if secondMessageCounter != 200 {
-			t.Errorf("Expected messages: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
+			t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
 		}
 	}
 	// BOTH
 	firstMessageCounter := scriber.statistics.UsersStatistics["first"].MessageCounter
 	if firstMessageCounter != 100 {
-		t.Errorf("Expected messages: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
+		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 	}
 	secondMessageCounter := scriber.statistics.UsersStatistics["second"].MessageCounter
 	if secondMessageCounter != 200 {
-		t.Errorf("Expected messages: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
+		t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
+	}
+}
+
+func Test_statisticsSerialization(t *testing.T) {
+	scriber := NewScriber()
+	scriber.Keep(&telegram.WebhookRequestMessage{From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one"})
+	scriber.Keep(&telegram.WebhookRequestMessage{From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two"})
+	jsonString := utils.PrintJson(scriber.GetStatistics())
+	expected := "{\"userStatistics\":{\"first\":{\"username\":\"first\",\"messageCounter\":1},\"second\":{\"username\":\"second\",\"messageCounter\":1}}}"
+	if jsonString != expected {
+		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, jsonString)
 	}
 }

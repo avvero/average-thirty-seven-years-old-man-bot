@@ -40,7 +40,7 @@ func (scriber Scriber) process() {
 			scriber.mutex.Lock()
 			userStatistics := scriber.statistics.UsersStatistics[message.From.Username]
 			if userStatistics == nil {
-				userStatistics = &UserStatistics{}
+				userStatistics = &UserStatistics{Username: message.From.Username}
 				scriber.statistics.UsersStatistics[message.From.Username] = userStatistics
 			}
 			userStatistics.MessageCounter++
