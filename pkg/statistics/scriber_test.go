@@ -64,7 +64,7 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one"})
 	scriber.Keep(&telegram.WebhookRequestMessage{From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two"})
 	jsonString := utils.PrettyPrint(scriber.GetStatistics())
-	expected := "{\"userStatistics\":{\"first\":{\"username\":\"first\",\"messageCounter\":1},\"second\":{\"username\":\"second\",\"messageCounter\":1}}}"
+	expected := "{userStatistics:{first:{username:first,messageCounter:1},second:{username:second,messageCounter:1}}}"
 	if jsonString != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, jsonString)
 	}
