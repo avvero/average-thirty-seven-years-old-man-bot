@@ -22,7 +22,7 @@ type UserStatistics struct {
 
 func NewScriber() *Scriber {
 	holder := &Scriber{
-		messages:   make(chan *telegram.WebhookRequestMessage),
+		messages:   make(chan *telegram.WebhookRequestMessage, 100),
 		statistics: &Statistics{UsersStatistics: make(map[string]*UserStatistics)},
 	}
 	go holder.process()
