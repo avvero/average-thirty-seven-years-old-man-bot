@@ -36,7 +36,7 @@ func main() {
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, "{\"name\": \"TheGamerGuildBot\", \"version\": \"1.3\"}")
+		io.WriteString(w, "{\"name\": \"Average Thirty-Seven Years Old Man (bot)\", \"version\": \"1.4\"}")
 	})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func main() {
 	})
 
 	log.Println("Http server started on port " + *httpPort)
-	sendMessage(245851441, 0, "Bot is redeployed, version 1.3")
+	sendMessage(245851441, 0, "Bot is redeployed, version 1.4")
 	http.ListenAndServe(":"+*httpPort, nil)
 }
 

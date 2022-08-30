@@ -2,7 +2,6 @@ package statistics
 
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
-	"strconv"
 	"sync"
 )
 
@@ -13,7 +12,7 @@ type Scriber struct {
 }
 
 type Statistics struct {
-	ChatStatistics map[string]*ChatStatistics `json:"chatStatistics"`
+	ChatStatistics map[int64]*ChatStatistics `json:"chatStatistics"`
 }
 
 type ChatStatistics struct {
@@ -28,7 +27,7 @@ type UserStatistics struct {
 func NewScriber() *Scriber {
 	holder := &Scriber{
 		messages:   make(chan *telegram.WebhookRequestMessage, 100),
-		statistics: &Statistics{ChatStatistics: make(map[string]*ChatStatistics)},
+		statistics: &Statistics{ChatStatistics: make(map[int64]*ChatStatistics)},
 	}
 	go holder.process()
 	return holder
@@ -43,11 +42,10 @@ func (scriber Scriber) process() {
 		select {
 		case message := <-scriber.messages:
 			scriber.mutex.Lock()
-			chatId := strconv.FormatInt(message.Chat.Id, 10)
-			chatStatistics := scriber.statistics.ChatStatistics[chatId]
+			chatStatistics := scriber.statistics.ChatStatistics[message.Chat.Id]
 			if chatStatistics == nil {
 				chatStatistics = &ChatStatistics{UsersStatistics: make(map[string]*UserStatistics)}
-				scriber.statistics.ChatStatistics[chatId] = chatStatistics
+				scriber.statistics.ChatStatistics[message.Chat.Id] = chatStatistics
 			}
 			userStatistics := chatStatistics.UsersStatistics[message.From.Username]
 			if userStatistics == nil {
@@ -62,5 +60,5 @@ func (scriber Scriber) process() {
 }
 
 func (scriber Scriber) GetStatistics(chatId int64) *ChatStatistics {
-	return scriber.statistics.ChatStatistics[strconv.FormatInt(chatId, 10)]
+	return scriber.statistics.ChatStatistics[chatId]
 }
