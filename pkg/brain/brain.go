@@ -30,7 +30,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(is("/info")).say("I'm bot").
-		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics())).
+		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		//
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
@@ -147,7 +147,7 @@ func contains(values ...string) func(origin string) bool {
 func (this *Chain) run() (bool, string) {
 	for _, opinion := range this.opinions {
 		has, message := opinion.Express(this.text)
-		if has && message != "" {
+		if has && message != "" && message != "null" { // TODO null comes from somewere
 			return true, message
 		}
 	}

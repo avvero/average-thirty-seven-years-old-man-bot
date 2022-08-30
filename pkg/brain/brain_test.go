@@ -1,9 +1,11 @@
 package brain
 
 import (
+	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
@@ -29,6 +31,29 @@ func Test_responseOnCommandInfo(t *testing.T) {
 	expected := "I'm bot"
 	if !respond || response != expected {
 		t.Error("Response for : ", expected, " != ", response)
+	}
+}
+
+func Test_responseOnCommandStatisticsOnEmptyStatistics(t *testing.T) {
+	brain := NewBrain(NewMemory(), false, statistics.NewScriber())
+	respond, response := brain.Decision(0, "/statistics")
+	if respond || response != "" {
+		t.Error("Expected {false, nil} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_responseOnCommandStatistics(t *testing.T) {
+	scriber := statistics.NewScriber()
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	})
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	brain := NewBrain(NewMemory(), false, scriber)
+	respond, response := brain.Decision(0, "/statistics")
+	expected := "{\"userStatistics\":{\"first\":{\"username\":\"first\",\"messageCounter\":1}}}"
+	if !respond || response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
 }
 

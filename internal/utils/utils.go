@@ -30,6 +30,9 @@ func RandomUpTo(max int) int {
 }
 
 func PrintJson(value any) string {
+	if value == nil {
+		return ""
+	}
 	js, _ := json.Marshal(value)
 	return string(js)
 }
