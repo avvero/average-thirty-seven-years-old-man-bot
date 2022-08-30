@@ -49,7 +49,7 @@ func main() {
 		fmt.Printf("Could not read data: %s\n", err)
 		panic(err)
 	}
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(1 * time.Hour)
 	done := make(chan bool)
 	go func() {
 		for {
@@ -98,8 +98,8 @@ func main() {
 	sendMessage(245851441, 0, "Bot is started, version 1.4")
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
-	sendMessage(245851441, 0, "Bot is stopped, version 1.4")
 	jsonBinClient.Write(data)
+	sendMessage(245851441, 0, "Bot is stopped, version 1.4")
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
