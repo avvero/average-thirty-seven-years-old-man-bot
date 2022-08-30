@@ -12,7 +12,9 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
@@ -27,6 +29,9 @@ var (
 )
 
 func main() {
+	gracefullShutdown := make(chan os.Signal, 1)
+	signal.Notify(gracefullShutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+
 	flag.Parse()
 
 	tokenEnv, found := os.LookupEnv("token")
@@ -37,7 +42,7 @@ func main() {
 	if found {
 		jsonBinMasterKey = &jsonBinMasterKeyEnv
 	}
-	// Data
+	//Data
 	jsonBinClient := data.NewJsonBinApiClient(*jsonBinMasterKey)
 	data, err := jsonBinClient.Read()
 	if err != nil {
@@ -57,7 +62,7 @@ func main() {
 			}
 		}
 	}()
-	scriber := statistics.NewScriberWithData(data)
+	scriber := statistics.NewScriber()
 	brain := brain.NewBrain(brain.NewMemory(), true, scriber)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
@@ -90,8 +95,11 @@ func main() {
 	})
 
 	log.Println("Http server started on port " + *httpPort)
-	sendMessage(245851441, 0, "Bot is redeployed, version 1.4")
+	sendMessage(245851441, 0, "Bot is started, version 1.4")
 	http.ListenAndServe(":"+*httpPort, nil)
+	<-gracefullShutdown
+	sendMessage(245851441, 0, "Bot is stopped, version 1.4")
+	jsonBinClient.Write(data)
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {

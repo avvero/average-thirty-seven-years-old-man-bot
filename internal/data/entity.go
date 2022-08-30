@@ -58,7 +58,7 @@ func (apiClient *JsonBinApiClient) Read() (*Data, error) {
 	unmarshalError := json.Unmarshal(body, jsonBinResponse)
 	if unmarshalError != nil {
 		fmt.Printf("Could not read data: %s\n", unmarshalError)
-		panic(unmarshalError)
+		return nil, unmarshalError
 	}
 	return jsonBinResponse.Record, nil
 }
