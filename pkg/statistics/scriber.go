@@ -1,36 +1,28 @@
 package statistics
 
 import (
+	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"sync"
 )
 
 type Scriber struct {
-	messages   chan *telegram.WebhookRequestMessage
-	mutex      sync.Mutex
-	statistics *Statistics
+	messages chan *telegram.WebhookRequestMessage
+	mutex    sync.Mutex
+	data     *data.Data
 }
 
-type Statistics struct {
-	ChatStatistics map[int64]*ChatStatistics `json:"chatStatistics"`
-}
-
-type ChatStatistics struct {
-	UsersStatistics map[string]*UserStatistics `json:"userStatistics"`
-}
-
-type UserStatistics struct {
-	Username       string `json:"username"`
-	MessageCounter int    `json:"messageCounter"`
-}
-
-func NewScriber() *Scriber {
+func NewScriberWithData(data *data.Data) *Scriber {
 	holder := &Scriber{
-		messages:   make(chan *telegram.WebhookRequestMessage, 100),
-		statistics: &Statistics{ChatStatistics: make(map[int64]*ChatStatistics)},
+		messages: make(chan *telegram.WebhookRequestMessage, 100),
+		data:     data,
 	}
 	go holder.process()
 	return holder
+}
+
+func NewScriber() *Scriber {
+	return NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)})
 }
 
 func (scriber Scriber) Keep(message *telegram.WebhookRequestMessage) {
@@ -42,14 +34,14 @@ func (scriber Scriber) process() {
 		select {
 		case message := <-scriber.messages:
 			scriber.mutex.Lock()
-			chatStatistics := scriber.statistics.ChatStatistics[message.Chat.Id]
+			chatStatistics := scriber.data.ChatStatistics[message.Chat.Id]
 			if chatStatistics == nil {
-				chatStatistics = &ChatStatistics{UsersStatistics: make(map[string]*UserStatistics)}
-				scriber.statistics.ChatStatistics[message.Chat.Id] = chatStatistics
+				chatStatistics = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserStatistics)}
+				scriber.data.ChatStatistics[message.Chat.Id] = chatStatistics
 			}
 			userStatistics := chatStatistics.UsersStatistics[message.From.Username]
 			if userStatistics == nil {
-				userStatistics = &UserStatistics{Username: message.From.Username}
+				userStatistics = &data.UserStatistics{Username: message.From.Username}
 				chatStatistics.UsersStatistics[message.From.Username] = userStatistics
 			}
 			// Set
@@ -59,6 +51,6 @@ func (scriber Scriber) process() {
 	}
 }
 
-func (scriber Scriber) GetStatistics(chatId int64) *ChatStatistics {
-	return scriber.statistics.ChatStatistics[chatId]
+func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
+	return scriber.data.ChatStatistics[chatId]
 }

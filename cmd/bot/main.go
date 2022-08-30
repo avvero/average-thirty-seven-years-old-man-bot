@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"io"
 	"log"
@@ -20,8 +21,9 @@ import (
 )
 
 var (
-	httpPort = flag.String("httpPort", "8080", "http server port")
-	token    = flag.String("token", "PROVIDE", "bot token")
+	httpPort         = flag.String("httpPort", "8080", "http server port")
+	token            = flag.String("token", "PROVIDE", "bot token")
+	jsonBinMasterKey = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 )
 
 func main() {
@@ -31,7 +33,31 @@ func main() {
 	if found {
 		token = &tokenEnv
 	}
-	scriber := statistics.NewScriber()
+	jsonBinMasterKeyEnv, found := os.LookupEnv("json-bin-master-key")
+	if found {
+		jsonBinMasterKey = &jsonBinMasterKeyEnv
+	}
+	// Data
+	jsonBinClient := data.NewJsonBinApiClient(*jsonBinMasterKey)
+	data, err := jsonBinClient.Read()
+	if err != nil {
+		fmt.Printf("Could not read data: %s\n", err)
+		panic(err)
+	}
+	ticker := time.NewTicker(1 * time.Hour)
+	done := make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-ticker.C:
+				fmt.Println("Write data to bin", t)
+				jsonBinClient.Write(data)
+			}
+		}
+	}()
+	scriber := statistics.NewScriberWithData(data)
 	brain := brain.NewBrain(brain.NewMemory(), true, scriber)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {

@@ -21,7 +21,7 @@ func Test_messageCounter(t *testing.T) {
 		for len(scriber.messages) != 0 {
 			time.Sleep(10 * time.Millisecond) // TODO none reliable
 		}
-		firstMessageCounter := scriber.statistics.ChatStatistics[1].UsersStatistics["first"].MessageCounter
+		firstMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["first"].MessageCounter
 		if firstMessageCounter != 100 {
 			t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 		}
@@ -38,17 +38,17 @@ func Test_messageCounter(t *testing.T) {
 		for len(scriber.messages) != 0 {
 			time.Sleep(10 * time.Millisecond) // TODO none reliable
 		}
-		secondMessageCounter := scriber.statistics.ChatStatistics[1].UsersStatistics["second"].MessageCounter
+		secondMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["second"].MessageCounter
 		if secondMessageCounter != 200 {
 			t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
 		}
 	}
 	// BOTH
-	firstMessageCounter := scriber.statistics.ChatStatistics[1].UsersStatistics["first"].MessageCounter
+	firstMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["first"].MessageCounter
 	if firstMessageCounter != 100 {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 	}
-	secondMessageCounter := scriber.statistics.ChatStatistics[1].UsersStatistics["second"].MessageCounter
+	secondMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["second"].MessageCounter
 	if secondMessageCounter != 200 {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
 	}
