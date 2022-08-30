@@ -62,7 +62,7 @@ func main() {
 			}
 		}
 	}()
-	scriber := statistics.NewScriber()
+	scriber := statistics.NewScriberWithData(data)
 	brain := brain.NewBrain(brain.NewMemory(), true, scriber)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
