@@ -44,7 +44,7 @@ func main() {
 		fmt.Printf("Could not read data: %s\n", err)
 		panic(err)
 	}
-	ticker := time.NewTicker(1 * time.Hour)
+	ticker := time.NewTicker(1 * time.Minute)
 	done := make(chan bool)
 	go func() {
 		for {
