@@ -9,8 +9,9 @@ type Censor struct {
 
 func (this Censor) Check(chatId int64, text string) (forbidden bool, response string) {
 	//text = normalize(text)
-	for _, word := range []string{"роси", "путин", "украин", "алах", "мухамед", "бог", "исус"} {
-		if strings.Contains(text, word) {
+	// List of word-prefixes
+	for _, word := range []string{"Росси", "Путин", "Украин", "Аллах", "Мухамед", "бог", "Иисус"} {
+		if strings.Contains(strings.ToLower(text), strings.ToLower(word)) {
 			return true, ""
 		}
 	}
