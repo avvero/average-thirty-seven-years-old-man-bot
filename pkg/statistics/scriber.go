@@ -39,10 +39,14 @@ func (scriber Scriber) process() {
 				chatStatistics = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserStatistics)}
 				scriber.data.ChatStatistics[message.Chat.Id] = chatStatistics
 			}
-			userStatistics := chatStatistics.UsersStatistics[message.From.Username]
+			user := message.From.Username
+			if user == "" {
+				user = message.From.LastName + " " + message.From.FirstName
+			}
+			userStatistics := chatStatistics.UsersStatistics[user]
 			if userStatistics == nil {
-				userStatistics = &data.UserStatistics{Username: message.From.Username}
-				chatStatistics.UsersStatistics[message.From.Username] = userStatistics
+				userStatistics = &data.UserStatistics{Username: user}
+				chatStatistics.UsersStatistics[user] = userStatistics
 			}
 			// Set
 			userStatistics.MessageCounter++
