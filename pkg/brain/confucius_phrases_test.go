@@ -6,17 +6,17 @@ import (
 	"testing"
 )
 
-func Test_returnsForLuckySenselessPhrase(t *testing.T) {
+func Test_returnsForLuckyConfuciusPhrase(t *testing.T) {
 	brain := NewBrain(NewMemory(), true, statistics.NewScriber())
 	respond := false
 	for i := 0; i < 1000; i++ {
 		thisRespond, thisResponse := brain.Decision(0, "any")
-		if thisRespond && utils.Contains(senselessPhrases, thisResponse) {
+		if thisRespond && utils.Contains(confuciusPhrases, thisResponse) {
 			respond = thisRespond
 			break
 		}
 	}
 	if !respond {
-		t.Error("Expected something from senselessPhrases but got nothing")
+		t.Error("Expected something from confuciusPhrases but got nothing")
 	}
 }

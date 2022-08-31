@@ -36,6 +36,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(NewKhaleesifyIntention()).
+		when(truth(brain.randomFactor), random(100)).then(&ConfuciusPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
 		when(truth(brain.randomFactor), random(10), contains("купил")).say("А не пиздишь? Аренда это не покупка").
 		when(is("gg")).say("gg").
