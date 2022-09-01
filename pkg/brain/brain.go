@@ -32,6 +32,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		//
+		//when(isToxic()).say("токсик ебаный").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
