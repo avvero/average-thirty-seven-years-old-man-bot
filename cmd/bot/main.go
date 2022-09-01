@@ -58,7 +58,7 @@ func main() {
 				return
 			case t := <-ticker.C:
 				fmt.Println("Write data to bin", t)
-				sendMessage(245851441, 0, "Write data to bin")
+				//sendMessage(245851441, 0, "Write data to bin")
 				jsonBinClient.Write(data)
 			}
 		}
