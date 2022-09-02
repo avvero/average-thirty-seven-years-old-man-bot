@@ -1,35 +1,25 @@
 package brain
 
 import (
-	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
 )
 
-type HuggingFaceToxicityDetector struct {
+type ToxicityDetector struct {
 	apiClient *huggingface.HuggingFaceApiClient
-	threshold float64
 }
 
-func NewHuggingFaceToxicityDetector(apiClient *huggingface.HuggingFaceApiClient, threshold float64) Opinion {
-	return &HuggingFaceToxicityDetector{apiClient: apiClient, threshold: threshold}
+func NewToxicityDetector(apiClient *huggingface.HuggingFaceApiClient) *ToxicityDetector {
+	return &ToxicityDetector{apiClient: apiClient}
 }
 
-func (detector HuggingFaceToxicityDetector) Express(text string) (has bool, response string) {
-	score, error := detector.apiClient.ToxicityScore(text)
-	if error != nil {
-		fmt.Printf("Response code: %s", error)
-	}
-	if score > detector.threshold {
-		return true, ""
-	} else {
-		return false, ""
-	}
+func (detector *ToxicityDetector) ToxicityScore(text string) (float64, error) {
+	return detector.apiClient.ToxicityScore(text)
 }
 
 type HuggingFaceToxicityDetectorNoop struct {
 	toxic bool
 }
 
-func (detector HuggingFaceToxicityDetectorNoop) Express(text string) (has bool, response string) {
-	return detector.toxic, ""
+func (detector *HuggingFaceToxicityDetectorNoop) ToxicityScore(text string) (float64, error) {
+	return 0, nil
 }

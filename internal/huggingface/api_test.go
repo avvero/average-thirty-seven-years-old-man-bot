@@ -13,7 +13,7 @@ func Test_toxicityScoreReturnsScore(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	apiClient := NewApiClient(ts.URL, "key")
 	score, err := apiClient.ToxicityScore("any")
 	expected := 0.0014224671758711338
 	if err != nil {
@@ -30,7 +30,7 @@ func Test_toxicityScoreReturnsErrorIfCantParse(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	apiClient := NewApiClient(ts.URL, "key")
 	score, err := apiClient.ToxicityScore("any")
 	expected := "Can't parse response: {dsf}\n: invalid character 'd' looking for beginning of object key string"
 	if fmt.Sprintf("%s", err) != expected {
@@ -47,7 +47,7 @@ func Test_toxicityScoreReturnsErrorIfLabel1IsNotFound(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	apiClient := NewApiClient(ts.URL, "key")
 	score, err := apiClient.ToxicityScore("any")
 	expected := "Can't find LABEL_1: [[{LABEL_0 0.9985774755477905}]]"
 	if fmt.Sprintf("%s", err) != expected {
@@ -65,7 +65,7 @@ func Test_toxicityScoreReturnsErrorOn503(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	apiClient := NewApiClient(ts.URL, "key")
 	score, err := apiClient.ToxicityScore("any")
 	expected := fmt.Sprintf("Response from: %s: 503: Some error, estimated time: 23.000000", apiClient.url)
 	if fmt.Sprintf("%s", err) != expected {
@@ -83,7 +83,7 @@ func Test_toxicityScoreReturnsErrorOn502(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	apiClient := NewApiClient(ts.URL, "key")
 	score, err := apiClient.ToxicityScore("any")
 	expected := fmt.Sprintf("Response from: %s: %d", apiClient.url, 502)
 	if fmt.Sprintf("%s", err) != expected {

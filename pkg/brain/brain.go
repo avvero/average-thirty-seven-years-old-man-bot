@@ -1,6 +1,7 @@
 package brain
 
 import (
+	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"strings"
@@ -12,10 +13,10 @@ type Brain struct {
 	memory           *Memory
 	randomFactor     bool
 	scriber          *statistics.Scriber
-	toxicityDetector Opinion
+	toxicityDetector *ToxicityDetector
 }
 
-func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector Opinion) *Brain {
+func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector *ToxicityDetector) *Brain {
 	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
 }
 
@@ -33,7 +34,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		//
-		when(isToxic(brain.toxicityDetector)).say("токсик ебаный").
+		when(isToxicBy(brain.toxicityDetector, 0.98)).say("токсик ебаный").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
@@ -126,10 +127,14 @@ func is(values ...string) func(origin string) bool {
 	}
 }
 
-func isToxic(toxicityDetector Opinion) func(origin string) bool {
+func isToxicBy(toxicityDetector *ToxicityDetector, threshold float64) func(origin string) bool {
 	return func(origin string) bool {
-		has, _ := toxicityDetector.Express(origin)
-		return has
+		score, err := toxicityDetector.ToxicityScore(origin)
+		if err != nil {
+			fmt.Printf("Toxicity check error: %s", err)
+			return false
+		}
+		return score > threshold
 	}
 }
 

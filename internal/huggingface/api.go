@@ -25,7 +25,7 @@ type ErrorDetails struct {
 	EstimatedTime float64 `json:"estimated_time"`
 }
 
-func NewHuggingFaceApiClient(url string, accessKey string) *HuggingFaceApiClient {
+func NewApiClient(url string, accessKey string) *HuggingFaceApiClient {
 	return &HuggingFaceApiClient{url: url, accessKey: accessKey}
 }
 
