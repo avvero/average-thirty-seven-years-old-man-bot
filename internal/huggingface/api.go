@@ -43,10 +43,8 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	request.Header.Set("Authorization", "Bearer "+apiClient.accessKey)
 	response, err := client.Do(request)
 	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
+		fmt.Printf("Response from: %s: %s", apiClient.url, err)
 		return 0, err
-	} else {
-		fmt.Printf("Response code %d from : %s\n", response.StatusCode, apiClient.url)
 	}
 	if response.StatusCode == 503 {
 		defer response.Body.Close()
@@ -56,11 +54,11 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 		if unmarshalError != nil {
 			return 0, unmarshalError
 		}
-		return 0, errors.New(fmt.Sprintf("Response code 503: %s, estimated time: %f", errorDetails.Error, errorDetails.EstimatedTime))
+		return 0, errors.New(fmt.Sprintf("Response from: %s: 503: %s, estimated time: %f", apiClient.url,
+			errorDetails.Error, errorDetails.EstimatedTime))
 	}
 	if response.StatusCode != 200 {
-		fmt.Printf("Response code: %d\n", response.StatusCode)
-		return 0, err
+		return 0, errors.New(fmt.Sprintf("Response from: %s: %d", apiClient.url, response.StatusCode))
 	}
 
 	defer response.Body.Close()
@@ -70,7 +68,7 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	toxicityFound := false
 
 	bodyString := string(body)
-	fmt.Printf("Response from : %s :%s\n", apiClient.url, bodyString)
+	fmt.Printf("Response from: %s: %d: %s\n", apiClient.url, response.StatusCode, bodyString)
 	labels, err := Parse(bodyString)
 	for _, label := range labels {
 		if label.Title == "LABEL_1" {
