@@ -59,6 +59,9 @@ var senselessPhrases = []string{
 	"сказал, как в лужу пёрнул",
 	"в общем и целом",
 	"держи в курсе, ебло ослиное",
+	"боже, яке кончене",
+	"мне похуй я так чувствую",
+	"удаляй при мне",
 }
 
 func (this SenselessPhrasesIntention) Express(text string) (has bool, response string) {
