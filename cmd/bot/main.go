@@ -72,7 +72,8 @@ func main() {
 	if found {
 		huggingfaceAccessKey = &huggingfaceAccessKeyEnv
 	}
-	huggingfaceApiClient := huggingface.NewHuggingFaceApiClient(huggingfaceAccessKeyEnv)
+	url := "https://api-inference.huggingface.co/models/apanc/russian-inappropriate-messages"
+	huggingfaceApiClient := huggingface.NewHuggingFaceApiClient(url, huggingfaceAccessKeyEnv)
 	toxicityDetector := brain.NewHuggingFaceToxicityDetector(huggingfaceApiClient, 0.98)
 
 	//

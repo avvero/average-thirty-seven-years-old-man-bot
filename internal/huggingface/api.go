@@ -12,6 +12,7 @@ import (
 )
 
 type HuggingFaceApiClient struct {
+	url       string
 	accessKey string
 }
 
@@ -25,20 +26,19 @@ type ErrorDetails struct {
 	EstimatedTime float64 `json:"estimated_time"`
 }
 
-func NewHuggingFaceApiClient(accessKey string) *HuggingFaceApiClient {
-	return &HuggingFaceApiClient{accessKey: accessKey}
+func NewHuggingFaceApiClient(url string, accessKey string) *HuggingFaceApiClient {
+	return &HuggingFaceApiClient{url: url, accessKey: accessKey}
 }
 
 func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, error) {
-	url := "https://api-inference.huggingface.co/models/apanc/russian-inappropriate-messages"
-	fmt.Printf("Request to: %s\n", url)
+	fmt.Printf("Request to: %s\n", apiClient.url)
 	client := http.Client{Timeout: 5 * time.Second}
 
 	requestBody, marshalError := json.Marshal(map[string]string{"inputs": text})
 	if marshalError != nil {
 		return 0, marshalError
 	}
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request, _ := http.NewRequest("POST", apiClient.url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", "Bearer "+apiClient.accessKey)
 	response, err := client.Do(request)
@@ -46,7 +46,7 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 		fmt.Printf("Request error: %s\n", err)
 		return 0, err
 	} else {
-		fmt.Printf("Response code %d from : %s\n", response.StatusCode, url)
+		fmt.Printf("Response code %d from : %s\n", response.StatusCode, apiClient.url)
 	}
 	if response.StatusCode == 503 {
 		defer response.Body.Close()
@@ -70,7 +70,7 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	toxicityFound := false
 
 	bodyString := string(body)
-	fmt.Printf("Response from : %s :%s\n", url, bodyString)
+	fmt.Printf("Response from : %s :%s\n", apiClient.url, bodyString)
 	labels, err := Parse(bodyString)
 	for _, label := range labels {
 		if label.Title == "LABEL_1" {
