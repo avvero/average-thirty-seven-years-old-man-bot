@@ -73,7 +73,7 @@ func main() {
 		huggingfaceAccessKey = &huggingfaceAccessKeyEnv
 	}
 	huggingfaceApiClient := huggingface.NewHuggingFaceApiClient(huggingfaceAccessKeyEnv)
-	toxicityDetector := brain.NewHuggingFaceToxicityDetector(huggingfaceApiClient, 0.99)
+	toxicityDetector := brain.NewHuggingFaceToxicityDetector(huggingfaceApiClient, 0.98)
 
 	//
 	brain := brain.NewBrain(brain.NewMemory(), true, scriber, toxicityDetector)
