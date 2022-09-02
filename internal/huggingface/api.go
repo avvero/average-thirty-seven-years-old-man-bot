@@ -12,7 +12,7 @@ import (
 )
 
 type HuggingFaceApiClient struct {
-	acessKey string
+	accessKey string
 }
 
 type Labels struct {
@@ -25,8 +25,8 @@ type ErrorDetails struct {
 	EstimatedTime float64 `json:"estimated_time"`
 }
 
-func NewHuggingFaceApiClient(acsessKey string) *HuggingFaceApiClient {
-	return &HuggingFaceApiClient{acessKey: acsessKey}
+func NewHuggingFaceApiClient(accessKey string) *HuggingFaceApiClient {
+	return &HuggingFaceApiClient{accessKey: accessKey}
 }
 
 func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, error) {
@@ -40,7 +40,7 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	}
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "Bearer "+apiClient.acessKey)
+	request.Header.Set("Authorization", "Bearer "+apiClient.accessKey)
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("Request error: %s\n", err)

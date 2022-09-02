@@ -33,7 +33,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		//
-		when(isToxic(brain)).say("токсик ебаный").
+		when(isToxic(brain.toxicityDetector)).say("токсик ебаный").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
@@ -126,9 +126,9 @@ func is(values ...string) func(origin string) bool {
 	}
 }
 
-func isToxic(brain *Brain) func(origin string) bool {
+func isToxic(toxicityDetector Opinion) func(origin string) bool {
 	return func(origin string) bool {
-		has, _ := brain.toxicityDetector.Express(origin)
+		has, _ := toxicityDetector.Express(origin)
 		return has
 	}
 }
