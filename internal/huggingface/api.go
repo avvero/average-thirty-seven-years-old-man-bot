@@ -77,5 +77,5 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 			}
 		}
 	}
-	return 0, errors.New(fmt.Sprintf("Can't find LABEL_1 : %v", labels))
+	return 0, errors.New(fmt.Sprintf("Can't find LABEL_1: %v", labels))
 }

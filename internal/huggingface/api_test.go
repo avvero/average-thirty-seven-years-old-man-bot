@@ -24,6 +24,40 @@ func Test_toxicityScoreReturnsScore(t *testing.T) {
 	}
 }
 
+func Test_toxicityScoreReturnsErrorIfCantParse(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, `{dsf}`)
+	}))
+	defer ts.Close()
+
+	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	score, err := apiClient.ToxicityScore("any")
+	expected := "Can't parse response: {dsf}\n: invalid character 'd' looking for beginning of object key string"
+	if fmt.Sprintf("%s", err) != expected {
+		t.Error("Error expected: ", expected, " != ", fmt.Sprintf("%s", err))
+	}
+	if score != 0 {
+		t.Error("Score expected: ", 0, " != ", score)
+	}
+}
+
+func Test_toxicityScoreReturnsErrorIfLabel1IsNotFound(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, `[[{"label":"LABEL_0","score":0.9985774755477905}]]`)
+	}))
+	defer ts.Close()
+
+	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
+	score, err := apiClient.ToxicityScore("any")
+	expected := "Can't find LABEL_1: [[{LABEL_0 0.9985774755477905}]]"
+	if fmt.Sprintf("%s", err) != expected {
+		t.Error("Error expected: ", expected, " != ", fmt.Sprintf("%s", err))
+	}
+	if score != 0 {
+		t.Error("Score expected: ", 0, " != ", score)
+	}
+}
+
 func Test_toxicityScoreReturnsErrorOn503(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(503)
