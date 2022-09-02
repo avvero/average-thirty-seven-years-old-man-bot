@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -16,7 +15,7 @@ type HuggingFaceApiClient struct {
 	accessKey string
 }
 
-type Labels struct {
+type Label struct {
 	Title string  `json:"label"`
 	Score float64 `json:"score"`
 }
@@ -64,33 +63,19 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)
 
-	toxicityScore := 0.0
-	toxicityFound := false
-
-	bodyString := string(body)
-	fmt.Printf("Response from: %s: %d: %s\n", apiClient.url, response.StatusCode, bodyString)
-	labels, err := Parse(bodyString)
-	for _, label := range labels {
-		if label.Title == "LABEL_1" {
-			toxicityScore = label.Score
-			toxicityFound = true
+	var labels [][]Label
+	unmarshalError := json.Unmarshal(body, &labels)
+	if unmarshalError != nil {
+		return 0, errors.New(fmt.Sprintf("Can't parse response: %s: %s", string(body), unmarshalError))
+	}
+	fmt.Printf("Response from: %s: %d: %v\n", apiClient.url, response.StatusCode, labels)
+	// Arrays composition
+	for _, labels2 := range labels {
+		for _, label := range labels2 {
+			if label.Title == "LABEL_1" {
+				return label.Score, nil
+			}
 		}
 	}
-	if !toxicityFound {
-		return 0, errors.New("Can't find LABEL_1 " + bodyString)
-	}
-	return toxicityScore, nil
-}
-
-func Parse(text string) ([]Labels, error) {
-	text = strings.Replace(text, "[[", "[", -1)
-	text = strings.Replace(text, "]]", "]", -1)
-
-	var labels []Labels
-	unmarshalError := json.Unmarshal([]byte(text), &labels)
-	if unmarshalError != nil {
-		return nil, unmarshalError
-	} else {
-		return labels, nil
-	}
+	return 0, errors.New(fmt.Sprintf("Can't find LABEL_1 : %v", labels))
 }

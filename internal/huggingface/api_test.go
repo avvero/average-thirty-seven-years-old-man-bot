@@ -14,8 +14,11 @@ func Test_toxicityScoreReturnsScore(t *testing.T) {
 	defer ts.Close()
 
 	apiClient := NewHuggingFaceApiClient(ts.URL, "key")
-	score, _ := apiClient.ToxicityScore("any")
+	score, err := apiClient.ToxicityScore("any")
 	expected := 0.0014224671758711338
+	if err != nil {
+		t.Error("Error: ", fmt.Sprintf("%s", err))
+	}
 	if score != expected {
 		t.Error("Score expected: ", expected, " != ", score)
 	}
