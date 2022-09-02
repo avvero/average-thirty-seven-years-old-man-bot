@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
+	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"io"
 	"log"
@@ -23,9 +24,10 @@ import (
 )
 
 var (
-	httpPort         = flag.String("httpPort", "8080", "http server port")
-	token            = flag.String("token", "PROVIDE", "bot token")
-	jsonBinMasterKey = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
+	httpPort             = flag.String("httpPort", "8080", "http server port")
+	token                = flag.String("token", "PROVIDE", "bot token")
+	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
+	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
 )
 
 func main() {
@@ -64,7 +66,17 @@ func main() {
 		}
 	}()
 	scriber := statistics.NewScriberWithData(data)
-	brain := brain.NewBrain(brain.NewMemory(), true, scriber)
+	// Toxicity detector
+
+	huggingfaceAccessKeyEnv, found := os.LookupEnv("huggingface-access-key")
+	if found {
+		huggingfaceAccessKey = &huggingfaceAccessKeyEnv
+	}
+	huggingfaceApiClient := huggingface.NewHuggingFaceApiClient(huggingfaceAccessKeyEnv)
+	toxicityDetector := brain.NewHuggingFaceToxicityDetector(huggingfaceApiClient, 0.99)
+
+	//
+	brain := brain.NewBrain(brain.NewMemory(), true, scriber, toxicityDetector)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -118,7 +130,7 @@ func sendMessage(chatId int64, receivedMessageId int64, message string) {
 	}
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
-	fmt.Printf("Request to: %s\n", url)
+	fmt.Printf("Request to: %s, message: %s\n", url, message)
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	_, err := client.Do(request)

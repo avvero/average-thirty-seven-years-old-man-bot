@@ -20,6 +20,11 @@ type Labels struct {
 	Score float64 `json:"score"`
 }
 
+type ErrorDetails struct {
+	Error         string  `json:"error"`
+	EstimatedTime float64 `json:"estimated_time"`
+}
+
 func NewHuggingFaceApiClient(acsessKey string) *HuggingFaceApiClient {
 	return &HuggingFaceApiClient{acessKey: acsessKey}
 }
@@ -40,6 +45,18 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	if err != nil {
 		fmt.Printf("Request error: %s\n", err)
 		return 0, err
+	} else {
+		fmt.Printf("Response code %d from : %s\n", response.StatusCode, url)
+	}
+	if response.StatusCode == 503 {
+		defer response.Body.Close()
+		body, _ := io.ReadAll(response.Body)
+		errorDetails := &ErrorDetails{}
+		unmarshalError := json.Unmarshal(body, errorDetails)
+		if unmarshalError != nil {
+			return 0, unmarshalError
+		}
+		return 0, errors.New(fmt.Sprintf("Response code 503: %s, estimated time: %f", errorDetails.Error, errorDetails.EstimatedTime))
 	}
 	if response.StatusCode != 200 {
 		fmt.Printf("Response code: %d\n", response.StatusCode)
@@ -53,6 +70,7 @@ func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, erro
 	toxicityFound := false
 
 	bodyString := string(body)
+	fmt.Printf("Response from : %s :%s\n", url, bodyString)
 	labels, err := Parse(bodyString)
 	for _, label := range labels {
 		if label.Title == "LABEL_1" {

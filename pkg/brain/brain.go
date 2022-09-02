@@ -9,13 +9,14 @@ import (
 )
 
 type Brain struct {
-	memory       *Memory
-	randomFactor bool
-	scriber      *statistics.Scriber
+	memory           *Memory
+	randomFactor     bool
+	scriber          *statistics.Scriber
+	toxicityDetector Opinion
 }
 
-func NewBrain(memory *Memory, randomFactor bool, scriber *statistics.Scriber) *Brain {
-	return &Brain{memory: memory, randomFactor: randomFactor, scriber: scriber}
+func NewBrain(memory *Memory, randomFactor bool, scriber *statistics.Scriber, toxicityDetector Opinion) *Brain {
+	return &Brain{memory: memory, randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
@@ -32,7 +33,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		//
-		//when(isToxic()).say("токсик ебаный").
+		when(isToxic(brain)).say("токсик ебаный").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
@@ -122,6 +123,13 @@ func is(values ...string) func(origin string) bool {
 			}
 		}
 		return false
+	}
+}
+
+func isToxic(brain *Brain) func(origin string) bool {
+	return func(origin string) bool {
+		has, _ := brain.toxicityDetector.Express(origin)
+		return has
 	}
 }
 
