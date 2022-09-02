@@ -76,7 +76,7 @@ func main() {
 	toxicityDetector := brain.NewHuggingFaceToxicityDetector(huggingfaceApiClient, 0.98)
 
 	//
-	brain := brain.NewBrain(brain.NewMemory(), true, scriber, toxicityDetector)
+	brain := brain.NewBrain(true, scriber, toxicityDetector)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

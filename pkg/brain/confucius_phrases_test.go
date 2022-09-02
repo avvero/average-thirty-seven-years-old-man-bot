@@ -7,7 +7,7 @@ import (
 )
 
 func Test_returnsForLuckyConfuciusPhrase(t *testing.T) {
-	brain := NewBrain(NewMemory(), true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
 	respond := false
 	for i := 0; i < 1000; i++ {
 		thisRespond, thisResponse := brain.Decision(0, "any")

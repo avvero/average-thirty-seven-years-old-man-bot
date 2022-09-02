@@ -15,8 +15,8 @@ type Brain struct {
 	toxicityDetector Opinion
 }
 
-func NewBrain(memory *Memory, randomFactor bool, scriber *statistics.Scriber, toxicityDetector Opinion) *Brain {
-	return &Brain{memory: memory, randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
+func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector Opinion) *Brain {
+	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
