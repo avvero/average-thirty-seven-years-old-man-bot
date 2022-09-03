@@ -137,7 +137,7 @@ func isToxicBy(toxicityDetector ToxicityDetector, threshold float64) func(origin
 			fmt.Printf("Toxicity check error: %s", err)
 			return false
 		}
-		return score > threshold
+		return score >= threshold
 	}
 }
 

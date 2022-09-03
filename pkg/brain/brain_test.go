@@ -60,7 +60,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 
 func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 	scriber := statistics.NewScriber()
-	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0.98})
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.0})
 	respond, response := brain.Decision(0, "/toxicity")
 	expected := ""
 	if respond || response != expected {
@@ -69,7 +69,7 @@ func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 }
 func Test_responseOnCommandToxicityFailed(t *testing.T) {
 	scriber := statistics.NewScriber()
-	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0, err: errors.New("что-то не вышло")})
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0, err: errors.New("что-то не вышло")})
 	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
 	expected := "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
 	if !respond || response != expected {
@@ -79,7 +79,7 @@ func Test_responseOnCommandToxicityFailed(t *testing.T) {
 
 func Test_responseOnCommandToxicity(t *testing.T) {
 	scriber := statistics.NewScriber()
-	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0.98})
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.98})
 	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
 	expected := "уровень токсичности 98%"
 	if !respond || response != expected {

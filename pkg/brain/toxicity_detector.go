@@ -20,10 +20,10 @@ func (detector HuggingFaceToxicityDetector) ToxicityScore(text string) (float64,
 }
 
 type ToxicityDetectorNoop struct {
-	result float64
-	err    error
+	score float64
+	err   error
 }
 
 func (detector ToxicityDetectorNoop) ToxicityScore(text string) (float64, error) {
-	return detector.result, detector.err
+	return detector.score, detector.err
 }

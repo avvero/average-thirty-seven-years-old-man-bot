@@ -6,10 +6,16 @@ import (
 )
 
 func Test_returnsForToxicResponse(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{result: 1})
-	respond, response := brain.Decision(0, "any")
-	expected := "токсик ебаный"
-	if !respond || response != expected {
-		t.Error("Response: ", expected, " != ", response)
+	data := map[float64]string{
+		0.8:  "осторожно",
+		0.9:  "на грани",
+		0.98: "токсик ебаный",
+	}
+	for score, expected := range data {
+		brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{score: score})
+		respond, response := brain.Decision(0, "any")
+		if !respond || response != expected {
+			t.Error("Response: ", expected, " != ", response)
+		}
 	}
 }
