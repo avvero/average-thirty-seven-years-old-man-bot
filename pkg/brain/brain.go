@@ -36,6 +36,8 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(startsWith("/toxicity")).say(describeToxicity(brain.toxicityDetector, text)).
 		//
 		when(isToxicBy(brain.toxicityDetector, 0.98)).say("токсик ебаный").
+		when(isToxicBy(brain.toxicityDetector, 0.90)).say("на грани").
+		when(isToxicBy(brain.toxicityDetector, 0.80)).say("осторожно").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
