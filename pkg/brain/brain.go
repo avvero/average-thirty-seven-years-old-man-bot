@@ -33,6 +33,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		// Commands
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
+		when(startsWith("/toxicity")).say(describeToxicity(brain.toxicityDetector, text)).
 		//
 		when(isToxicBy(brain.toxicityDetector, 0.98)).say("токсик ебаный").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
@@ -138,6 +139,16 @@ func isToxicBy(toxicityDetector ToxicityDetector, threshold float64) func(origin
 	}
 }
 
+func describeToxicity(toxicityDetector ToxicityDetector, origin string) string {
+	score, err := toxicityDetector.ToxicityScore(origin)
+	if err != nil {
+		fmt.Printf("Toxicity check error: %s", err)
+		return "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
+	} else {
+		return fmt.Sprintf("уровень токсичности %.0f", score*100) + "%" //TODO
+	}
+}
+
 func length(size int) func(origin string) bool {
 	return func(origin string) bool {
 		return len(origin) >= size
@@ -158,6 +169,12 @@ func contains(values ...string) func(origin string) bool {
 			}
 		}
 		return false
+	}
+}
+
+func startsWith(value string) func(origin string) bool {
+	return func(origin string) bool {
+		return strings.HasPrefix(origin, value) && len(strings.TrimSpace(strings.ReplaceAll(origin, value, ""))) > 2
 	}
 }
 

@@ -1,6 +1,7 @@
 package brain
 
 import (
+	"errors"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"strconv"
@@ -52,6 +53,35 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{})
 	respond, response := brain.Decision(0, "/statistics")
 	expected := "{\"userStatistics\":{\"first\":{\"username\":\"first\",\"messageCounter\":1}}}"
+	if !respond || response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
+	scriber := statistics.NewScriber()
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0.98})
+	respond, response := brain.Decision(0, "/toxicity")
+	expected := ""
+	if respond || response != expected {
+		t.Error("Expected {false, \"\"} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+func Test_responseOnCommandToxicityFailed(t *testing.T) {
+	scriber := statistics.NewScriber()
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0, err: errors.New("что-то не вышло")})
+	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
+	expected := "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
+	if !respond || response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_responseOnCommandToxicity(t *testing.T) {
+	scriber := statistics.NewScriber()
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{result: 0.98})
+	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
+	expected := "уровень токсичности 98%"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
