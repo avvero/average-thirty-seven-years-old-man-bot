@@ -35,24 +35,24 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	}
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
-		when(is("/info")).say("I'm bot").
-		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
+		when(its("/info")).say("I'm bot").
+		when(its("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//
-		when(truth(toxicityScore == 0.98)).say("токсик ебаный").
-		when(truth(toxicityScore == 0.90)).say("на грани щас").
-		when(truth(toxicityScore == 0.8)).say("осторожнее").
-		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
-		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
-		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
-		when(truth(brain.randomFactor), random(200), length(14)).then(NewKhaleesifyIntention()).
-		when(truth(brain.randomFactor), random(100)).then(&ConfuciusPhrasesIntention{}).
-		when(truth(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
-		when(truth(brain.randomFactor), random(10), contains("купил")).say("А не пиздишь? Аренда это не покупка").
-		when(is("gg")).say("gg").
-		when(is("нет")).say("пидора ответ").
+		when(is(toxicityScore == 0.98)).say("токсик ебаный").
+		when(is(toxicityScore == 0.90)).say("на грани щас").
+		when(is(toxicityScore == 0.8)).say("осторожнее").
+		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
+		when(is(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
+		when(is(brain.randomFactor), random(200), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(100)).then(&ConfuciusPhrasesIntention{}).
+		when(is(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
+		when(is(brain.randomFactor), random(10), contains("купил")).say("А не пиздишь? Аренда это не покупка").
+		when(its("gg")).say("gg").
+		when(its("нет")).say("пидора ответ").
 		when(contains("morrowind", "морровинд", "моровинд")).say("Morrowind - одна из лучших игр эва").
-		when(is("er", "ер", "эр")).say("Elden Ring - это величие").
+		when(its("er", "ер", "эр")).say("Elden Ring - это величие").
 		when(contains("elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр ")).say("Elden Ring - это величие").
 		when(contains("spotify", "спотифай")).say("Эти пидоры Антону косарик должны за подписку").
 		when(contains("devops", "девопс")).say("Девопсы не нужны").
@@ -105,7 +105,7 @@ func (this *Link) replace(from string, to string) *Chain {
 	return this.chain
 }
 
-func truth(value bool) func(_ string) bool {
+func is(value bool) func(_ string) bool {
 	return func(_ string) bool {
 		return value
 	}
@@ -117,7 +117,7 @@ func random(factor int) func(origin string) bool {
 	}
 }
 
-func is(values ...string) func(origin string) bool {
+func its(values ...string) func(origin string) bool {
 	return func(origin string) bool {
 		for _, value := range values {
 			if origin == value {
