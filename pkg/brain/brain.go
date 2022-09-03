@@ -40,8 +40,8 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//
 		when(truth(toxicityScore == 0.98)).say("токсик ебаный").
-		when(truth(toxicityScore == 0.90)).say("на грани").
-		when(truth(toxicityScore == 0.8)).say("осторожно").
+		when(truth(toxicityScore == 0.90)).say("на грани щас").
+		when(truth(toxicityScore == 0.8)).say("внимательно").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
