@@ -29,15 +29,19 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 			return false, ""
 		}
 	}
+	toxicityScore, err := brain.toxicityDetector.ToxicityScore(text)
+	if err != nil {
+		fmt.Printf("Toxicity check error: %s", err)
+	}
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(is("/info")).say("I'm bot").
 		when(is("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		when(startsWith("/toxicity")).say(describeToxicity(brain.toxicityDetector, text)).
 		//
-		when(isToxicBy(brain.toxicityDetector, 0.98)).say("токсик ебаный").
-		when(isToxicBy(brain.toxicityDetector, 0.90)).say("на грани").
-		when(isToxicBy(brain.toxicityDetector, 0.80)).say("осторожно").
+		when(truth(toxicityScore == 0.98)).say("токсик ебаный").
+		when(truth(toxicityScore == 0.90)).say("на грани").
+		when(truth(toxicityScore == 0.8)).say("осторожно").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).
@@ -127,17 +131,6 @@ func is(values ...string) func(origin string) bool {
 			}
 		}
 		return false
-	}
-}
-
-func isToxicBy(toxicityDetector ToxicityDetector, threshold float64) func(origin string) bool {
-	return func(origin string) bool {
-		score, err := toxicityDetector.ToxicityScore(origin)
-		if err != nil {
-			fmt.Printf("Toxicity check error: %s", err)
-			return false
-		}
-		return score >= threshold
 	}
 }
 
