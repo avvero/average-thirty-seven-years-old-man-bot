@@ -48,7 +48,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(200), length(14)).then(NewKhaleesifyIntention()).
 		when(is(brain.randomFactor), random(100)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
-		when(is(brain.randomFactor), random(10), contains("купил")).say("А не пиздишь? Аренда это не покупка").
+		when(is(brain.randomFactor), random(50), contains("купил")).say("А не пиздишь? Аренда это не покупка").
 		when(its("gg")).say("gg").
 		when(its("нет")).say("пидора ответ").
 		when(contains("morrowind", "морровинд", "моровинд")).say("Morrowind - одна из лучших игр эва").
