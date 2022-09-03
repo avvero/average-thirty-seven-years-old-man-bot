@@ -25,11 +25,11 @@ type ErrorDetails struct {
 	EstimatedTime float64 `json:"estimated_time"`
 }
 
-func NewApiClient(url string, accessKey string) *HuggingFaceApiClient {
-	return &HuggingFaceApiClient{url: url, accessKey: accessKey}
+func NewApiClient(url string, accessKey string) HuggingFaceApiClient {
+	return HuggingFaceApiClient{url: url, accessKey: accessKey}
 }
 
-func (apiClient *HuggingFaceApiClient) ToxicityScore(text string) (float64, error) {
+func (apiClient HuggingFaceApiClient) ToxicityScore(text string) (float64, error) {
 	fmt.Printf("Request to: %s\n", apiClient.url)
 	client := http.Client{Timeout: 5 * time.Second}
 

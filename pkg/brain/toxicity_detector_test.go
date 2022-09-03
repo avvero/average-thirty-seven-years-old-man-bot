@@ -6,7 +6,7 @@ import (
 )
 
 func Test_returnsForToxicResponse(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{toxic: true})
+	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{result: 1})
 	respond, response := brain.Decision(0, "any")
 	expected := "токсик ебаный"
 	if !respond || response != expected {

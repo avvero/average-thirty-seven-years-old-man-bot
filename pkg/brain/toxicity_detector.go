@@ -4,22 +4,25 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
 )
 
-type ToxicityDetector struct {
-	apiClient *huggingface.HuggingFaceApiClient
+type ToxicityDetector interface {
+	ToxicityScore(text string) (float64, error)
+}
+type HuggingFaceToxicityDetector struct {
+	apiClient huggingface.HuggingFaceApiClient
 }
 
-func NewToxicityDetector(apiClient *huggingface.HuggingFaceApiClient) *ToxicityDetector {
-	return &ToxicityDetector{apiClient: apiClient}
+func NewToxicityDetector(apiClient huggingface.HuggingFaceApiClient) *HuggingFaceToxicityDetector {
+	return &HuggingFaceToxicityDetector{apiClient: apiClient}
 }
 
-func (detector *ToxicityDetector) ToxicityScore(text string) (float64, error) {
+func (detector HuggingFaceToxicityDetector) ToxicityScore(text string) (float64, error) {
 	return detector.apiClient.ToxicityScore(text)
 }
 
-type HuggingFaceToxicityDetectorNoop struct {
-	toxic bool
+type ToxicityDetectorNoop struct {
+	result float64
 }
 
-func (detector *HuggingFaceToxicityDetectorNoop) ToxicityScore(text string) (float64, error) {
-	return 0, nil
+func (detector ToxicityDetectorNoop) ToxicityScore(text string) (float64, error) {
+	return detector.result, nil
 }

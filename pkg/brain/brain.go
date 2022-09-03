@@ -13,10 +13,10 @@ type Brain struct {
 	memory           *Memory
 	randomFactor     bool
 	scriber          *statistics.Scriber
-	toxicityDetector *ToxicityDetector
+	toxicityDetector ToxicityDetector
 }
 
-func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector *ToxicityDetector) *Brain {
+func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector ToxicityDetector) *Brain {
 	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
 }
 
@@ -127,7 +127,7 @@ func is(values ...string) func(origin string) bool {
 	}
 }
 
-func isToxicBy(toxicityDetector *ToxicityDetector, threshold float64) func(origin string) bool {
+func isToxicBy(toxicityDetector ToxicityDetector, threshold float64) func(origin string) bool {
 	return func(origin string) bool {
 		score, err := toxicityDetector.ToxicityScore(origin)
 		if err != nil {

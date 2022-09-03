@@ -9,7 +9,7 @@ import (
 )
 
 func Test_responseOnlyToWhitelisted(t *testing.T) {
-	brain := NewBrain(false, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	data := map[string]string{
 		"-1001733786877": "gg",
 		"245851441":      "gg",
@@ -26,7 +26,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 }
 
 func Test_responseOnCommandInfo(t *testing.T) {
-	brain := NewBrain(false, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	respond, response := brain.Decision(0, "/info")
 	expected := "I'm bot"
 	if !respond || response != expected {
@@ -35,7 +35,7 @@ func Test_responseOnCommandInfo(t *testing.T) {
 }
 
 func Test_responseOnCommandStatisticsOnEmptyStatistics(t *testing.T) {
-	brain := NewBrain(false, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	respond, response := brain.Decision(0, "/statistics")
 	if respond || response != "" {
 		t.Error("Expected {false, nil} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -49,7 +49,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
 	})
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	brain := NewBrain(false, scriber, &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{})
 	respond, response := brain.Decision(0, "/statistics")
 	expected := "{\"userStatistics\":{\"first\":{\"username\":\"first\",\"messageCounter\":1}}}"
 	if !respond || response != expected {
@@ -58,7 +58,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 }
 
 func Test_returnsOnSomeText(t *testing.T) {
-	brain := NewBrain(false, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	data := map[string]string{
 		"gg": "gg",
 		"GG": "gg",
@@ -141,7 +141,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 }
 
 func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	data := map[string]string{
 		"я думал сначала Медведев это опять. А тут какой то давыдов": "не опять, а снова",
 
@@ -170,7 +170,7 @@ func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
 }
 
 func Test_returnsOnNotElderRing(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	data := []string{
 		"pERt",
 		"sdfERdfd",
@@ -186,7 +186,7 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 }
 
 func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	respond := false
 	response := ""
 	expected := "делись зя миня, дляконь"
@@ -203,7 +203,7 @@ func Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 }
 
 func Test_censorTests(t *testing.T) {
-	brain := NewBrain(true, statistics.NewScriber(), &HuggingFaceToxicityDetectorNoop{})
+	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{})
 	data := []string{
 		"Россия",
 		"Росия",
