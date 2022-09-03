@@ -41,7 +41,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		//
 		when(truth(toxicityScore == 0.98)).say("токсик ебаный").
 		when(truth(toxicityScore == 0.90)).say("на грани щас").
-		when(truth(toxicityScore == 0.8)).say("внимательно").
+		when(truth(toxicityScore == 0.8)).say("осторожнее").
 		when(truth(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(truth(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		when(truth(brain.randomFactor), random(200), length(14)).then(&HuefyIntention{}).

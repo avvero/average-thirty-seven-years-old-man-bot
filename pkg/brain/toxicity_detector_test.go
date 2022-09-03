@@ -7,8 +7,8 @@ import (
 
 func Test_returnsForToxicResponse(t *testing.T) {
 	data := map[float64]string{
-		0.8:  "осторожно",
-		0.9:  "на грани",
+		0.8:  "осторожнее",
+		0.9:  "на грани щас",
 		0.98: "токсик ебаный",
 	}
 	for score, expected := range data {
