@@ -9,7 +9,7 @@ func Test_returnsForToxicResponse(t *testing.T) {
 	data := map[float64]string{
 		0.8:  "осторожнее",
 		0.9:  "на грани щас",
-		0.98: "токсик ебаный",
+		0.98: "токсик",
 	}
 	for score, expected := range data {
 		brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{score: score})

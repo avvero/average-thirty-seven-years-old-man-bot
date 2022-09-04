@@ -39,7 +39,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(its("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//
-		when(is(toxicityScore >= 0.98)).say("токсик ебаный").
+		when(is(toxicityScore >= 0.98)).say("токсик").
 		when(is(toxicityScore >= 0.90)).say("на грани щас").
 		when(is(toxicityScore >= 0.8)).say("осторожнее").
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
