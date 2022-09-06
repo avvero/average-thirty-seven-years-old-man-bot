@@ -65,7 +65,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(contains("трансформации")).replace("трансформации", "оргии гомогеев").
 		when(contains("java", "джаба", "джава", "ява")).say("джава-хуява, а я работаю на го").
 		when(contains("блокир")).say("пусть себе анус заблокируют").
-		when(contains("проблем")).say("у меня есть 5-10 солюшенов этой проблемы").
+		when(is(brain.randomFactor), random(100), contains("проблем")).say("у меня есть 5-10 солюшенов этой проблемы").
 		when(contains("mass effect")).say("Шепард умрет").
 		when(contains("масс эффект")).say("Шепард умрет").
 		run()
