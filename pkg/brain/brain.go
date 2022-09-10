@@ -50,11 +50,11 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
 		//when(is(brain.randomFactor), random(100), contains("купил")).say("А не пиздишь? Аренда это не покупка").
 		when(its("gg")).say("gg").
-		when(its("нет")).say("пидора ответ").
+		when(its("нет")).then(&NoThenPhraseIntention{}).
 		when(contains("morrowind", "морровинд", "моровинд")).say("Morrowind - одна из лучших игр эва").
 		when(its("er", "ер", "эр")).say("Elden Ring - это величие").
 		when(contains("elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр ")).say("Elden Ring - это величие").
-		when(contains("spotify", "спотифай")).say("Эти пидоры Антону косарик должны за подписку").
+		when(contains("spotify", "спотифай")).say("Эти н'вахи Антону косарик должны за подписку").
 		when(contains("devops", "девопс")).say("Девопсы не нужны").
 		when(contains("devops")).say("Девопсы не нужны").
 		when(contains("scrum")).say("Скрам - это пережиток").
