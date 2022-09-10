@@ -120,6 +120,7 @@ var noThenResponses = []string{
 	"Много старых кед",
 	"Городской бюджет",
 	"С Хогвардса конверт",
+	"Говна пакет",
 }
 
 func (this NoThenPhraseIntention) Express(text string) (has bool, response string) {
