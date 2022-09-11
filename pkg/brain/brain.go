@@ -59,10 +59,10 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(contains("devops")).say("Девопсы не нужны").
 		when(contains("scrum")).say("Скрам - это пережиток").
 		when(contains("скрам")).say("Скрам - это пережиток").
-		when(is(brain.randomFactor), random(100), contains("трансформациями")).replace("трансформациями", "оргиями гомогеев").
-		when(is(brain.randomFactor), random(100), contains("трансформация")).replace("трансформация", "оргия гомогеев").
-		when(is(brain.randomFactor), random(100), contains("трансформацию")).replace("трансформацию", "оргию гомогеев").
-		when(is(brain.randomFactor), random(100), contains("трансформации")).replace("трансформации", "оргии гомогеев").
+		when(is(brain.randomFactor), random(100), contains("трансформациями")).replace("трансформациями", "пертурбациями").
+		when(is(brain.randomFactor), random(100), contains("трансформация")).replace("трансформация", "пертурбация").
+		when(is(brain.randomFactor), random(100), contains("трансформацию")).replace("трансформацию", "пертурбацию").
+		when(is(brain.randomFactor), random(100), contains("трансформации")).replace("трансформации", "пертурбации").
 		when(contains("java", "джаба", "джава", "ява")).say("джава-хуява, а я работаю на го").
 		when(contains("блокир")).say("пусть себе анус заблокируют").
 		when(is(brain.randomFactor), random(100), contains("проблем")).say("у меня есть 5-10 солюшенов этой проблемы").
