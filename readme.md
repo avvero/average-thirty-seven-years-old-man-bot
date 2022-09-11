@@ -1,14 +1,14 @@
 # Average Thirty-Seven Years Old Man (bot)
 
 Piece of digital art, telegram bot which acts like average thirty-seven years old man (by the author opinion):
-
-- doesn't give a shit
+- doesn't care about it at all
 - tries to be humorous
 - dumb
 - arrogant
 - spontaneous
 - answers out of place
-- uses bad words
+- uses bad word
+- can understand toxicity
 
 ## Skills
 
