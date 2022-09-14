@@ -98,8 +98,8 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
-	//date := time.Now().Format("2006-01-02")
-	expected := "Statistics by user:\n- first: 1\n- second: 1\nStatistics by day:\n- 2022-09-14: 2\n"
+	date := time.Now().Format("2006-01-02")
+	expected := "Statistics by user:\n - first: 1\n - second: 1\nStatistics by day:\n - " + date + ": 2\n"
 	if text != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, text)
 	}

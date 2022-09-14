@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
+	"log"
 	"strings"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -31,7 +32,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	}
 	toxicityScore, toxicityDetectionErr := brain.toxicityDetector.ToxicityScore(text)
 	if toxicityDetectionErr != nil {
-		fmt.Printf("Toxicity check error: %s", toxicityDetectionErr)
+		log.Println("Toxicity check error: " + toxicityDetectionErr.Error())
 	}
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands

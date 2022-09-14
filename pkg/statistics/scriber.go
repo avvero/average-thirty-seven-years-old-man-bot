@@ -80,7 +80,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		scriber.data.ChatStatistics[chatId] == nil ||
 		scriber.data.ChatStatistics[chatId].UsersStatistics == nil ||
 		scriber.data.ChatStatistics[chatId].DailyStatistics == nil {
-		return "Data is empty"
+		return ""
 	}
 	chatStatistics := scriber.data.ChatStatistics[chatId]
 
