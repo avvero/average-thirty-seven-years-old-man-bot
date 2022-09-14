@@ -14,12 +14,12 @@ type Data struct {
 }
 
 type ChatStatistics struct {
-	UsersStatistics map[string]*UserStatistics `json:"userStatistics"`
+	UsersStatistics map[string]*MessageStatistics `json:"userStatistics"`
+	DailyStatistics map[string]*MessageStatistics `json:"dailyStatistics"`
 }
 
-type UserStatistics struct {
-	Username       string `json:"username"`
-	MessageCounter int    `json:"messageCounter"`
+type MessageStatistics struct {
+	MessageCounter int `json:"messageCounter"`
 }
 
 type JsonBinResponse struct {

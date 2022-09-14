@@ -36,7 +36,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(its("/info")).say("I'm bot").
-		when(its("/statistics")).say(utils.PrintJson(brain.scriber.GetStatistics(chatId))).
+		when(its("/statistics")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
