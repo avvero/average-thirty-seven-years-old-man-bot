@@ -90,12 +90,16 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
 	})
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+	})
 	for len(scriber.messages) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	//date := time.Now().Format("2006-01-02")
-	expected := "Statistics by user:\n- first: 1\nStatistics by day:\n- 2022-09-14: 1\n"
+	expected := "Statistics by user:\n- first: 1\n- second: 1\nStatistics by day:\n- 2022-09-14: 2\n"
 	if text != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, text)
 	}

@@ -3,6 +3,7 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,12 +86,25 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 
 	sb := strings.Builder{}
 	sb.WriteString("Statistics by user:\n")
-	for k, v := range chatStatistics.UsersStatistics {
-		sb.WriteString(" - " + k + ": " + strconv.Itoa(v.MessageCounter) + "\n")
+	usKeys := sortedKeys(chatStatistics.UsersStatistics)
+	for _, k := range usKeys {
+		sb.WriteString(" - " + k + ": " + strconv.Itoa(chatStatistics.UsersStatistics[k].MessageCounter) + "\n")
 	}
 	sb.WriteString("Statistics by day:\n")
-	for k, v := range chatStatistics.DailyStatistics {
-		sb.WriteString(" - " + k + ": " + strconv.Itoa(v.MessageCounter) + "\n")
+	dsKeys := sortedKeys(chatStatistics.DailyStatistics)
+	for _, k := range dsKeys {
+		sb.WriteString(" - " + k + ": " + strconv.Itoa(chatStatistics.DailyStatistics[k].MessageCounter) + "\n")
 	}
 	return sb.String()
+}
+
+func sortedKeys(m map[string]*data.MessageStatistics) []string {
+	keys := make([]string, len(m))
+	i := 0
+	for k := range m {
+		keys[i] = k
+		i++
+	}
+	sort.Strings(keys)
+	return keys
 }
