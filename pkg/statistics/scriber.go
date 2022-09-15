@@ -3,6 +3,7 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -86,7 +87,9 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 
 	sb := strings.Builder{}
 	sb.WriteString("Statistics by user:\n")
-	usKeys := sortedKeys(chatStatistics.UsersStatistics)
+	log.Println("usKeys: ", chatStatistics.UsersStatistics)
+	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
+	log.Println("usKeys: ", usKeys)
 	for _, k := range usKeys {
 		sb.WriteString(" - " + k + ": " + strconv.Itoa(chatStatistics.UsersStatistics[k].MessageCounter) + "\n")
 	}
@@ -106,5 +109,29 @@ func sortedKeys(m map[string]*data.MessageStatistics) []string {
 		i++
 	}
 	sort.Strings(keys)
+	return keys
+}
+
+type SortByMessageCounterTuple struct {
+	key   string
+	value *data.MessageStatistics
+}
+
+func sortByMessageCounter(statistics map[string]*data.MessageStatistics) []string {
+	tuples := make([]SortByMessageCounterTuple, len(statistics))
+	i := 0
+	for k := range statistics {
+		tuples[i] = SortByMessageCounterTuple{key: k, value: statistics[k]}
+		i++
+	}
+	log.Println("tuples: ", tuples)
+	sort.Slice(tuples, func(i, j int) bool {
+		return tuples[i].value.MessageCounter > tuples[j].value.MessageCounter
+	})
+	// take keys
+	keys := make([]string, len(tuples))
+	for i, tuple := range tuples {
+		keys[i] = tuple.key
+	}
 	return keys
 }
