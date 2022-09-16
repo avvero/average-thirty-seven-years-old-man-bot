@@ -103,6 +103,14 @@ func main() {
 			go func() {
 				time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
 				sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
+				// wrap
+				botMessage := &telegram.WebhookRequestMessage{
+					MessageId: 0,
+					From:      &telegram.WebhookRequestMessageSender{Username: "bot"},
+					Chat:      webhookRequest.Message.Chat,
+					Text:      response,
+				}
+				scriber.Keep(botMessage)
 			}()
 		}
 	})
