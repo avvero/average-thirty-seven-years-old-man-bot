@@ -69,7 +69,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(100), contains("проблем")).say("у меня есть 5-10 солюшенов этой проблемы").
 		when(contains("mass effect")).say("Шепард умрет").
 		when(contains("масс эффект")).say("Шепард умрет").
-		when(contains("новое", "новые", "новая", "новое", "новые", "новье")).say("Точное новое, а не проперженное бу?").
+		//when(contains("новое", "новые", "новая", "новое", "новые", "новье")).say("Точное новое, а не проперженное бу?").
 		run()
 }
 
