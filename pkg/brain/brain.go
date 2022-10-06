@@ -56,8 +56,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(its("er", "ер", "эр")).say("Elden Ring - это величие").
 		when(contains("elden ring", "элден ринг", "eлден ринг", "елден ринг", " er ", " ер ", " эр ")).say("Elden Ring - это величие").
 		when(contains("spotify", "спотифай")).say("Эти н'вахи Антону косарик должны за подписку").
-		when(contains("devops", "девопс")).say("Девопсы не нужны").
-		when(contains("devops")).say("Девопсы не нужны").
+		when(is(brain.randomFactor), random(50), contains("devops", "девопс")).say("Девопсы не нужны").
 		when(contains("scrum")).say("Скрам - это пережиток").
 		when(contains("скрам")).say("Скрам - это пережиток").
 		when(is(brain.randomFactor), random(100), contains("трансформациями")).replace("трансформациями", "пертурбациями").
