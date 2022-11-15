@@ -64,3 +64,7 @@ In `go.mod`
 ```go
 require github.com/go -telegram-bot-api/telegram-bot-api/v5 v5.5.1
 ```
+
+## TODO 
+
+1. Improve build for docker
