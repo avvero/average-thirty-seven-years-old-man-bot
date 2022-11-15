@@ -15,7 +15,7 @@
         return xmlHttp.responseText;
     }
     const charId = new URLSearchParams(window.location.search).get('id')
-    const statistics = JSON.parse(httpGet("/statistics?id=" + charId))
+    const statistics = JSON.parse(httpGet("statistics?id=" + charId))
     // userStatisticsData
     let userStatisticsData = {
         labels: [],
