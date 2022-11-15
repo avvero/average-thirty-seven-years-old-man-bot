@@ -14,7 +14,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
@@ -86,7 +85,7 @@ func main() {
 		io.WriteString(w, "{\"name\": \"Average Thirty-Seven Years Old Man (bot)\", \"version\": \"1.4\"}")
 	})
 
-	http.Handle("/statics/", http.StripPrefix(strings.TrimRight("/statics/", "/"), http.FileServer(http.Dir("static"))))
+	http.Handle("/", http.FileServer(http.Dir("static")))
 
 	http.HandleFunc("/statistics", func(w http.ResponseWriter, r *http.Request) {
 		chatIdString := r.URL.Query().Get("id")
