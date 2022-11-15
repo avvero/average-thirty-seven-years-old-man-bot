@@ -58,7 +58,8 @@ func (scriber Scriber) process() {
 			}
 			userStatistics.MessageCounter++
 			// Daily
-			date := time.Now().Format("2006-01-02")
+			now := time.Now()
+			date := now.Format("2006-01-02")
 			if chatStatistics.DailyStatistics == nil {
 				chatStatistics.DailyStatistics = make(map[string]*data.MessageStatistics)
 			}
@@ -68,6 +69,15 @@ func (scriber Scriber) process() {
 				chatStatistics.DailyStatistics[date] = dailyStatistics
 			}
 			dailyStatistics.MessageCounter++
+			// Hourly
+			hour := now.Format("2006-01-02T15")
+			if chatStatistics.HourlyUserStatistics == nil {
+				chatStatistics.HourlyUserStatistics = map[string]map[string]int{}
+			}
+			if chatStatistics.HourlyUserStatistics[hour] == nil {
+				chatStatistics.HourlyUserStatistics[hour] = map[string]int{}
+			}
+			chatStatistics.HourlyUserStatistics[hour][user]++
 			scriber.mutex.Unlock()
 		}
 	}
