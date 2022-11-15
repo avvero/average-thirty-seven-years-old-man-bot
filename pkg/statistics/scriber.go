@@ -12,22 +12,24 @@ import (
 )
 
 type Scriber struct {
-	messages chan *telegram.WebhookRequestMessage
-	mutex    sync.Mutex
-	data     *data.Data
+	messages       chan *telegram.WebhookRequestMessage
+	mutex          sync.Mutex
+	data           *data.Data
+	statisticsPage string
 }
 
-func NewScriberWithData(data *data.Data) *Scriber {
+func NewScriberWithData(data *data.Data, statisticsPage string) *Scriber {
 	holder := &Scriber{
-		messages: make(chan *telegram.WebhookRequestMessage, 100),
-		data:     data,
+		messages:       make(chan *telegram.WebhookRequestMessage, 100),
+		data:           data,
+		statisticsPage: statisticsPage,
 	}
 	go holder.process()
 	return holder
 }
 
 func NewScriber() *Scriber {
-	return NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)})
+	return NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "")
 }
 
 func (scriber Scriber) Keep(message *telegram.WebhookRequestMessage) {
@@ -73,6 +75,10 @@ func (scriber Scriber) process() {
 
 func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
 	return scriber.data.ChatStatistics[chatId]
+}
+
+func (scriber Scriber) GetStatisticsPage() string {
+	return scriber.statisticsPage
 }
 
 // TODO move to external object

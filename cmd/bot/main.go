@@ -13,9 +13,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
@@ -28,11 +26,12 @@ var (
 	token                = flag.String("token", "PROVIDE", "bot token")
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
+	statisticsPage       = flag.String("statistics-page", "PROVIDE", "statistics-page")
 )
 
 func main() {
-	gracefullShutdown := make(chan os.Signal, 1)
-	signal.Notify(gracefullShutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+	//gracefullShutdown := make(chan os.Signal, 1)
+	//signal.Notify(gracefullShutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 
 	flag.Parse()
 
@@ -43,6 +42,10 @@ func main() {
 	jsonBinMasterKeyEnv, found := os.LookupEnv("json-bin-master-key")
 	if found {
 		jsonBinMasterKey = &jsonBinMasterKeyEnv
+	}
+	statisticsPageEnv, found := os.LookupEnv("statistics-page")
+	if found {
+		statisticsPage = &statisticsPageEnv
 	}
 	//Data
 	jsonBinClient := data.NewJsonBinApiClient(*jsonBinMasterKey)
@@ -65,9 +68,8 @@ func main() {
 			}
 		}
 	}()
-	scriber := statistics.NewScriberWithData(data)
+	scriber := statistics.NewScriberWithData(data, *statisticsPage)
 	// Toxicity detector
-
 	huggingfaceAccessKeyEnv, found := os.LookupEnv("huggingface-access-key")
 	if found {
 		huggingfaceAccessKey = &huggingfaceAccessKeyEnv
@@ -81,6 +83,16 @@ func main() {
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, "{\"name\": \"Average Thirty-Seven Years Old Man (bot)\", \"version\": \"1.4\"}")
+	})
+
+	http.Handle("/", http.FileServer(http.Dir("static")))
+
+	http.HandleFunc("/statistics", func(w http.ResponseWriter, r *http.Request) {
+		chatIdString := r.URL.Query().Get("id")
+		chatId, _ := strconv.ParseInt(chatIdString, 10, 64)
+
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, utils.PrintJson(scriber.GetStatistics(chatId)))
 	})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
@@ -118,9 +130,9 @@ func main() {
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.4")
 	http.ListenAndServe(":"+*httpPort, nil)
-	<-gracefullShutdown
-	jsonBinClient.Write(data)
-	sendMessage(245851441, 0, "Bot is stopped, version 1.4")
+	//<-gracefullShutdown
+	//jsonBinClient.Write(data)
+	//sendMessage(245851441, 0, "Bot is stopped, version 1.4")
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
