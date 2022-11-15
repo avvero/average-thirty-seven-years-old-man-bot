@@ -53,7 +53,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{})
 	respond, response := brain.Decision(0, "/statistics")
-	expected := "Please go to: http://url"
+	expected := "Please go to: http://url?id=0"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
