@@ -13,7 +13,9 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
@@ -30,8 +32,8 @@ var (
 )
 
 func main() {
-	//gracefullShutdown := make(chan os.Signal, 1)
-	//signal.Notify(gracefullShutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+	gracefullShutdown := make(chan os.Signal, 1)
+	signal.Notify(gracefullShutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 
 	flag.Parse()
 
@@ -130,9 +132,9 @@ func main() {
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.4")
 	http.ListenAndServe(":"+*httpPort, nil)
-	//<-gracefullShutdown
-	//jsonBinClient.Write(data)
-	//sendMessage(245851441, 0, "Bot is stopped, version 1.4")
+	<-gracefullShutdown
+	jsonBinClient.Write(data)
+	sendMessage(245851441, 0, "Bot is stopped, version 1.4")
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
