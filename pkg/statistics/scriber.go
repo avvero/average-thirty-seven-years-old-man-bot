@@ -95,8 +95,9 @@ func stem(text string) []string {
 	return strings.Fields(s)
 }
 
-var prepositions = []string{
+var ignoredWords = []string{
 	"в", "на", "с", "от", "к", "и", "не", "ну", "он", "так", "там", "то", "что", "чё", "а", "как", "за", "ни", "у",
+	"я", "это", "но", "ты", "все", "по", "же", "из", "бы", "уже", "его", "мой", "про", "меня",
 	"a", "the", "of", "and", "to", "in", "is", "it", "et", "by", "from", "or", "but", "has", "that", "are", "o", "so",
 	"for", "on", "as", "an", "not", "no", "t", "s"}
 
@@ -104,8 +105,8 @@ func normalize(word string) string {
 	if word == "" {
 		return ""
 	}
-	for _, preposition := range prepositions {
-		if preposition == word {
+	for _, ignoredWord := range ignoredWords {
+		if ignoredWord == word {
 			return ""
 		}
 	}
