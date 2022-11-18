@@ -95,7 +95,8 @@ func stem(text string) []string {
 	return strings.Fields(s)
 }
 
-var prepositions = []string{"в", "на", "с", "от", "к", "и", "не", "ну", "он", "так", "там", "то", "что", "чё", "a",
+var prepositions = []string{
+	"в", "на", "с", "от", "к", "и", "не", "ну", "он", "так", "там", "то", "что", "чё", "a", "как",
 	"the", "of", "and", "to", "in", "is", "it", "et", "by", "from", "or", "but", "has", "that", "are"}
 
 func normalize(word string) string {
