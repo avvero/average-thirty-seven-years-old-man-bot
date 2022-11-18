@@ -178,7 +178,7 @@ func Test_statisticsRussianText(t *testing.T) {
 		намеченных плановых заданий требуют определения и уточнения направлений прогрессивного развития. Не следует, однако 
 		забывать, что реализация намеченных плановых заданий представляет собой интересный эксперимент проверки дальнейших 
 		направлений развития.
-		проблема проблемы в на с и не ну он так там то что чё`
+		проблема проблемы в на с и не ну он так там то что чё a`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
@@ -206,6 +206,7 @@ func Test_statisticsRussianText(t *testing.T) {
 		"то":         0,
 		"что":        0,
 		"чё":         0,
+		"a":          0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {
