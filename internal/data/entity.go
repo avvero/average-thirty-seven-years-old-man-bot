@@ -33,7 +33,7 @@ type JsonBinApiClient struct {
 }
 
 func NewJsonBinApiClient(masterKey string) *JsonBinApiClient {
-	return &JsonBinApiClient{binId: "630df3735c146d63ca85bc20", masterKey: masterKey}
+	return &JsonBinApiClient{binId: "6377909e2b3499323b039787", masterKey: masterKey}
 }
 
 func (apiClient *JsonBinApiClient) Read() (*Data, error) {
