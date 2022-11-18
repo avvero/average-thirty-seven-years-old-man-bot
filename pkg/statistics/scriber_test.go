@@ -144,7 +144,7 @@ func Test_statisticsText(t *testing.T) {
 		kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur 
 		sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
 		At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem 
-		ipsum dolor sit amet.`
+		ipsum dolor sit amet. the of and to in is it et by from or but has that are`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
@@ -160,6 +160,21 @@ func Test_statisticsText(t *testing.T) {
 		"dolor":  4,
 		"dolore": 2,
 		"no":     2,
+		"the":    0,
+		"of":     0,
+		"and":    0,
+		"to":     0,
+		"in":     0,
+		"is":     0,
+		"it":     0,
+		"et":     0,
+		"by":     0,
+		"from":   0,
+		"or":     0,
+		"but":    0,
+		"has":    0,
+		"that":   0,
+		"are":    0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {
