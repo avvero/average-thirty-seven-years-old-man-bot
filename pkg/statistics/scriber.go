@@ -134,11 +134,11 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	sb := strings.Builder{}
 	sb.WriteString("Top 7 users:\n")
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
-	usListStart := 0
-	if len(usKeys) > 7 {
-		usListStart = len(usKeys) - 7
+	usListEnd := len(usKeys)
+	if len(usKeys) >= 7 {
+		usListEnd = 7
 	}
-	for i := usListStart; i < len(usKeys); i++ {
+	for i := 0; i < usListEnd; i++ {
 		sb.WriteString(" - " + usKeys[i] + ": " + strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter) + "\n")
 	}
 	sb.WriteString("Statistics by day:\n")

@@ -133,13 +133,13 @@ func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 7 users:
+ - user9: 9
+ - user8: 8
  - user7: 7
  - user6: 6
  - user5: 5
  - user4: 4
  - user3: 3
- - user2: 2
- - user1: 1
 Statistics by day:
  - ` + date + `: 45
 
