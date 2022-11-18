@@ -47,7 +47,7 @@
         dailyStatisticsData.labels.push(key)
         dailyStatisticsData.datasets[0].data.push(value.messageCounter)
     }
-    // dailyStatisticsData
+    // daily word statistics
     let dailyWordStatisticsData = {
         labels: [],
         datasets: [{
@@ -66,6 +66,34 @@
         if (++todayWordStatisticsSize > 30) break
         dailyWordStatisticsData.labels.push(key)
         dailyWordStatisticsData.datasets[0].data.push(value)
+    }
+    // total word statistics
+    let wordStatisticsData = {
+        labels: [],
+        datasets: [{
+            label: '# times',
+            data: [],
+            borderWidth: 1
+        }]
+    }
+    let wordStatistics = []
+    for (const [date, words] of Object.entries(statistics["dailyWordStatistics"])) {
+        for (const [word, counter] of Object.entries(words)) {
+            if (!wordStatistics[word]) {
+                wordStatistics[word] = 0
+            }
+            wordStatistics[word] += counter
+        }
+    }
+    wordStatistics = Object.entries(wordStatistics)
+    wordStatistics.sort((a, b) => {
+        return b[1] - a[1]
+    })
+    let wordStatisticsSize = 0;
+    for (const [key, value] of wordStatistics) {
+        if (++wordStatisticsSize > 30) break
+        wordStatisticsData.labels.push(key)
+        wordStatisticsData.datasets[0].data.push(value)
     }
 </script>
 
@@ -113,6 +141,24 @@
     new Chart(document.getElementById('dailyWordStatistics'), {
         type: 'bar',
         data: dailyWordStatisticsData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<h3>The top of words</h3>
+<div style="width: 1000px">
+    <canvas id="wordStatistics"></canvas>
+</div>
+<script>
+    new Chart(document.getElementById('wordStatistics'), {
+        type: 'bar',
+        data: wordStatisticsData,
         options: {
             scales: {
                 y: {
