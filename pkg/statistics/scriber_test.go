@@ -178,15 +178,16 @@ func Test_statisticsRussianText(t *testing.T) {
 		намеченных плановых заданий требуют определения и уточнения направлений прогрессивного развития. Не следует, однако 
 		забывать, что реализация намеченных плановых заданий представляет собой интересный эксперимент проверки дальнейших 
 		направлений развития.
-		проблема проблемы в на с и`
+		проблема проблемы в на с и не ну он так там то что чё`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: text,
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
 	})
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	for len(scriber.messages) != 0 {
-		time.Sleep(10 * time.Millisecond) // TODO none reliable
+		time.Sleep(100 * time.Millisecond) // TODO none reliable
 	}
 	expectedWordStatistics := map[string]int{
 		"значимость": 1,
@@ -197,6 +198,14 @@ func Test_statisticsRussianText(t *testing.T) {
 		"на":         0,
 		"с":          0,
 		"и":          0,
+		"не":         0,
+		"ну":         0,
+		"он":         0,
+		"так":        0,
+		"там":        0,
+		"то":         0,
+		"что":        0,
+		"чё":         0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {

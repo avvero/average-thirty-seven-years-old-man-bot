@@ -8,12 +8,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-     function httpGet(theUrl) {
+    function httpGet(theUrl) {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-        xmlHttp.send( null );
+        xmlHttp.open("GET", theUrl, false); // false for synchronous request
+        xmlHttp.send(null);
         return xmlHttp.responseText;
     }
+
     const charId = new URLSearchParams(window.location.search).get('id')
     const statistics = JSON.parse(httpGet("statistics?id=" + charId))
     // userStatisticsData
@@ -41,6 +42,21 @@
     for (const [key, value] of Object.entries(statistics["dailyStatistics"])) {
         dailyStatisticsData.labels.push(key)
         dailyStatisticsData.datasets[0].data.push(value.messageCounter)
+    }
+    // dailyStatisticsData
+    let dailyWordStatisticsData = {
+        labels: [],
+        datasets: [{
+            label: '# messages',
+            data: [],
+            borderWidth: 1
+        }]
+    }
+    const dailyWordStatisticsArray = Object.entries(statistics["dailyWordStatistics"])
+    const todayWordStatisticsArray = Object.entries(dailyWordStatisticsArray[dailyWordStatisticsArray.length - 1][1])
+    for (const [key, value] of todayWordStatisticsArray) {
+        dailyWordStatisticsData.labels.push(key)
+        dailyWordStatisticsData.datasets[0].data.push(value)
     }
 </script>
 
@@ -70,6 +86,24 @@
     new Chart(document.getElementById('dailyStatistics'), {
         type: 'bar',
         data: dailyStatisticsData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<h3>Today word statistics</h3>
+<div style="width: 1000px">
+    <canvas id="dailyWordStatistics"></canvas>
+</div>
+<script>
+    new Chart(document.getElementById('dailyWordStatistics'), {
+        type: 'bar',
+        data: dailyWordStatisticsData,
         options: {
             scales: {
                 y: {

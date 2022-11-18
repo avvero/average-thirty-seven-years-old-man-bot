@@ -3,7 +3,6 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
-	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"log"
 	"regexp"
 	"sort"
@@ -92,19 +91,23 @@ func (scriber Scriber) process() {
 
 func stem(text string) []string {
 	s := regexp.MustCompile("[^A-Za-z\\p{L}]+").ReplaceAllString(text, " ")
+	s = strings.ToLower(s)
 	return strings.Fields(s)
 }
 
-var prepositions = []string{"в", "на", "с", "от", "к", "и"}
+var prepositions = []string{"в", "на", "с", "от", "к", "и", "не", "ну", "он", "так", "там", "то", "что", "чё"}
 
 func normalize(word string) string {
 	if word == "" {
 		return ""
 	}
-	if utils.Contains(prepositions, word) {
-		return ""
+	for _, preposition := range prepositions {
+		if preposition == word {
+			return ""
+		}
 	}
-	return strings.ToLower(word)
+	println("return word", word)
+	return word
 }
 
 func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
