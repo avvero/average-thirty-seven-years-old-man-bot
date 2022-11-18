@@ -5,6 +5,7 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"log"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -77,7 +78,7 @@ func (scriber Scriber) process() {
 			if chatStatistics.DailyWordStatistics[date] == nil {
 				chatStatistics.DailyWordStatistics[date] = make(map[string]int)
 			}
-			words := strings.Fields(message.Text)
+			words := stem(message.Text)
 			for _, word := range words {
 				key := normalize(word)
 				if key != "" {
@@ -87,6 +88,11 @@ func (scriber Scriber) process() {
 			scriber.mutex.Unlock()
 		}
 	}
+}
+
+func stem(text string) []string {
+	s := regexp.MustCompile("[^A-Za-z\\p{L}]+").ReplaceAllString(text, " ")
+	return strings.Fields(s)
 }
 
 var prepositions = []string{"в", "на", "с", "от", "к", "и"}

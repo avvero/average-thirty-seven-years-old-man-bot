@@ -207,3 +207,36 @@ func Test_statisticsRussianText(t *testing.T) {
 	}
 	println("Result:", utils.PrintJson(scriber.GetStatistics(1)))
 }
+
+func Test_statisticsRussianTextWithPunctuation(t *testing.T) {
+	text := `Значимость этих проблем настолько очевидна, что реализация намеченных плановых заданий способствует 
+		подготовки и реализации дальнейших направлений развития. Равным образом постоянный количественный рост и сфера нашей 
+		активности позволяет оценить значение соответствующий условий активизации. Разнообразный и богатый опыт реализация 
+		намеченных плановых заданий требуют определения и уточнения направлений прогрессивного развития. Не следует, однако 
+		забывать, что реализация намеченных плановых заданий представляет собой интересный эксперимент проверки дальнейших 
+		направлений развития.
+		проблема проблемы в на с и`
+
+	scriber := NewScriber()
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: text,
+		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+	})
+	for len(scriber.messages) != 0 {
+		time.Sleep(10 * time.Millisecond) // TODO none reliable
+	}
+	expectedWordStatistics := map[string]int{
+		"очевидна":    1,
+		"развития":    3,
+		"активизации": 1,
+		"забывать":    1,
+	}
+	date := time.Now().Format("2006-01-02")
+	for word, number := range expectedWordStatistics {
+		counter := scriber.GetStatistics(1).DailyWordStatistics[date][word]
+		if counter != number {
+			t.Errorf("Expected for %v: \"%d\" but got: \"%d\"", word, number, counter)
+		}
+	}
+	println("Result:", utils.PrintJson(scriber.GetStatistics(1)))
+}
