@@ -3,6 +3,7 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
+	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"log"
 	"sort"
 	"strconv"
@@ -69,18 +70,35 @@ func (scriber Scriber) process() {
 				chatStatistics.DailyStatistics[date] = dailyStatistics
 			}
 			dailyStatistics.MessageCounter++
-			// Hourly
-			hour := now.Format("2006-01-02T15")
-			if chatStatistics.HourlyUserStatistics == nil {
-				chatStatistics.HourlyUserStatistics = map[string]map[string]int{}
+			// Word statistics
+			if chatStatistics.DailyWordStatistics == nil {
+				chatStatistics.DailyWordStatistics = make(map[string]map[string]int)
 			}
-			if chatStatistics.HourlyUserStatistics[hour] == nil {
-				chatStatistics.HourlyUserStatistics[hour] = map[string]int{}
+			if chatStatistics.DailyWordStatistics[date] == nil {
+				chatStatistics.DailyWordStatistics[date] = make(map[string]int)
 			}
-			chatStatistics.HourlyUserStatistics[hour][user]++
+			words := strings.Fields(message.Text)
+			for _, word := range words {
+				key := normalize(word)
+				if key != "" {
+					chatStatistics.DailyWordStatistics[date][key] = chatStatistics.DailyWordStatistics[date][key] + 1
+				}
+			}
 			scriber.mutex.Unlock()
 		}
 	}
+}
+
+var prepositions = []string{"в", "на", "с", "от", "к", "и"}
+
+func normalize(word string) string {
+	if word == "" {
+		return ""
+	}
+	if utils.Contains(prepositions, word) {
+		return ""
+	}
+	return strings.ToLower(word)
 }
 
 func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
