@@ -54,7 +54,12 @@
     }
     const dailyWordStatisticsArray = Object.entries(statistics["dailyWordStatistics"])
     const todayWordStatisticsArray = Object.entries(dailyWordStatisticsArray[dailyWordStatisticsArray.length - 1][1])
+    todayWordStatisticsArray.sort((a, b) => {
+        return b[1] - a[1]
+    })
+    var todayWordStatisticsSize = 0;
     for (const [key, value] of todayWordStatisticsArray) {
+        if (++todayWordStatisticsSize > 30) break
         dailyWordStatisticsData.labels.push(key)
         dailyWordStatisticsData.datasets[0].data.push(value)
     }
