@@ -3,6 +3,7 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -103,7 +104,46 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
-	expected := "Statistics by user:\n - second: 2\n - first: 1\nStatistics by day:\n - " + date + ": 3\n"
+	expected := `Top 7 users:
+ - second: 2
+ - first: 1
+Statistics by day:
+ - ` + date + `: 3
+
+To get more information visit: ?id=1`
+	if text != expected {
+		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, text)
+	}
+}
+
+func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
+	scriber := NewScriber()
+	for i := 0; i < 10; i++ {
+		for j := 0; j < i; j++ {
+			scriber.Keep(&telegram.WebhookRequestMessage{
+				From: &telegram.WebhookRequestMessageSender{Username: "user" + strconv.Itoa(i)}, Text: "message" + strconv.Itoa(j),
+				Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+			})
+		}
+	}
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	for len(scriber.messages) != 0 {
+		time.Sleep(10 * time.Millisecond) // TODO none reliable
+	}
+	text := scriber.GetStatisticsPrettyPrint(1)
+	date := time.Now().Format("2006-01-02")
+	expected := `Top 7 users:
+ - user7: 7
+ - user6: 6
+ - user5: 5
+ - user4: 4
+ - user3: 3
+ - user2: 2
+ - user1: 1
+Statistics by day:
+ - ` + date + `: 45
+
+To get more information visit: ?id=1`
 	if text != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, text)
 	}

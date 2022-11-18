@@ -5,7 +5,6 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -38,7 +37,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	return with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(its("/info")).say("I'm bot").
-		when(its("/statistics")).say("Please go to: "+brain.scriber.GetStatisticsPage()+"?id="+strconv.FormatInt(chatId, 10)).
+		when(its("/statistics")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").

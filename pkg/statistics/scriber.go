@@ -132,18 +132,30 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	chatStatistics := scriber.data.ChatStatistics[chatId]
 
 	sb := strings.Builder{}
-	sb.WriteString("Statistics by user:\n")
-	log.Println("usKeys: ", chatStatistics.UsersStatistics)
+	sb.WriteString("Top 7 users:\n")
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
-	log.Println("usKeys: ", usKeys)
-	for _, k := range usKeys {
-		sb.WriteString(" - " + k + ": " + strconv.Itoa(chatStatistics.UsersStatistics[k].MessageCounter) + "\n")
+	usListStart := 0
+	if len(usKeys) > 7 {
+		usListStart = len(usKeys) - 7
+	}
+	for i := usListStart; i < len(usKeys); i++ {
+		sb.WriteString(" - " + usKeys[i] + ": " + strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter) + "\n")
 	}
 	sb.WriteString("Statistics by day:\n")
 	dsKeys := sortedKeys(chatStatistics.DailyStatistics)
-	for _, k := range dsKeys {
-		sb.WriteString(" - " + k + ": " + strconv.Itoa(chatStatistics.DailyStatistics[k].MessageCounter) + "\n")
+	start := 0
+	if len(dsKeys) > 7 {
+		start = len(dsKeys) - 7
 	}
+	println("dsKeys", dsKeys)
+	println("len(dsKeys)", len(dsKeys))
+	println("len(chatStatistics.DailyStatistics)", len(chatStatistics.DailyStatistics))
+	println("start", start)
+	for i := start; i < len(dsKeys); i++ {
+		sb.WriteString(" - " + dsKeys[i] + ": " + strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter) + "\n")
+	}
+	sb.WriteString("\n")
+	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))
 	return sb.String()
 }
 
