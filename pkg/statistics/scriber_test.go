@@ -107,7 +107,8 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	expected := `Top 7 users:
  - second: 2
  - first: 1
-Statistics by day:
+
+Last 7 days:
  - ` + date + `: 3
 
 To get more information visit: ?id=1`
@@ -140,7 +141,8 @@ func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
  - user5: 5
  - user4: 4
  - user3: 3
-Statistics by day:
+
+Last 7 days:
  - ` + date + `: 45
 
 To get more information visit: ?id=1`

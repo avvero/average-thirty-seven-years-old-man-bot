@@ -141,7 +141,8 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	for i := 0; i < usListEnd; i++ {
 		sb.WriteString(" - " + usKeys[i] + ": " + strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter) + "\n")
 	}
-	sb.WriteString("Statistics by day:\n")
+	sb.WriteString("\n")
+	sb.WriteString("Last 7 days:\n")
 	dsKeys := sortedKeys(chatStatistics.DailyStatistics)
 	start := 0
 	if len(dsKeys) > 7 {
