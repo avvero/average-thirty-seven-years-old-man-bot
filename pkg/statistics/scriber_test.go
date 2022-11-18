@@ -144,7 +144,7 @@ func Test_statisticsText(t *testing.T) {
 		kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur 
 		sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
 		At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem 
-		ipsum dolor sit amet. the of and to in is it et by from or but has that are a o so for on as an no not`
+		ipsum dolor sit amet. the of and to in is it et by from or but has that are a o so for on as an no not t's t s`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
@@ -184,6 +184,8 @@ func Test_statisticsText(t *testing.T) {
 		"as":     0,
 		"an":     0,
 		"not":    0,
+		"t":      0,
+		"s":      0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {
