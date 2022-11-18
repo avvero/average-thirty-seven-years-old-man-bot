@@ -26,7 +26,11 @@
             borderWidth: 1
         }]
     }
-    for (const [key, value] of Object.entries(statistics["userStatistics"])) {
+    const userStatistics = Object.entries(statistics["userStatistics"])
+    userStatistics.sort((a, b) => {
+        return b[1].messageCounter - a[1].messageCounter
+    })
+    for (const [key, value] of userStatistics) {
         userStatisticsData.labels.push(key)
         userStatisticsData.datasets[0].data.push(value.messageCounter)
     }
@@ -47,7 +51,7 @@
     let dailyWordStatisticsData = {
         labels: [],
         datasets: [{
-            label: '# messages',
+            label: '# times',
             data: [],
             borderWidth: 1
         }]
