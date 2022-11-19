@@ -97,7 +97,8 @@ func stem(text string) []string {
 
 var ignoredWords = []string{
 	"в", "на", "с", "от", "к", "и", "не", "ну", "он", "так", "там", "то", "что", "чё", "а", "как", "за", "ни", "у",
-	"я", "это", "но", "ты", "все", "по", "же", "из", "бы", "уже", "его", "мой", "про", "меня",
+	"я", "это", "но", "ты", "все", "по", "же", "из", "бы", "уже", "его", "мой", "про", "меня", "вот", "до",
+	"был", "было", "еще", "ещё", "или", "только", "если", "й", "они", "где", "есть", "мне", "даже", "когда",
 	"a", "the", "of", "and", "to", "in", "is", "it", "et", "by", "from", "or", "but", "has", "that", "are", "o", "so",
 	"for", "on", "as", "an", "not", "no", "t", "s"}
 
@@ -148,10 +149,6 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	if len(dsKeys) > 7 {
 		start = len(dsKeys) - 7
 	}
-	println("dsKeys", dsKeys)
-	println("len(dsKeys)", len(dsKeys))
-	println("len(chatStatistics.DailyStatistics)", len(chatStatistics.DailyStatistics))
-	println("start", start)
 	for i := start; i < len(dsKeys); i++ {
 		sb.WriteString(" - " + dsKeys[i] + ": " + strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter) + "\n")
 	}
