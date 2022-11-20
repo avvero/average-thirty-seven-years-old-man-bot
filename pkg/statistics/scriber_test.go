@@ -186,7 +186,8 @@ func Test_statisticsText(t *testing.T) {
 		kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur 
 		sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
 		At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem 
-		ipsum dolor sit amet. the of and to in is it et by from or but has that are a o so for on as an no not t's t s`
+		ipsum dolor sit amet. the of and to in is it et by from or but has that are a o so for on as an no not t's t s
+		http https`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
@@ -228,6 +229,8 @@ func Test_statisticsText(t *testing.T) {
 		"not":    0,
 		"t":      0,
 		"s":      0,
+		"http":   0,
+		"https":  0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {
@@ -247,7 +250,7 @@ func Test_statisticsRussianText(t *testing.T) {
 		забывать, что реализация намеченных плановых заданий представляет собой интересный эксперимент проверки дальнейших 
 		направлений развития.
 		проблема проблемы в на с и не ну он так там то что чё а как за ни у я это но ты все по же из бы уже его мой про меня
-        вот до был было еще ещё или только если й они где есть мне даже когда да нет
+        вот до был было еще ещё или только если й они где есть мне даже когда да нет их
 		а б в г д е ж з`
 
 	scriber := NewScriber()
@@ -316,6 +319,7 @@ func Test_statisticsRussianText(t *testing.T) {
 		"д":          0,
 		"да":         0,
 		"нет":        0,
+		"их":         0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {
