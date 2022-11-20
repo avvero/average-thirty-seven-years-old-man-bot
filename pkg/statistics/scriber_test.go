@@ -187,7 +187,7 @@ func Test_statisticsText(t *testing.T) {
 		sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
 		At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem 
 		ipsum dolor sit amet. the of and to in is it et by from or but has that are a o so for on as an no not t's t s
-		http https`
+		http https www com ru`
 
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{
@@ -231,6 +231,9 @@ func Test_statisticsText(t *testing.T) {
 		"s":      0,
 		"http":   0,
 		"https":  0,
+		"www":    0,
+		"ru":     0,
+		"com":    0,
 	}
 	date := time.Now().Format("2006-01-02")
 	for word, number := range expectedWordStatistics {

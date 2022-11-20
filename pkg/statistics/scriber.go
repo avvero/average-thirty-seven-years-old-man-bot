@@ -100,7 +100,7 @@ var ignoredWords = []string{
 	"я", "это", "но", "ты", "все", "по", "же", "из", "бы", "уже", "его", "мой", "про", "меня", "вот", "до", "нет",
 	"был", "было", "еще", "ещё", "или", "только", "если", "й", "они", "где", "есть", "мне", "даже", "когда", "да", "их",
 	"a", "the", "of", "and", "to", "in", "is", "it", "et", "by", "from", "or", "but", "has", "that", "are", "o", "so",
-	"for", "on", "as", "an", "not", "no", "t", "s", "http", "https"}
+	"for", "on", "as", "an", "not", "no", "t", "s", "http", "https", "www", "com", "ru"}
 
 func normalize(word string) string {
 	if word == "" {
