@@ -16,7 +16,7 @@ type Data struct {
 type ChatStatistics struct {
 	UsersStatistics     map[string]*MessageStatistics `json:"userStatistics"`
 	DailyStatistics     map[string]*MessageStatistics `json:"dailyStatistics"`
-	DailyWordStatistics map[string]map[string]int     `json:"dailyWordStatistics"`
+	DailyWordStatistics map[string]map[string]int     //     `json:"dailyWordStatistics"`
 }
 
 type MessageStatistics struct {
