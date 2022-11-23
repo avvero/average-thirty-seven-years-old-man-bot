@@ -56,7 +56,7 @@ func main() {
 		fmt.Printf("Could not read data: %s\n", err)
 		panic(err)
 	}
-	ticker := time.NewTicker(1 * time.Hour)
+	ticker := time.NewTicker(10 * time.Minute)
 	done := make(chan bool)
 	go func() {
 		for {
@@ -65,8 +65,11 @@ func main() {
 				return
 			case t := <-ticker.C:
 				fmt.Println("Write data to bin", t)
-				//sendMessage(245851441, 0, "Write data to bin")
-				jsonBinClient.Write(data)
+				sendMessage(245851441, 0, "Write data to bin")
+				err := jsonBinClient.Write(data)
+				if err != nil {
+					sendMessage(245851441, 0, "Write data to bin erro: "+err.Error())
+				}
 			}
 		}
 	}()
