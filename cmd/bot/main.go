@@ -56,12 +56,13 @@ func main() {
 		fmt.Printf("Could not read data: %s\n", err)
 		panic(err)
 	}
-	ticker := time.NewTicker(10 * time.Minute)
+	ticker := time.NewTicker(1 * time.Minute)
 	done := make(chan bool)
 	go func() {
 		for {
 			select {
 			case <-done:
+				ticker.Stop()
 				return
 			case t := <-ticker.C:
 				fmt.Println("Write data to bin", t)
