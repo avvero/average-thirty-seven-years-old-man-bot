@@ -44,10 +44,10 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
-		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
-		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
-		//when(is(brain.randomFactor), random(300), length(14)).then(NewKhaleesifyIntention()).
-		//when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
+		when(is(brain.randomFactor), random(300), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
+		when(is(brain.randomFactor), random(300), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
 		//when(is(brain.randomFactor), random(100), contains("купил")).say("А не пиздишь? Аренда это не покупка").
 		when(its("gg")).say("gg").
@@ -63,7 +63,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(100), contains("трансформация")).replace("трансформация", "пертурбация").
 		when(is(brain.randomFactor), random(100), contains("трансформацию")).replace("трансформацию", "пертурбацию").
 		when(is(brain.randomFactor), random(100), contains("трансформации")).replace("трансформации", "пертурбации").
-		when(contains("java", "джаба", "джава", "ява")).say("джава-хуява, а я работаю на го").
+		//when(contains("java", "джаба", "джава", "ява")).say("джава-хуява, а я работаю на го").
 		when(contains("блокир")).say("пусть себе анус заблокируют").
 		when(is(brain.randomFactor), random(100), contains("проблем")).say("у меня есть 5-10 солюшенов этой проблемы").
 		when(contains("mass effect")).say("Шепард умрет").
