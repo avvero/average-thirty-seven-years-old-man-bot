@@ -3,7 +3,6 @@ package statistics
 import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
-	"log"
 	"regexp"
 	"sort"
 	"strconv"
@@ -184,7 +183,6 @@ func sortByMessageCounter(statistics map[string]*data.MessageStatistics) []strin
 		tuples[i] = SortByMessageCounterTuple{key: k, value: statistics[k]}
 		i++
 	}
-	log.Println("tuples: ", tuples)
 	sort.Slice(tuples, func(i, j int) bool {
 		return tuples[i].value.MessageCounter > tuples[j].value.MessageCounter
 	})
