@@ -66,7 +66,7 @@ func main() {
 				return
 			case t := <-ticker.C:
 				fmt.Println("Write data to bin", t)
-				sendMessage(245851441, 0, "Write data to bin")
+				//sendMessage(245851441, 0, "Write data to bin")
 				err := jsonBinClient.Write(data)
 				if err != nil {
 					sendMessage(245851441, 0, "Write data to bin erro: "+err.Error())
