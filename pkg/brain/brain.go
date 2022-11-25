@@ -70,7 +70,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(contains("масс эффект")).say("Шепард умрет").
 		//when(contains("новое", "новые", "новая", "новое", "новые", "новье")).say("Точное новое, а не проперженное бу?").
 		run()
-	return
+	return respond, response, toxicityScore
 }
 
 func with(text string) *Chain {
