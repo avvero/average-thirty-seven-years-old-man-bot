@@ -117,6 +117,8 @@ func main() {
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
 		respond, response, toxicityScore := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
 		go scriber.Keep(webhookRequest.Message, toxicityScore)
+		fmt.Println("Message to " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
+			webhookRequest.Message.Chat.Title + ": " + strconv.FormatBool(respond) + ": " + response)
 		if respond {
 			go func() {
 				time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
