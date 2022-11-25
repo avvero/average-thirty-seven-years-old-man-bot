@@ -8,7 +8,7 @@ import (
 
 func Test_returnsForNoThenPhrase(t *testing.T) {
 	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{})
-	thisRespond, thisResponse := brain.Decision(0, "нет")
+	thisRespond, thisResponse, _ := brain.Decision(0, "нет")
 	if !thisRespond || !utils.Contains(noThenResponses, thisResponse) {
 		t.Error("Expected something from noThenResponses but got:", thisResponse)
 	}

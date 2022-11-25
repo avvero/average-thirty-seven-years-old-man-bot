@@ -20,7 +20,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
-		respond, response := brain.Decision(chatId, "gg")
+		respond, response, _ := brain.Decision(chatId, "gg")
 		if !respond || response != expected {
 			t.Error("Response for ", k, ": ", expected, " != ", response)
 		}
@@ -29,7 +29,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 
 func Test_responseOnCommandInfo(t *testing.T) {
 	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
-	respond, response := brain.Decision(0, "/info")
+	respond, response, _ := brain.Decision(0, "/info")
 	expected := "I'm bot"
 	if !respond || response != expected {
 		t.Error("Response for : ", expected, " != ", response)
@@ -38,7 +38,7 @@ func Test_responseOnCommandInfo(t *testing.T) {
 
 func _Test_responseOnCommandStatisticsOnEmptyStatistics(t *testing.T) {
 	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{})
-	respond, response := brain.Decision(0, "/statistics")
+	respond, response, _ := brain.Decision(0, "/statistics")
 	if respond || response != "" {
 		t.Error("Expected {false, nil} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
@@ -49,16 +49,16 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
-	})
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{})
-	respond, response := brain.Decision(0, "/statistics")
+	respond, response, _ := brain.Decision(0, "/statistics")
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 7 users:
- - first: 1
+ - first: 1 (t: 0.00)
 
 Last 7 days:
- - ` + date + `: 1
+ - ` + date + `: 1 (t: 0.00)
 
 To get more information visit: http://url?id=0`
 	if !respond || response != expected {
@@ -69,7 +69,7 @@ To get more information visit: http://url?id=0`
 func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.0})
-	respond, response := brain.Decision(0, "/toxicity")
+	respond, response, _ := brain.Decision(0, "/toxicity")
 	expected := ""
 	if respond || response != expected {
 		t.Error("Expected {false, \"\"} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -79,7 +79,7 @@ func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 func Test_responseOnCommandToxicityFailed(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0, err: errors.New("что-то не вышло")})
-	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "/toxicity что-то на токсичном")
 	expected := "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -89,7 +89,7 @@ func Test_responseOnCommandToxicityFailed(t *testing.T) {
 func Test_responseOnCommandToxicity(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.98})
-	respond, response := brain.Decision(0, "/toxicity что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "/toxicity что-то на токсичном")
 	expected := "уровень токсичности 98%"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -147,7 +147,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"что-то про масс эффект и так далее": "Шепард умрет",
 	}
 	for origin, expected := range data {
-		respond, response := brain.Decision(0, origin)
+		respond, response, _ := brain.Decision(0, origin)
 		if !respond || response != expected {
 			t.Error("Response for", origin, ":", expected, "!=", response)
 		}
@@ -187,7 +187,7 @@ func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
 		respond := false
 		response := ""
 		for i := 0; i < 500; i++ {
-			thisRespond, thisResponse := brain.Decision(0, origin)
+			thisRespond, thisResponse, _ := brain.Decision(0, origin)
 			if thisRespond && thisResponse == expected {
 				respond = thisRespond
 				response = thisResponse
@@ -208,7 +208,7 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 		"трансформационный1",
 	}
 	for _, text := range data {
-		respond, response := brain.Decision(0, text)
+		respond, response, _ := brain.Decision(0, text)
 		if respond {
 			t.Errorf("Not expected: \"%s\"", response)
 		}
@@ -221,7 +221,7 @@ func _Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 	response := ""
 	expected := "делись зя миня, дляконь"
 	for i := 0; i < 500; i++ {
-		thisRespond, thisResponse := brain.Decision(0, "дерись за меня, дракон")
+		thisRespond, thisResponse, _ := brain.Decision(0, "дерись за меня, дракон")
 		if thisRespond && thisResponse == expected {
 			respond = thisRespond
 			response = thisResponse

@@ -18,9 +18,9 @@ func Test_messageCounter(t *testing.T) {
 			scriber.Keep(&telegram.WebhookRequestMessage{
 				Chat: &telegram.WebhookRequestMessageChat{Id: 1},
 				From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
-			})
+			}, 0.2)
 		}
-		for len(scriber.messages) != 0 {
+		for len(scriber.packs) != 0 {
 			time.Sleep(10 * time.Millisecond) // TODO none reliable
 		}
 		firstMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["first"].MessageCounter
@@ -39,9 +39,9 @@ func Test_messageCounter(t *testing.T) {
 			scriber.Keep(&telegram.WebhookRequestMessage{
 				From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
 				Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-			})
+			}, 0.4)
 		}
-		for len(scriber.messages) != 0 {
+		for len(scriber.packs) != 0 {
 			time.Sleep(10 * time.Millisecond) // TODO none reliable
 		}
 		secondMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["second"].MessageCounter
@@ -54,13 +54,25 @@ func Test_messageCounter(t *testing.T) {
 	if firstMessageCounter != 100 {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 	}
+	firstToxicityScore := scriber.data.ChatStatistics[1].UsersStatistics["first"].ToxicityScore
+	if firstToxicityScore != 0.20 {
+		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", 0.2, firstToxicityScore)
+	}
 	secondMessageCounter := scriber.data.ChatStatistics[1].UsersStatistics["second"].MessageCounter
 	if secondMessageCounter != 200 {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
 	}
+	secondToxicityScore := scriber.data.ChatStatistics[1].UsersStatistics["second"].ToxicityScore
+	if secondToxicityScore != 0.40 {
+		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", 0.40, secondToxicityScore)
+	}
 	dailyMessageCounter := scriber.data.ChatStatistics[1].DailyStatistics[date].MessageCounter
 	if dailyMessageCounter != 300 {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, dailyMessageCounter)
+	}
+	dailyToxicityScore := scriber.data.ChatStatistics[1].DailyStatistics[date].ToxicityScore
+	if dailyToxicityScore != 0.40 {
+		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", 0.40, dailyToxicityScore)
 	}
 }
 
@@ -69,17 +81,17 @@ func Test_statisticsSerialization(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0)
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
-	for len(scriber.messages) != 0 {
+	}, 0)
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	jsonString := utils.PrintJson(scriber.GetStatistics(1))
 	date := time.Now().Format("2006-01-02")
-	expected := `{"userStatistics":{"first":{"messageCounter":1},"second":{"messageCounter":1}},"dailyStatistics":{"` + date + `":{"messageCounter":2}}}`
+	expected := `{"userStatistics":{"first":{"messageCounter":1,"toxicityScore":0},"second":{"messageCounter":1,"toxicityScore":0}},"dailyStatistics":{"` + date + `":{"messageCounter":2,"toxicityScore":0}}}`
 	if jsonString != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, jsonString)
 	}
@@ -90,26 +102,26 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0.1)
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0.2)
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
-	for len(scriber.messages) != 0 {
+	}, 0.3)
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 7 users:
- - second: 2
- - first: 1
+ - second: 2 (t: 0.20)
+ - first: 1 (t: 0.05)
 
 Last 7 days:
- - ` + date + `: 3
+ - ` + date + `: 3 (t: 0.21)
 
 To get more information visit: ?id=1`
 	if text != expected {
@@ -124,26 +136,26 @@ func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
 			scriber.Keep(&telegram.WebhookRequestMessage{
 				From: &telegram.WebhookRequestMessageSender{Username: "user" + strconv.Itoa(i)}, Text: "message" + strconv.Itoa(j),
 				Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-			})
+			}, 0)
 		}
 	}
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	for len(scriber.messages) != 0 {
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 7 users:
- - user9: 9
- - user8: 8
- - user7: 7
- - user6: 6
- - user5: 5
- - user4: 4
- - user3: 3
+ - user9: 9 (t: 0.00)
+ - user8: 8 (t: 0.00)
+ - user7: 7 (t: 0.00)
+ - user6: 6 (t: 0.00)
+ - user5: 5 (t: 0.00)
+ - user4: 4 (t: 0.00)
+ - user3: 3 (t: 0.00)
 
 Last 7 days:
- - ` + date + `: 45
+ - ` + date + `: 45 (t: 0.00)
 
 To get more information visit: ?id=1`
 	if text != expected {
@@ -157,15 +169,15 @@ func Test_statisticsForSingleWords(t *testing.T) {
 		scriber.Keep(&telegram.WebhookRequestMessage{
 			From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 			Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-		})
+		}, 0)
 	}
 	for i := 0; i < 20; i++ {
 		scriber.Keep(&telegram.WebhookRequestMessage{
 			From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
 			Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-		})
+		}, 0)
 	}
-	for len(scriber.messages) != 0 {
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	date := time.Now().Format("2006-01-02")
@@ -193,9 +205,9 @@ func Test_statisticsText(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: text,
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	for len(scriber.messages) != 0 {
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	expectedWordStatistics := map[string]int{
@@ -260,9 +272,9 @@ func Test_statisticsRussianText(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: text,
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	for len(scriber.messages) != 0 {
+	for len(scriber.packs) != 0 {
 		time.Sleep(100 * time.Millisecond) // TODO none reliable
 	}
 	expectedWordStatistics := map[string]int{
@@ -355,9 +367,9 @@ func Test_statisticsRussianTextWithPunctuation(t *testing.T) {
 	scriber.Keep(&telegram.WebhookRequestMessage{
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: text,
 		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
-	})
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	for len(scriber.messages) != 0 {
+	for len(scriber.packs) != 0 {
 		time.Sleep(10 * time.Millisecond) // TODO none reliable
 	}
 	expectedWordStatistics := map[string]int{

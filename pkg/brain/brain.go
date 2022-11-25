@@ -21,20 +21,20 @@ func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector T
 	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
 }
 
-func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string) {
+func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string, toxicityScore float64) {
 	for _, protector := range []Protector{&Whitelist{}, &Censor{}} {
 		forbidden, message := protector.Check(chatId, text)
 		if forbidden && message != "" {
-			return true, message
+			return true, message, -1
 		} else if forbidden {
-			return false, ""
+			return false, "", -1
 		}
 	}
 	toxicityScore, toxicityDetectionErr := brain.toxicityDetector.ToxicityScore(text)
 	if toxicityDetectionErr != nil {
 		log.Println("Toxicity check error: " + toxicityDetectionErr.Error())
 	}
-	return with(strings.ToLower(strings.TrimSpace(text))).
+	respond, response = with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(its("/info")).say("I'm bot").
 		when(its("/statistics")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
@@ -70,6 +70,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(contains("масс эффект")).say("Шепард умрет").
 		//when(contains("новое", "новые", "новая", "новое", "новые", "новье")).say("Точное новое, а не проперженное бу?").
 		run()
+	return
 }
 
 func with(text string) *Chain {

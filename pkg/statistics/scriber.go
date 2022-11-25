@@ -1,6 +1,7 @@
 package statistics
 
 import (
+	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"regexp"
@@ -12,7 +13,7 @@ import (
 )
 
 type Scriber struct {
-	messages       chan *telegram.WebhookRequestMessage
+	packs          chan *Pack
 	mutex          sync.Mutex
 	data           *data.Data
 	statisticsPage string
@@ -20,7 +21,7 @@ type Scriber struct {
 
 func NewScriberWithData(data *data.Data, statisticsPage string) *Scriber {
 	holder := &Scriber{
-		messages:       make(chan *telegram.WebhookRequestMessage, 100),
+		packs:          make(chan *Pack, 100),
 		data:           data,
 		statisticsPage: statisticsPage,
 	}
@@ -32,14 +33,20 @@ func NewScriber() *Scriber {
 	return NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "")
 }
 
-func (scriber Scriber) Keep(message *telegram.WebhookRequestMessage) {
-	scriber.messages <- message
+type Pack struct {
+	message       *telegram.WebhookRequestMessage
+	toxicityScore float64
+}
+
+func (scriber Scriber) Keep(message *telegram.WebhookRequestMessage, toxicityScore float64) {
+	scriber.packs <- &Pack{message: message, toxicityScore: toxicityScore}
 }
 
 func (scriber Scriber) process() {
 	for {
 		select {
-		case message := <-scriber.messages:
+		case pack := <-scriber.packs:
+			message := pack.message
 			scriber.mutex.Lock()
 			// By user
 			chatStatistics := scriber.data.ChatStatistics[message.Chat.Id]
@@ -57,6 +64,7 @@ func (scriber Scriber) process() {
 				chatStatistics.UsersStatistics[user] = userStatistics
 			}
 			userStatistics.MessageCounter++
+			userStatistics.ToxicityScore = (userStatistics.ToxicityScore + pack.toxicityScore) / 2.0
 			// Daily
 			now := time.Now()
 			date := now.Format("2006-01-02")
@@ -69,6 +77,7 @@ func (scriber Scriber) process() {
 				chatStatistics.DailyStatistics[date] = dailyStatistics
 			}
 			dailyStatistics.MessageCounter++
+			dailyStatistics.ToxicityScore = (dailyStatistics.ToxicityScore + pack.toxicityScore) / 2
 			// Word statistics
 			if chatStatistics.DailyWordStatistics == nil {
 				chatStatistics.DailyWordStatistics = make(map[string]map[string]int)
@@ -143,7 +152,9 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		usListEnd = 7
 	}
 	for i := 0; i < usListEnd; i++ {
-		sb.WriteString(" - " + usKeys[i] + ": " + strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter) + "\n")
+		messages := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter)
+		toxicity := fmt.Sprintf("%.2f", chatStatistics.UsersStatistics[usKeys[i]].ToxicityScore)
+		sb.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
 	}
 	sb.WriteString("\n")
 	sb.WriteString("Last 7 days:\n")
@@ -153,7 +164,9 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		start = len(dsKeys) - 7
 	}
 	for i := start; i < len(dsKeys); i++ {
-		sb.WriteString(" - " + dsKeys[i] + ": " + strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter) + "\n")
+		messages := strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter)
+		toxicity := fmt.Sprintf("%.2f", chatStatistics.DailyStatistics[dsKeys[i]].ToxicityScore)
+		sb.WriteString(" - " + dsKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
 	}
 	sb.WriteString("\n")
 	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))

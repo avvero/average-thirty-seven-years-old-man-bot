@@ -115,8 +115,8 @@ func main() {
 		}
 		fmt.Println("Message from " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
 			webhookRequest.Message.Chat.Title + ": " + webhookRequest.Message.Text)
-		scriber.Keep(webhookRequest.Message)
-		respond, response := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
+		respond, response, toxicityScore := brain.Decision(webhookRequest.Message.Chat.Id, webhookRequest.Message.Text)
+		scriber.Keep(webhookRequest.Message, toxicityScore)
 		if respond {
 			go func() {
 				time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
@@ -128,7 +128,7 @@ func main() {
 					Chat:      webhookRequest.Message.Chat,
 					Text:      response,
 				}
-				scriber.Keep(botMessage)
+				scriber.Keep(botMessage, 0)
 			}()
 		}
 	})
