@@ -64,7 +64,7 @@ func (scriber Scriber) process() {
 				chatStatistics.UsersStatistics[user] = userStatistics
 			}
 			userStatistics.MessageCounter++
-			userStatistics.ToxicityScore = (userStatistics.ToxicityScore + pack.toxicityScore) / 2.0
+			userStatistics.ToxicityScore = calculateToxicity(userStatistics.ToxicityScore, pack.toxicityScore)
 			// Daily
 			now := time.Now()
 			date := now.Format("2006-01-02")
@@ -77,7 +77,7 @@ func (scriber Scriber) process() {
 				chatStatistics.DailyStatistics[date] = dailyStatistics
 			}
 			dailyStatistics.MessageCounter++
-			dailyStatistics.ToxicityScore = (dailyStatistics.ToxicityScore + pack.toxicityScore) / 2
+			dailyStatistics.ToxicityScore = calculateToxicity(dailyStatistics.ToxicityScore, pack.toxicityScore)
 			// Word statistics
 			if chatStatistics.DailyWordStatistics == nil {
 				chatStatistics.DailyWordStatistics = make(map[string]map[string]int)
@@ -95,6 +95,10 @@ func (scriber Scriber) process() {
 			scriber.mutex.Unlock()
 		}
 	}
+}
+
+func calculateToxicity(prev float64, new float64) float64 {
+	return prev*0.9 + new*0.1
 }
 
 func stem(text string) []string {
