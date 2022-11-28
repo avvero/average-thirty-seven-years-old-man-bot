@@ -49,6 +49,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(300), length(14)).then(NewKhaleesifyIntention()).
 		when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
+		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
 		//when(is(brain.randomFactor), random(100), contains("купил")).say("А не пиздишь? Аренда это не покупка").
 		when(its("gg")).say("gg").
 		when(its("нет")).then(&NoThenPhraseIntention{}).
