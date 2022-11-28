@@ -98,7 +98,7 @@ func (scriber Scriber) process() {
 }
 
 func calculateToxicity(prev float64, new float64) float64 {
-	return prev*0.9 + new*0.1
+	return prev*0.95 + new*0.05
 }
 
 func stem(text string) []string {
