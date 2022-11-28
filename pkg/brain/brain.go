@@ -45,7 +45,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(300), length(5)).then(&HuefyLastWordIntention{}).
-		when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
+		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
 		when(is(brain.randomFactor), random(300), length(14)).then(NewKhaleesifyIntention()).
 		when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
