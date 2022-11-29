@@ -54,10 +54,7 @@ func (scriber Scriber) process() {
 				chatStatistics = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
 				scriber.data.ChatStatistics[message.Chat.Id] = chatStatistics
 			}
-			user := message.From.Username
-			if user == "" {
-				user = message.From.LastName + " " + message.From.FirstName
-			}
+			user := scriber.GetUser(message)
 			userStatistics := chatStatistics.UsersStatistics[user]
 			if userStatistics == nil {
 				userStatistics = &data.MessageStatistics{}
@@ -134,19 +131,21 @@ func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
 	return scriber.data.ChatStatistics[chatId]
 }
 
-func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage) int {
+func (scriber Scriber) GetUser(message *telegram.WebhookRequestMessage) string {
 	user := message.From.Username
 	if user == "" {
 		user = message.From.LastName + " " + message.From.FirstName
 	}
+	return user
+}
+
+func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage) int {
+	user := scriber.GetUser(message)
 	return scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter
 }
 
 func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage, messageCounter int) {
-	user := message.From.Username
-	if user == "" {
-		user = message.From.LastName + " " + message.From.FirstName
-	}
+	user := scriber.GetUser(message)
 	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
 }
 
