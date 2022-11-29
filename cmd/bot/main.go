@@ -133,6 +133,16 @@ func main() {
 				scriber.Keep(botMessage, 0)
 			}()
 		}
+		//
+		user := webhookRequest.Message.From.Username
+		if user == "" {
+			user = webhookRequest.Message.From.LastName + " " + webhookRequest.Message.From.FirstName
+		}
+		if scriber.GetUserStatistics(webhookRequest.Message) == 10000 {
+			sendMessage(webhookRequest.Message.Chat.Id, 0, "Пользователь "+user+" достиг величия и начнет свой новый цикл. Поздравьте его, ведь сами вы нихуя не достигли.")
+			scriber.SetUserStatistics(webhookRequest.Message, 0)
+			jsonBinClient.Write(data)
+		}
 	})
 
 	log.Println("Http server started on port " + *httpPort)

@@ -134,6 +134,22 @@ func (scriber Scriber) GetStatistics(chatId int64) *data.ChatStatistics {
 	return scriber.data.ChatStatistics[chatId]
 }
 
+func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage) int {
+	user := message.From.Username
+	if user == "" {
+		user = message.From.LastName + " " + message.From.FirstName
+	}
+	return scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter
+}
+
+func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage, messageCounter int) {
+	user := message.From.Username
+	if user == "" {
+		user = message.From.LastName + " " + message.From.FirstName
+	}
+	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
+}
+
 func (scriber Scriber) GetStatisticsPage() string {
 	return scriber.statisticsPage
 }
