@@ -134,7 +134,7 @@ func main() {
 			}()
 		}
 		//
-		if scriber.GetUserStatistics(webhookRequest.Message) == 10000 {
+		if scriber.GetUserStatistics(webhookRequest.Message) >= 10000 {
 			user := scriber.GetUser(webhookRequest.Message)
 			sendMessage(webhookRequest.Message.Chat.Id, 0, "Пользователь "+user+" достиг величия и начинает свой новый цикл восхождения. Путем унижения он пройдет вновь от низших и бесполезных к великим и бесценным.")
 			scriber.SetUserStatistics(webhookRequest.Message, 0)
