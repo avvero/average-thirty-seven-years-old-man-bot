@@ -8,6 +8,7 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
+	"github.com/go-co-op/gocron"
 	"io"
 	"log"
 	"net/http"
@@ -140,6 +141,10 @@ func main() {
 			scriber.SetUserStatistics(webhookRequest.Message, 0)
 			jsonBinClient.Write(data)
 		}
+	})
+	// Scheduler
+	gocron.NewScheduler(time.UTC).Cron("53 8 * * 1-5").Do(func() {
+		sendMessage(245851441, 0, "@avveroll go to standup")
 	})
 
 	log.Println("Http server started on port " + *httpPort)
