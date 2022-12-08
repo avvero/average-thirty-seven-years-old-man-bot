@@ -143,9 +143,11 @@ func main() {
 		}
 	})
 	// Scheduler
-	gocron.NewScheduler(time.UTC).Cron("53 8 * * 1-5").Do(func() {
-		sendMessage(245851441, 0, "@avveroll go to standup")
+	standupScheduler := gocron.NewScheduler(time.UTC)
+	standupScheduler.Cron("15 9 * * 1-5").Do(func() {
+		sendMessage(245851441, 0, "@avveroll пиздуйте на стэндап")
 	})
+	standupScheduler.StartAsync()
 
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.4")
