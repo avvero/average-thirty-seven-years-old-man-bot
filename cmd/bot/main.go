@@ -144,7 +144,7 @@ func main() {
 	})
 	// Scheduler
 	standupScheduler := gocron.NewScheduler(time.UTC)
-	standupScheduler.Cron("20 9 * * 1-5").Do(func() {
+	standupScheduler.Cron("25 9 * * 1-5").Do(func() {
 		sendMessage(-1001733786877, 0, "(тестовое сообщение) @avveroll, @Gilmar_RU, @wishpering, @justFirst пиздуйте на стэндап")
 	})
 	standupScheduler.StartAsync()
