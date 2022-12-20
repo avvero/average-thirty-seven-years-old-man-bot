@@ -120,12 +120,12 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
-	expected := `Top 7 users:
- - second: 2 (t: 0.05)
+	expected := `Top 10 users:
+ - second: 2 (t: 0.02)
  - first: 1 (t: 0.01)
 
-Last 7 days:
- - ` + date + `: 3 (t: 0.06)
+Last 10 days:
+ - ` + date + `: 3 (t: 0.03)
 
 To get more information visit: ?id=1`
 	if text != expected {
@@ -149,7 +149,7 @@ func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
 	}
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
-	expected := `Top 7 users:
+	expected := `Top 10 users:
  - user9: 9 (t: 0.00)
  - user8: 8 (t: 0.00)
  - user7: 7 (t: 0.00)
@@ -157,8 +157,10 @@ func Test_statisticsPrettyPrintReturnTopUsers(t *testing.T) {
  - user5: 5 (t: 0.00)
  - user4: 4 (t: 0.00)
  - user3: 3 (t: 0.00)
+ - user2: 2 (t: 0.00)
+ - user1: 1 (t: 0.00)
 
-Last 7 days:
+Last 10 days:
  - ` + date + `: 45 (t: 0.00)
 
 To get more information visit: ?id=1`

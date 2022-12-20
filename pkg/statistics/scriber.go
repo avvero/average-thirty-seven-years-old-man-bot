@@ -164,11 +164,11 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	chatStatistics := scriber.data.ChatStatistics[chatId]
 
 	sb := strings.Builder{}
-	sb.WriteString("Top 7 users:\n")
+	sb.WriteString("Top 10 users:\n")
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
 	usListEnd := len(usKeys)
-	if len(usKeys) >= 7 {
-		usListEnd = 7
+	if len(usKeys) >= 10 {
+		usListEnd = 10
 	}
 	for i := 0; i < usListEnd; i++ {
 		messages := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter)
@@ -176,11 +176,11 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		sb.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
 	}
 	sb.WriteString("\n")
-	sb.WriteString("Last 7 days:\n")
+	sb.WriteString("Last 10 days:\n")
 	dsKeys := sortedKeys(chatStatistics.DailyStatistics)
 	start := 0
-	if len(dsKeys) > 7 {
-		start = len(dsKeys) - 7
+	if len(dsKeys) > 10 {
+		start = len(dsKeys) - 10
 	}
 	for i := start; i < len(dsKeys); i++ {
 		messages := strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter)
