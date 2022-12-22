@@ -56,7 +56,7 @@ func Test_messageCounter(t *testing.T) {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, firstMessageCounter)
 	}
 	firstToxicityScore := scriber.data.ChatStatistics[1].UsersStatistics["first"].ToxicityScore
-	firstToxicityExpected := 0.2
+	firstToxicityExpected := 0.00
 	if fmt.Sprintf("%.2f", firstToxicityScore) != fmt.Sprintf("%.2f", firstToxicityExpected) {
 		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", firstToxicityExpected, firstToxicityScore)
 	}
@@ -65,7 +65,7 @@ func Test_messageCounter(t *testing.T) {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 200, secondMessageCounter)
 	}
 	secondToxicityScore := scriber.data.ChatStatistics[1].UsersStatistics["second"].ToxicityScore
-	secondToxicityScoreExpected := 0.40
+	secondToxicityScoreExpected := 0.00
 	if fmt.Sprintf("%.2f", secondToxicityScore) != fmt.Sprintf("%.2f", secondToxicityScoreExpected) {
 		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", secondToxicityScoreExpected, secondToxicityScore)
 	}
@@ -74,7 +74,7 @@ func Test_messageCounter(t *testing.T) {
 		t.Errorf("Expected: \"%d\" but got: \"%d\"", 100, dailyMessageCounter)
 	}
 	dailyToxicityScore := scriber.data.ChatStatistics[1].DailyStatistics[date].ToxicityScore
-	dailyToxicityScoreExpected := 0.40
+	dailyToxicityScoreExpected := 0.00
 	if fmt.Sprintf("%.2f", dailyToxicityScore) != fmt.Sprintf("%.2f", dailyToxicityScoreExpected) {
 		t.Errorf("Expected: \"%.2f\" but got: \"%.2f\"", dailyToxicityScoreExpected, dailyToxicityScore)
 	}
@@ -121,11 +121,11 @@ func Test_statisticsPrettyPrint(t *testing.T) {
 	text := scriber.GetStatisticsPrettyPrint(1)
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
- - second: 2 (t: 0.02)
- - first: 1 (t: 0.01)
+ - second: 2 (t: 0.00)
+ - first: 1 (t: 0.00)
 
 Last 10 days:
- - ` + date + `: 3 (t: 0.03)
+ - ` + date + `: 3 (t: 0.00)
 
 To get more information visit: ?id=1`
 	if text != expected {

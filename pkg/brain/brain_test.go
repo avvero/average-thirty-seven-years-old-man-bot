@@ -54,10 +54,10 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{})
 	respond, response, _ := brain.Decision(0, "/statistics")
 	date := time.Now().Format("2006-01-02")
-	expected := `Top 7 users:
+	expected := `Top 10 users:
  - first: 1 (t: 0.00)
 
-Last 7 days:
+Last 10 days:
  - ` + date + `: 1 (t: 0.00)
 
 To get more information visit: http://url?id=0`
