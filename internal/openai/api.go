@@ -47,8 +47,7 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	fmt.Printf("Request to: %s\n", apiClient.url)
 	client := http.Client{Timeout: 50 * time.Second}
 
-	prompt := "Он говорит \"" + text + "\". Издевайся над ним."
-	requestBody, marshalError := json.Marshal(Request{Model: "text-davinci-003", Prompt: prompt, Temperature: 0.9,
+	requestBody, marshalError := json.Marshal(Request{Model: "text-davinci-003", Prompt: text, Temperature: 0.9,
 		MaxTokens: 500, TopP: 1, FrequencyPenalty: 0.0, PresencePenalty: 0.6})
 	if marshalError != nil {
 		return marshalError, ""
