@@ -46,7 +46,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя отвратительно, оскорби его так, как это сделал бы ковбой!"}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя плохо, оскорби его так, как это сделал бы мистер Спок из фильма Star Track."}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя плохо, пошути над ним так, как это сделал бы Deadpool"}).
-		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". Издевайся над ним.\""}).
+		when(is(brain.randomFactor), random(50), length(25)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". Издевайся над ним.\""}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(300), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
