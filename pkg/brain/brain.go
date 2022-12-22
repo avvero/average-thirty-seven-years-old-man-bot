@@ -3,6 +3,7 @@ package brain
 import (
 	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
+	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"log"
 	"strings"
@@ -15,10 +16,11 @@ type Brain struct {
 	randomFactor     bool
 	scriber          *statistics.Scriber
 	toxicityDetector ToxicityDetector
+	openAiClient     *openai.OpenAiClient
 }
 
-func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector ToxicityDetector) *Brain {
-	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector}
+func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector ToxicityDetector, openAiClient *openai.OpenAiClient) *Brain {
+	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector, openAiClient: openAiClient}
 }
 
 func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string, toxicityScore float64) {
@@ -43,6 +45,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
+		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(300), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
@@ -252,4 +255,21 @@ func (this ComposeOpinion) Express(text string) (has bool, response string) {
 		}
 	}
 	return false, ""
+}
+
+type OpenApiIntention struct {
+	brain *Brain
+}
+
+func (this OpenApiIntention) Express(text string) (has bool, response string) {
+	if this.brain.openAiClient == nil {
+		return false, ""
+	}
+	request := "Он говорит \"" + text + "\". Издевайся над ним.\""
+	err, response := this.brain.openAiClient.Completion(request)
+	if err != nil {
+		return false, ""
+	} else {
+		return true, response
+	}
 }

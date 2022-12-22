@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
+	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"github.com/go-co-op/gocron"
 	"io"
@@ -22,6 +23,8 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 	"github.com/avvero/the_gamers_guild_bot/pkg/brain"
+
+	_ "github.com/motemen/go-loghttp/global" // Just this line!
 )
 
 var (
@@ -30,6 +33,7 @@ var (
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
 	statisticsPage       = flag.String("statistics-page", "PROVIDE", "statistics-page")
+	openApiKey           = flag.String("open-api-key", "PROVIDE", "open-api-key")
 )
 
 func main() {
@@ -84,8 +88,14 @@ func main() {
 	url := "https://api-inference.huggingface.co/models/apanc/russian-inappropriate-messages"
 	huggingFaceApiClient := huggingface.NewApiClient(url, huggingfaceAccessKeyEnv)
 	toxicityDetector := brain.NewToxicityDetector(huggingFaceApiClient)
+	// open api
+	openApiKeyEnv, found := os.LookupEnv("open-api-key")
+	if found {
+		openApiKey = &openApiKeyEnv
+	}
+	openApiClient := openai.NewApiClient("https://api.openai.com/v1/completions", openApiKeyEnv)
 	//
-	brain := brain.NewBrain(true, scriber, toxicityDetector)
+	brain := brain.NewBrain(true, scriber, toxicityDetector, &openApiClient)
 
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -151,6 +161,12 @@ func main() {
 
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.4")
+	err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
+	if err != nil {
+		sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+	} else {
+		sendMessage(245851441, 0, aiResponse)
+	}
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
 	jsonBinClient.Write(data)

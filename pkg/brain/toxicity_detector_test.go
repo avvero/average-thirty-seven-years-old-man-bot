@@ -16,7 +16,7 @@ func Test_returnsForToxicResponse(t *testing.T) {
 		1.00:  "токсик",
 	}
 	for score, expected := range data {
-		brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{score: score})
+		brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{score: score}, nil)
 		respond := false
 		response := ""
 		for i := 0; i < 20; i++ {
