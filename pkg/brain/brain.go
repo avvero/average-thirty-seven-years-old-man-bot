@@ -263,11 +263,11 @@ type OpenApiIntention struct {
 	text  string
 }
 
-func (this OpenApiIntention) Express(text string) (has bool, response string) {
+func (this OpenApiIntention) Express(ignore string) (has bool, response string) {
 	if this.brain.openAiClient == nil {
 		return false, ""
 	}
-	err, response := this.brain.openAiClient.Completion(text)
+	err, response := this.brain.openAiClient.Completion(this.text)
 	if err != nil {
 		return false, ""
 	} else {
