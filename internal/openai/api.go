@@ -73,7 +73,7 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 		return errors.New(fmt.Sprintf("Response from: %s: %d: %s", apiClient.url, response.StatusCode,
 			responseBody.Error.Message)), ""
 	}
-	result := strings.ReplaceAll(responseBody.Choice[0].Text, "\n", "")
+	result := strings.ReplaceAll(responseBody.Choice[0].Text, "\n\n", "")
 	result = strings.ReplaceAll(result, "\"", "")
 	return err, result
 }
