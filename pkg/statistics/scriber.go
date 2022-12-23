@@ -150,11 +150,21 @@ func (scriber Scriber) GetUser(message *telegram.WebhookRequestMessage) string {
 
 func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage) int {
 	user := scriber.GetUser(message)
+	if scriber.data.ChatStatistics[message.Chat.Id] == nil ||
+		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] == nil {
+		return 0
+	}
 	return scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter
 }
 
 func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage, messageCounter int) {
 	user := scriber.GetUser(message)
+	if scriber.data.ChatStatistics[message.Chat.Id] == nil {
+		scriber.data.ChatStatistics[message.Chat.Id] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+	}
+	if scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] == nil {
+		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] = &data.MessageStatistics{}
+	}
 	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
 }
 
