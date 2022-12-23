@@ -17,10 +17,10 @@ type OpenAiClient struct {
 }
 
 type Request struct {
-	Model       string  `json:"model"`
-	Prompt      string  `json:"prompt"`
-	Temperature float64 `json:"temperature"`
-	//MaxTokens        int     `json:"max_tokens"`
+	Model            string  `json:"model"`
+	Prompt           string  `json:"prompt"`
+	Temperature      float64 `json:"temperature"`
+	MaxTokens        int     `json:"max_tokens"`
 	TopP             int     `json:"top_p"`
 	FrequencyPenalty int     `json:"frequency_penalty"`
 	PresencePenalty  float64 `json:"presence_penalty"`
@@ -48,7 +48,7 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	client := http.Client{Timeout: 50 * time.Second}
 
 	requestBody, marshalError := json.Marshal(Request{Model: "text-davinci-003", Prompt: text, Temperature: 0.9,
-		TopP: 1, FrequencyPenalty: 0.0, PresencePenalty: 0.6})
+		MaxTokens: 4097 - len(text), TopP: 1, FrequencyPenalty: 0.0, PresencePenalty: 0.6})
 	if marshalError != nil {
 		return marshalError, ""
 	}
