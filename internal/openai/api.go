@@ -47,6 +47,8 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	fmt.Printf("Request to: %s\n", apiClient.url)
 	client := http.Client{Timeout: 500 * time.Second}
 
+	text = strings.ReplaceAll(text, "\"", "\\\"")
+
 	requestBody, marshalError := json.Marshal(Request{Model: "text-davinci-003", Prompt: text, Temperature: 0.9,
 		MaxTokens: 4097 - len(text), TopP: 1, FrequencyPenalty: 0.0, PresencePenalty: 0.6})
 	if marshalError != nil {
