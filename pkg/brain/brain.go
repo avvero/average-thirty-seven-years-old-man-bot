@@ -41,7 +41,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(its("/info")).say("I'm bot").
 		when(its("/statistics")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
-		when(startsWith("/ai")).then(&OpenApiIntention{brain: brain, text: text}).
+		when(startsWith("/ai")).then(&OpenApiIntentionWithError{brain: brain, text: text}).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя отвратительно, оскорби его так, как это сделал бы ковбой!"}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя плохо, оскорби его так, как это сделал бы мистер Спок из фильма Star Track."}).
@@ -270,6 +270,23 @@ func (this OpenApiIntention) Express(ignore string) (has bool, response string) 
 	err, response := this.brain.openAiClient.Completion(this.text)
 	if err != nil {
 		return false, ""
+	} else {
+		return true, response
+	}
+}
+
+type OpenApiIntentionWithError struct {
+	brain *Brain
+	text  string
+}
+
+func (this OpenApiIntentionWithError) Express(ignore string) (has bool, response string) {
+	if this.brain.openAiClient == nil {
+		return false, ""
+	}
+	err, response := this.brain.openAiClient.Completion(this.text)
+	if err != nil {
+		return true, "Ошибка обработки: " + err.Error()
 	} else {
 		return true, response
 	}
