@@ -43,12 +43,10 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		when(startsWith("/ai")).then(&OpenApiIntentionWithError{brain: brain, text: text}).
 		//
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя токсично, скажи ему об этом и угрожай так, как это сделал бы ковбой!"}).
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя токсично, скажи ему об этом и угрожай так, как это сделал бы мистер Спок из фильма Star Track."}).
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).then(&OpenApiIntention{brain: brain, text: "Он ведет себя токсично, скажи ему об этом и угрожай так, как это сделал бы Deadpool!"}).
+		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
+		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
+		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
 		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал остроумный джентльмен."}).
-		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в стиле mocking meme."}).
-		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему шуткой в стиле George Carlin."}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
