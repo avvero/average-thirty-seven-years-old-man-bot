@@ -50,9 +50,9 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в стиле mocking meme."}).
 		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему шуткой в стиле George Carlin."}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
-		when(is(brain.randomFactor), random(300), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
-		when(is(brain.randomFactor), random(300), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(500), length(14)).then(NewKhaleesifyIntention()).
 		when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
 		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
