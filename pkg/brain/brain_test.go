@@ -38,7 +38,7 @@ func Test_responseOnCommandInfo(t *testing.T) {
 
 func _Test_responseOnCommandStatisticsOnEmptyStatistics(t *testing.T) {
 	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "/statistics")
+	respond, response, _ := brain.Decision(0, "статистика хуистика")
 	if respond || response != "" {
 		t.Error("Expected {false, nil} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
@@ -52,7 +52,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "/statistics")
+	respond, response, _ := brain.Decision(0, "статистика хуистика")
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
  - first: 1 (t: 0.00)
@@ -69,7 +69,7 @@ To get more information visit: http://url?id=0`
 func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.0}, nil)
-	respond, response, _ := brain.Decision(0, "/toxicity")
+	respond, response, _ := brain.Decision(0, "токсик ревиленто")
 	expected := ""
 	if respond || response != expected {
 		t.Error("Expected {false, \"\"} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -79,7 +79,7 @@ func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 func Test_responseOnCommandToxicityFailed(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0, err: errors.New("что-то не вышло")}, nil)
-	respond, response, _ := brain.Decision(0, "/toxicity что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "токсик ревиленто что-то на токсичном")
 	expected := "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -89,7 +89,7 @@ func Test_responseOnCommandToxicityFailed(t *testing.T) {
 func Test_responseOnCommandToxicity(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.98}, nil)
-	respond, response, _ := brain.Decision(0, "/toxicity что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "токсик ревиленто что-то на токсичном")
 	expected := "уровень токсичности 98%"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")

@@ -39,9 +39,9 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 	respond, response = with(strings.ToLower(strings.TrimSpace(text))).
 		// Commands
 		when(its("/info")).say("I'm bot").
-		when(its("/statistics")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
-		when(startsWith("/toxicity")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
-		when(startsWith("/ai")).then(&OpenApiIntentionWithError{brain: brain, text: text}).
+		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
+		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
+		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: text}).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
