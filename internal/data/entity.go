@@ -22,6 +22,7 @@ type ChatStatistics struct {
 type MessageStatistics struct {
 	MessageCounter int     `json:"messageCounter"`
 	ToxicityScore  float64 `json:"toxicityScore"`
+	Tension        int     `json:"tension"`
 }
 
 type JsonBinResponse struct {

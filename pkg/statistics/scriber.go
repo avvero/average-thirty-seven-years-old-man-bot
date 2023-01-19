@@ -168,6 +168,24 @@ func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage
 	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
 }
 
+func (scriber Scriber) GetUserTension(chatId int64, user string) int {
+	if scriber.data.ChatStatistics[chatId] == nil ||
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
+		return 0
+	}
+	return scriber.data.ChatStatistics[chatId].UsersStatistics[user].Tension
+}
+
+func (scriber Scriber) SetUserTension(chatId int64, user string, tension int) {
+	if scriber.data.ChatStatistics[chatId] == nil {
+		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+	}
+	if scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] = &data.MessageStatistics{}
+	}
+	scriber.data.ChatStatistics[chatId].UsersStatistics[user].Tension = tension
+}
+
 func (scriber Scriber) GetStatisticsPage() string {
 	return scriber.statisticsPage
 }
