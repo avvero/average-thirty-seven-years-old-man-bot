@@ -155,7 +155,7 @@ func main() {
 		// AnimeAnimeAnime123
 		if -1001733786877 == webhookRequest.Message.Chat.Id {
 			tension := scriber.GetUserTension(-1001733786877, "AnimeAnimeAnime123")
-			if tension <= 10 {
+			if tension <= 1000 {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension+1)
 			} else {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension-100)
