@@ -155,10 +155,10 @@ func main() {
 		// AnimeAnimeAnime123
 		if -1001733786877 == webhookRequest.Message.Chat.Id {
 			tension := scriber.GetUserTension(-1001733786877, "AnimeAnimeAnime123")
-			if tension <= 10 {
+			if tension <= 100 {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension+1)
 			} else {
-				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension-10)
+				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension-20)
 				sendMessage(-1001733786877, 0, "@AnimeAnimeAnime123")
 				sendSticker(-1001733786877, 0, "CAACAgIAAxkBAAIenmPJaxAsTOYxV2hkA6sun3veDpHVAAI4EAACBKuASWXqT-PrAoZVLQQ")
 			}
@@ -227,7 +227,7 @@ func sendSticker(chatId int64, receivedMessageId int64, fileId string) {
 		fmt.Printf("could not marshal body: %s\n", marshalError)
 	}
 	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
+	url := "https://api.telegram.org/bot" + *token + "/sendSticker"
 	fmt.Printf("Request to: %s, sticker: %s\n", url, fileId)
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
