@@ -118,6 +118,7 @@ func main() {
 			fmt.Printf("could not read body: %s\n", err)
 			return
 		}
+		fmt.Println("Telegram Message body from " + string(body))
 		webhookRequest := &telegram.WebhookRequest{}
 		json.Unmarshal(body, webhookRequest)
 		if webhookRequest == nil || webhookRequest.Message == nil {
