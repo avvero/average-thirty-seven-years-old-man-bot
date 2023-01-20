@@ -44,7 +44,7 @@ func (brain *Brain) Decision(chatId int64, text string) (respond bool, response 
 		when(startsWith("/ai")).say("не веди себя как магл, используй заклинание: интелекто ебанина").
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
-		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: text}).
+		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
