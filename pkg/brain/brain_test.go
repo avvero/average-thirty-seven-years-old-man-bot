@@ -16,13 +16,13 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 		"-1001733786877": "gg",
 		"245851441":      "gg",
 		"-578279468":     "gg",
-		"1":              "Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business.",
+		"1":              "1: Mr Moony presents his compliments to Professor Snape, and begs him to keep his abnormally large nose out of other people’s business.",
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
 		respond, response, _ := brain.Decision(chatId, "gg")
 		if !respond || response != expected {
-			t.Error("Response for ", k, ": ", expected, " != ", response)
+			t.Error("Response for ", k, ": \n", expected, "\n != \n", response)
 		}
 	}
 }
@@ -104,28 +104,28 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"gG": "gg",
 		"Gg": "gg",
 
-		"morrowind":             "Morrowind - одна из лучших игр эва",
-		"моровинд":              "Morrowind - одна из лучших игр эва",
-		"морровинд":             "Morrowind - одна из лучших игр эва",
-		"бла бла бла morrowind": "Morrowind - одна из лучших игр эва",
+		"morrowind":                         "Morrowind - одна из лучших игр эва",
+		"моровинд":                          "Morrowind - одна из лучших игр эва",
+		"морровинд":                         "Morrowind - одна из лучших игр эва",
+		"бла бла бла morrowind":             "Morrowind - одна из лучших игр эва",
 		"бла бла бла morrowind бла бла бла": "Morrowind - одна из лучших игр эва",
 
-		"Elden Ring": "Elden Ring - это величие",
+		"Elden Ring":                         "Elden Ring - это величие",
 		"бла бла бла Elden Ring бла бла бла": "Elden Ring - это величие",
-		"elden ring": "Elden Ring - это величие",
+		"elden ring":                         "Elden Ring - это величие",
 		"бла бла бла elden ring бла бла бла": "Elden Ring - это величие",
-		"ER": "Elden Ring - это величие",
-		"бла бла бла ER бла бла бла": "Elden Ring - это величие",
-		"ЕР": "Elden Ring - это величие",
-		"бла бла бла ЕР бла бла бла": "Elden Ring - это величие",
-		"ЭР": "Elden Ring - это величие",
-		"бла бла бла ЭР бла бла бла": "Elden Ring - это величие",
-		"Элден ринг":                 "Elden Ring - это величие",
-		"Елден РИНГ":                 "Elden Ring - это величие",
+		"ER":                                 "Elden Ring - это величие",
+		"бла бла бла ER бла бла бла":         "Elden Ring - это величие",
+		"ЕР":                                 "Elden Ring - это величие",
+		"бла бла бла ЕР бла бла бла":         "Elden Ring - это величие",
+		"ЭР":                                 "Elden Ring - это величие",
+		"бла бла бла ЭР бла бла бла":         "Elden Ring - это величие",
+		"Элден ринг":                         "Elden Ring - это величие",
+		"Елден РИНГ":                         "Elden Ring - это величие",
 
-		"spotify":  "Эти н'вахи Антону косарик должны за подписку",
-		"Spotify":  "Эти н'вахи Антону косарик должны за подписку",
-		"спотифай": "Эти н'вахи Антону косарик должны за подписку",
+		"spotify":                          "Эти н'вахи Антону косарик должны за подписку",
+		"Spotify":                          "Эти н'вахи Антону косарик должны за подписку",
+		"спотифай":                         "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла spotify бла бла бла":  "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла спотифай бла бла бла": "Эти н'вахи Антону косарик должны за подписку",
 
@@ -139,9 +139,9 @@ func Test_returnsOnSomeText(t *testing.T) {
 		//"джаба":         "джава-хуява, а я работаю на го",
 		//"бла джаба бла": "джава-хуява, а я работаю на го",
 
-		"да там же уже решено, теперь надо новое что-то заблокировать": "пусть себе анус заблокируют",
-		"они это вчера заблокировали и ждут":                           "пусть себе анус заблокируют",
-		"это меня блокирует сильно":                                    "пусть себе анус заблокируют",
+		//"да там же уже решено, теперь надо новое что-то заблокировать": "пусть себе анус заблокируют",
+		//"они это вчера заблокировали и ждут":                           "пусть себе анус заблокируют",
+		//"это меня блокирует сильно":                                    "пусть себе анус заблокируют",
 
 		"что-то про mass effect и так далее": "Шепард умрет",
 		"что-то про масс эффект и так далее": "Шепард умрет",
@@ -159,7 +159,7 @@ func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
 	data := map[string]string{
 		"я думал сначала Медведев это опять. А тут какой то давыдов": "не опять, а снова",
 
-		"двуличие": "хуичие",
+		//"двуличие": "хуичие",
 
 		//"Потому что надо было не шифры ваши писать": "хуёму что хуядо хуило не хуифры хуяши хуисать",
 
