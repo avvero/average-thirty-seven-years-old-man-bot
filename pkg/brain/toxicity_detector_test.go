@@ -20,7 +20,7 @@ func Test_returnsForToxicResponse(t *testing.T) {
 		respond := false
 		response := ""
 		for i := 0; i < 20; i++ {
-			thisRespond, thisResponse, _ := brain.Decision(0, "any")
+			thisRespond, thisResponse, _ := brain.Decision(0, "user", "any")
 			if thisRespond && thisResponse == expected {
 				respond = thisRespond
 				response = thisResponse

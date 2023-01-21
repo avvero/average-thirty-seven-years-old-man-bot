@@ -10,7 +10,7 @@ func Test_returnsForLuckySenselessPhrase(t *testing.T) {
 	brain := NewBrain(true, statistics.NewScriber(), &ToxicityDetectorNoop{}, nil)
 	respond := false
 	for i := 0; i < 1000; i++ {
-		thisRespond, thisResponse, _ := brain.Decision(0, "any")
+		thisRespond, thisResponse, _ := brain.Decision(0, "user", "any")
 		if thisRespond && utils.Contains(senselessPhrases, thisResponse) {
 			respond = thisRespond
 			break

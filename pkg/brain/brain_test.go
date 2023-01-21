@@ -20,7 +20,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 	}
 	for k, expected := range data {
 		chatId, _ := strconv.ParseInt(k, 10, 64)
-		respond, response, _ := brain.Decision(chatId, "gg")
+		respond, response, _ := brain.Decision(chatId, "user", "gg")
 		if !respond || response != expected {
 			t.Error("Response for ", k, ": \n", expected, "\n != \n", response)
 		}
@@ -29,7 +29,7 @@ func Test_responseOnlyToWhitelisted(t *testing.T) {
 
 func Test_responseOnCommandInfo(t *testing.T) {
 	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "/info")
+	respond, response, _ := brain.Decision(0, "user", "/info")
 	expected := "I'm bot"
 	if !respond || response != expected {
 		t.Error("Response for : ", expected, " != ", response)
@@ -38,7 +38,7 @@ func Test_responseOnCommandInfo(t *testing.T) {
 
 func _Test_responseOnCommandStatisticsOnEmptyStatistics(t *testing.T) {
 	brain := NewBrain(false, statistics.NewScriber(), &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "статистика хуистика")
+	respond, response, _ := brain.Decision(0, "user", "статистика хуистика")
 	if respond || response != "" {
 		t.Error("Expected {false, nil} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
@@ -61,7 +61,7 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	scriber.SetUserTension(0, "third", 1)
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "статистика хуистика")
+	respond, response, _ := brain.Decision(0, "user", "статистика хуистика")
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
  - first: 2 (t: 0.00)
@@ -82,7 +82,7 @@ To get more information visit: http://url?id=0`
 func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.0}, nil)
-	respond, response, _ := brain.Decision(0, "токсик ревиленто")
+	respond, response, _ := brain.Decision(0, "user", "токсик ревиленто")
 	expected := ""
 	if respond || response != expected {
 		t.Error("Expected {false, \"\"} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -92,7 +92,7 @@ func Test_responseOnCommandToxicityWithoutPhrase(t *testing.T) {
 func Test_responseOnCommandToxicityFailed(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0, err: errors.New("что-то не вышло")}, nil)
-	respond, response, _ := brain.Decision(0, "токсик ревиленто что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "user", "токсик ревиленто что-то на токсичном")
 	expected := "определить уровень токсичности не удалось, быть может вы - черт, попробуйте позже"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -102,7 +102,7 @@ func Test_responseOnCommandToxicityFailed(t *testing.T) {
 func Test_responseOnCommandToxicity(t *testing.T) {
 	scriber := statistics.NewScriber()
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{score: 0.98}, nil)
-	respond, response, _ := brain.Decision(0, "токсик ревиленто что-то на токсичном")
+	respond, response, _ := brain.Decision(0, "user", "токсик ревиленто что-то на токсичном")
 	expected := "уровень токсичности 98%"
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
@@ -117,28 +117,28 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"gG": "gg",
 		"Gg": "gg",
 
-		"morrowind":                         "Morrowind - одна из лучших игр эва",
-		"моровинд":                          "Morrowind - одна из лучших игр эва",
-		"морровинд":                         "Morrowind - одна из лучших игр эва",
-		"бла бла бла morrowind":             "Morrowind - одна из лучших игр эва",
+		"morrowind":             "Morrowind - одна из лучших игр эва",
+		"моровинд":              "Morrowind - одна из лучших игр эва",
+		"морровинд":             "Morrowind - одна из лучших игр эва",
+		"бла бла бла morrowind": "Morrowind - одна из лучших игр эва",
 		"бла бла бла morrowind бла бла бла": "Morrowind - одна из лучших игр эва",
 
-		"Elden Ring":                         "Elden Ring - это величие",
+		"Elden Ring": "Elden Ring - это величие",
 		"бла бла бла Elden Ring бла бла бла": "Elden Ring - это величие",
-		"elden ring":                         "Elden Ring - это величие",
+		"elden ring": "Elden Ring - это величие",
 		"бла бла бла elden ring бла бла бла": "Elden Ring - это величие",
-		"ER":                                 "Elden Ring - это величие",
-		"бла бла бла ER бла бла бла":         "Elden Ring - это величие",
-		"ЕР":                                 "Elden Ring - это величие",
-		"бла бла бла ЕР бла бла бла":         "Elden Ring - это величие",
-		"ЭР":                                 "Elden Ring - это величие",
-		"бла бла бла ЭР бла бла бла":         "Elden Ring - это величие",
-		"Элден ринг":                         "Elden Ring - это величие",
-		"Елден РИНГ":                         "Elden Ring - это величие",
+		"ER": "Elden Ring - это величие",
+		"бла бла бла ER бла бла бла": "Elden Ring - это величие",
+		"ЕР": "Elden Ring - это величие",
+		"бла бла бла ЕР бла бла бла": "Elden Ring - это величие",
+		"ЭР": "Elden Ring - это величие",
+		"бла бла бла ЭР бла бла бла": "Elden Ring - это величие",
+		"Элден ринг":                 "Elden Ring - это величие",
+		"Елден РИНГ":                 "Elden Ring - это величие",
 
-		"spotify":                          "Эти н'вахи Антону косарик должны за подписку",
-		"Spotify":                          "Эти н'вахи Антону косарик должны за подписку",
-		"спотифай":                         "Эти н'вахи Антону косарик должны за подписку",
+		"spotify":  "Эти н'вахи Антону косарик должны за подписку",
+		"Spotify":  "Эти н'вахи Антону косарик должны за подписку",
+		"спотифай": "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла spotify бла бла бла":  "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла спотифай бла бла бла": "Эти н'вахи Антону косарик должны за подписку",
 
@@ -160,7 +160,7 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"что-то про масс эффект и так далее": "Шепард умрет",
 	}
 	for origin, expected := range data {
-		respond, response, _ := brain.Decision(0, origin)
+		respond, response, _ := brain.Decision(0, "user", origin)
 		if !respond || response != expected {
 			t.Error("Response for", origin, ":", expected, "!=", response)
 		}
@@ -200,7 +200,7 @@ func Test_returnsOnSomeTextWithRandomFactor(t *testing.T) {
 		respond := false
 		response := ""
 		for i := 0; i < 500; i++ {
-			thisRespond, thisResponse, _ := brain.Decision(0, origin)
+			thisRespond, thisResponse, _ := brain.Decision(0, "user", origin)
 			if thisRespond && thisResponse == expected {
 				respond = thisRespond
 				response = thisResponse
@@ -221,7 +221,7 @@ func Test_returnsOnNotElderRing(t *testing.T) {
 		"трансформационный1",
 	}
 	for _, text := range data {
-		respond, response, _ := brain.Decision(0, text)
+		respond, response, _ := brain.Decision(0, "user", text)
 		if respond {
 			t.Errorf("Not expected: \"%s\"", response)
 		}
@@ -234,7 +234,7 @@ func _Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 	response := ""
 	expected := "делись зя миня, дляконь"
 	for i := 0; i < 500; i++ {
-		thisRespond, thisResponse, _ := brain.Decision(0, "дерись за меня, дракон")
+		thisRespond, thisResponse, _ := brain.Decision(0, "user", "дерись за меня, дракон")
 		if thisRespond && thisResponse == expected {
 			respond = thisRespond
 			response = thisResponse

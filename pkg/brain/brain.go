@@ -23,7 +23,7 @@ func NewBrain(randomFactor bool, scriber *statistics.Scriber, toxicityDetector T
 	return &Brain{randomFactor: randomFactor, scriber: scriber, toxicityDetector: toxicityDetector, openAiClient: openAiClient}
 }
 
-func (brain *Brain) Decision(chatId int64, text string) (respond bool, response string, toxicityScore float64) {
+func (brain *Brain) Decision(chatId int64, user string, text string) (respond bool, response string, toxicityScore float64) {
 	for _, protector := range []Protector{&Whitelist{}} {
 		forbidden, message := protector.Check(chatId, text)
 		if forbidden && message != "" {

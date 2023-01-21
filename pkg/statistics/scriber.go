@@ -231,15 +231,24 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		sb.WriteString(" - " + dsKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
 	}
 
-	sb.WriteString("\n")
-	sb.WriteString("Top 10 infuriating persons:\n")
-
+	showInfuriating := false
 	for i := 0; i < usListEnd; i++ {
-		if chatStatistics.UsersStatistics[usKeys[i]].Tension == 0 {
-			continue
+		if chatStatistics.UsersStatistics[usKeys[i]].Tension > 0 {
+			showInfuriating = true
+			break
 		}
-		tension := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].Tension)
-		sb.WriteString(" - " + usKeys[i] + ": tension = " + tension + "\n")
+	}
+	if showInfuriating {
+		sb.WriteString("\n")
+		sb.WriteString("Top 10 infuriating persons:\n")
+
+		for i := 0; i < usListEnd; i++ {
+			if chatStatistics.UsersStatistics[usKeys[i]].Tension == 0 {
+				continue
+			}
+			tension := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].Tension)
+			sb.WriteString(" - " + usKeys[i] + ": tension = " + tension + "\n")
+		}
 	}
 	sb.WriteString("\n")
 	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))
