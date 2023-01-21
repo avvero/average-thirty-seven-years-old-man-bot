@@ -50,15 +50,28 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
 	}, 0)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "two",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	}, 0)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "third"}, Text: "three",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	scriber.SetUserTension(0, "third", 1)
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
 	respond, response, _ := brain.Decision(0, "статистика хуистика")
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
- - first: 1 (t: 0.00)
+ - first: 2 (t: 0.00)
+ - third: 1 (t: 0.00)
 
 Last 10 days:
- - ` + date + `: 1 (t: 0.00)
+ - ` + date + `: 3 (t: 0.00)
+
+Top 10 infuriating persons:
+ - third: tension = 1
 
 To get more information visit: http://url?id=0`
 	if !respond || response != expected {

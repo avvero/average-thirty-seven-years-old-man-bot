@@ -169,6 +169,9 @@ func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage
 }
 
 func (scriber Scriber) GetUserTension(chatId int64, user string) int {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil ||
 		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
 		return 0
@@ -177,6 +180,9 @@ func (scriber Scriber) GetUserTension(chatId int64, user string) int {
 }
 
 func (scriber Scriber) SetUserTension(chatId int64, user string, tension int) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil {
 		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
 	}
@@ -223,6 +229,17 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		messages := strconv.Itoa(chatStatistics.DailyStatistics[dsKeys[i]].MessageCounter)
 		toxicity := fmt.Sprintf("%.2f", chatStatistics.DailyStatistics[dsKeys[i]].ToxicityScore)
 		sb.WriteString(" - " + dsKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
+	}
+
+	sb.WriteString("\n")
+	sb.WriteString("Top 10 infuriating persons:\n")
+
+	for i := 0; i < usListEnd; i++ {
+		if chatStatistics.UsersStatistics[usKeys[i]].Tension == 0 {
+			continue
+		}
+		tension := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].Tension)
+		sb.WriteString(" - " + usKeys[i] + ": tension = " + tension + "\n")
 	}
 	sb.WriteString("\n")
 	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))
