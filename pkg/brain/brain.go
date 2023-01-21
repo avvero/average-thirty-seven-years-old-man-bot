@@ -323,7 +323,7 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры. Поиздевайся над проигравшим."
 	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
-		return true, "Ошибка обработки: " + err.Error()
+		return true, "Давай по новой, " + this.user + ", все хуйня!"
 	} else {
 		return true, response
 	}
