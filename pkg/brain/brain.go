@@ -309,7 +309,7 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 
 	botRoll := utils.RandomUpTo(5) + 1
 	userRoll := utils.RandomUpTo(5) + 1
-	gameDescription := "Игра в кости. Игрок first выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
+	gameDescription := "Игра в кости. Игрок " + this.user + " выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
 	if userRoll == botRoll {
 		gameDescription = gameDescription + ". Результат: Ничья."
 	} else if userRoll > botRoll {
