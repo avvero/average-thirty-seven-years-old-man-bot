@@ -307,16 +307,17 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 		return false, ""
 	}
 
+	cost := 100
 	botRoll := utils.RandomUpTo(5) + 1
 	userRoll := utils.RandomUpTo(5) + 1
 	gameDescription := "Игра в кости. Игрок " + this.user + " выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
 	if userRoll == botRoll {
 		gameDescription = gameDescription + ". Результат: Ничья."
 	} else if userRoll > botRoll {
-		gameDescription = gameDescription + ". Результат: " + this.user + " выиграл 10 очков."
+		gameDescription = gameDescription + ". Результат: " + this.user + " выиграл " + strconv.Itoa(cost) + " очков."
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, 10)
 	} else {
-		gameDescription = gameDescription + ". Результат: " + this.user + " проиграл 10 очков."
+		gameDescription = gameDescription + ". Результат: " + this.user + " проиграл " + strconv.Itoa(cost) + " очков."
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
 	}
 
