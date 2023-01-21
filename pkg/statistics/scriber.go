@@ -168,6 +168,17 @@ func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage
 	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
 }
 
+func (scriber Scriber) IncreaseUserMessageStatistics(chatId int64, user string, value int) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
+	if scriber.data.ChatStatistics[chatId] == nil ||
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
+		return
+	}
+	scriber.data.ChatStatistics[chatId].UsersStatistics[user].MessageCounter += value
+}
+
 func (scriber Scriber) GetUserTension(chatId int64, user string) int {
 	scriber.mutex.Lock()
 	defer scriber.mutex.Unlock()

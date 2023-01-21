@@ -6,6 +6,7 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -45,6 +46,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
+		when(startsWith("фортуно поласкато")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
@@ -287,6 +289,37 @@ func (this OpenApiIntentionWithError) Express(ignore string) (has bool, response
 		return false, ""
 	}
 	err, response := this.brain.openAiClient.Completion(this.text)
+	if err != nil {
+		return true, "Ошибка обработки: " + err.Error()
+	} else {
+		return true, response
+	}
+}
+
+type Dice struct {
+	brain  *Brain
+	chatId int64
+	user   string
+}
+
+func (this Dice) Express(ignore string) (has bool, response string) {
+	if this.brain.openAiClient == nil {
+		return false, ""
+	}
+
+	botRoll := utils.RandomUpTo(5) + 1
+	userRoll := utils.RandomUpTo(5) + 1
+	gameDescription := "Игра в кости. Игрок first выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
+	if userRoll > botRoll {
+		gameDescription = gameDescription + ". Результат: first выиграл 10 очков."
+		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, 10)
+	} else {
+		gameDescription = gameDescription + ". Результат: first проиграл 10 очков."
+		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
+	}
+
+	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры. Поиздевайся над проигравшим."
+	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
 		return true, "Ошибка обработки: " + err.Error()
 	} else {
