@@ -101,6 +101,32 @@ func Test_statisticsSerialization(t *testing.T) {
 	}
 }
 
+func Test_increaseMessageCounter(t *testing.T) {
+	scriber := NewScriber()
+	message := &telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+	}
+	scriber.Keep(message, 0)
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	counter := scriber.GetUserStatistics(message)
+	if counter != 1 {
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 1, counter)
+	}
+	// increase
+	scriber.IncreaseUserMessageStatistics(1, "first", 10)
+	counter = scriber.GetUserStatistics(message)
+	if counter != 11 {
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 11, counter)
+	}
+	// decrease
+	scriber.IncreaseUserMessageStatistics(1, "first", -10)
+	counter = scriber.GetUserStatistics(message)
+	if counter != 1 {
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 1, counter)
+	}
+}
+
 func Test_statisticsPrettyPrint(t *testing.T) {
 	scriber := NewScriber()
 	scriber.Keep(&telegram.WebhookRequestMessage{

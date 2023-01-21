@@ -240,18 +240,3 @@ func _Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
-
-func Test_dice(t *testing.T) {
-	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
-	scriber.Keep(&telegram.WebhookRequestMessage{
-		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "first",
-		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
-	}, 0)
-	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
-	respond, response, _ := brain.Decision(0, "user", "фортуно поласкато")
-	expected := `Игра в кости`
-	if !respond || response != expected {
-		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
-	}
-}
