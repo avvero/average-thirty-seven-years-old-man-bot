@@ -54,10 +54,6 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "two",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
 	}, 0)
-	scriber.Keep(&telegram.WebhookRequestMessage{
-		From: &telegram.WebhookRequestMessageSender{Username: "third"}, Text: "three",
-		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
-	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	scriber.SetUserTension(0, "third", 1)
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
@@ -65,10 +61,10 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
  - first: 2 (t: 0.00)
- - third: 1 (t: 0.00)
+ - third: 0 (t: 0.00)
 
 Last 10 days:
- - ` + date + `: 3 (t: 0.00)
+ - ` + date + `: 2 (t: 0.00)
 
 Top 10 infuriating persons:
  - third: tension = 1

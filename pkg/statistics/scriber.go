@@ -232,7 +232,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	}
 
 	showInfuriating := false
-	for i := 0; i < usListEnd; i++ {
+	for i := 0; i < len(usKeys); i++ {
 		if chatStatistics.UsersStatistics[usKeys[i]].Tension > 0 {
 			showInfuriating = true
 			break
@@ -242,7 +242,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 		sb.WriteString("\n")
 		sb.WriteString("Top 10 infuriating persons:\n")
 
-		for i := 0; i < usListEnd; i++ {
+		for i := 0; i < len(usKeys); i++ {
 			if chatStatistics.UsersStatistics[usKeys[i]].Tension == 0 {
 				continue
 			}
