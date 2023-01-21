@@ -46,7 +46,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
-		when(its("фортуно поласкато")).then(&Dice{brain: brain, chatId: chatId, user: user}).
+		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		//
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
@@ -310,7 +310,9 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 	botRoll := utils.RandomUpTo(5) + 1
 	userRoll := utils.RandomUpTo(5) + 1
 	gameDescription := "Игра в кости. Игрок first выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
-	if userRoll > botRoll {
+	if userRoll == botRoll {
+		gameDescription = gameDescription + ". Результат: Ничья."
+	} else if userRoll > botRoll {
 		gameDescription = gameDescription + ". Результат: first выиграл 10 очков."
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, 10)
 	} else {
