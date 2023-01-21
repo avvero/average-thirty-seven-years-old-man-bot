@@ -313,10 +313,10 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 	if userRoll == botRoll {
 		gameDescription = gameDescription + ". Результат: Ничья."
 	} else if userRoll > botRoll {
-		gameDescription = gameDescription + ". Результат: first выиграл 10 очков."
+		gameDescription = gameDescription + ". Результат: " + this.user + " выиграл 10 очков."
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, 10)
 	} else {
-		gameDescription = gameDescription + ". Результат: first проиграл 10 очков."
+		gameDescription = gameDescription + ". Результат: " + this.user + " проиграл 10 очков."
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
 	}
 
