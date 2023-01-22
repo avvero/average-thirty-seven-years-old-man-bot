@@ -2,9 +2,13 @@ package brain
 
 import (
 	"errors"
+	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/data"
+	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
+	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
@@ -72,6 +76,49 @@ Top 10 infuriating persons:
 To get more information visit: http://url?id=0`
 	if !respond || response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_SkillCosts(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "Сообщение от AI"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	}, 0)
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	// when
+	respond, response, _ := brain.Decision(0, "user", "интелекто ебанина текст текст текст")
+	// then
+	expected := `Репутация: 1. Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+	// when
+	for i := 0; i <= 10; i++ {
+		scriber.Keep(&telegram.WebhookRequestMessage{
+			From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
+			Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+		}, 0)
+	}
+	time.Sleep(100 * time.Millisecond) // TODO none reliable
+	respond, response, _ = brain.Decision(0, "user", "интелекто ебанина текст текст текст")
+	// then
+	expected = `Сообщение от AI`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+	// and
+	counter := scriber.GetUserMessageCount(0, "first")
+	if counter != 2 {
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 1, counter)
 	}
 }
 
