@@ -49,6 +49,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		//
+		when(is(brain.randomFactor), random(100)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
@@ -302,6 +303,34 @@ func (this OpenApiIntentionWithError) Express(ignore string) (has bool, response
 	err, response := this.brain.openAiClient.Completion(this.text)
 	if err != nil {
 		return true, "Ошибка обработки: " + err.Error()
+	} else {
+		return true, response
+	}
+}
+
+type DumbledoreScore struct {
+	brain  *Brain
+	chatId int64
+	user   string
+}
+
+func (this DumbledoreScore) Express(text string) (has bool, response string) {
+	if this.brain.openAiClient == nil {
+		return false, ""
+	}
+	message := "Ученик " + this.user + " сказал \"" + text + "\""
+	score := (utils.RandomUpTo(2) + 1) * 5
+	if utils.RandomUpTo(1) == 0 {
+		message += " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
+		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
+	} else {
+		message += " и потерял " + strconv.Itoa(score) + " очков для своего факультета"
+		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -score)
+	}
+	message += ", прокомментируй это будто ты профессор Дамблдор с указанием количества очков и названия факультета Хогвартс, где учится " + this.user + " (придумай смешное название факультету в одно слово)"
+	err, response := this.brain.openAiClient.Completion(text)
+	if err != nil {
+		return true, "Давай по новой, " + this.user + ", все хуйня!"
 	} else {
 		return true, response
 	}
