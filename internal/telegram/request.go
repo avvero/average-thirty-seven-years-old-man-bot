@@ -5,10 +5,11 @@ type WebhookRequest struct {
 }
 
 type WebhookRequestMessage struct {
-	MessageId int64                        `json:"message_id"`
-	From      *WebhookRequestMessageSender `json:"from"`
-	Chat      *WebhookRequestMessageChat   `json:"chat"`
-	Text      string                       `json:"text"`
+	MessageId            int64                        `json:"message_id"`
+	From                 *WebhookRequestMessageSender `json:"from"`
+	Chat                 *WebhookRequestMessageChat   `json:"chat"`
+	Text                 string                       `json:"text"`
+	ForwardFromMessageId int64                        `json:"forward_from_message_id"`
 }
 
 type WebhookRequestMessageSender struct {
