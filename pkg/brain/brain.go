@@ -328,7 +328,7 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -score)
 	}
 	message += ", прокомментируй это будто ты профессор Дамблдор с указанием количества очков и названия факультета Хогвартс, где учится " + this.user + " (придумай смешное название факультету в одно слово)"
-	err, response := this.brain.openAiClient.Completion(text)
+	err, response := this.brain.openAiClient.Completion(message)
 	if err != nil {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
 	} else {
