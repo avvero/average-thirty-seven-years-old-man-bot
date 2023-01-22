@@ -323,7 +323,9 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 
 	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры."
 	userMessageCount := this.brain.scriber.GetUserMessageCount(this.chatId, this.user)
-	if userMessageCount < 1000 {
+	if userMessageCount < 100 {
+		gameDescription = gameDescription + "Отрази в своих словах презрение к игроку " + this.user + ", игрок ничто и никто, отрази это."
+	} else if userMessageCount < 1000 {
 		gameDescription = gameDescription + "Отрази в своих словах глубокую ненависть к игроку " + this.user
 	} else if userMessageCount < 3000 {
 		gameDescription = gameDescription + "Отрази в своих словах уважение к игроку " + this.user
