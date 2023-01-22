@@ -55,10 +55,10 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
 		//when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал остроумный джентльмен."}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
-		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(1000), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
-		when(is(brain.randomFactor), random(500), length(14)).then(NewKhaleesifyIntention()).
-		when(is(brain.randomFactor), random(500)).then(&ConfuciusPhrasesIntention{}).
+		when(is(brain.randomFactor), random(1000), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(1000)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
 		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
 		when(its("gg")).say("gg").
