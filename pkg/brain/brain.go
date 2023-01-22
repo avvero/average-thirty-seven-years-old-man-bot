@@ -321,7 +321,15 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -cost)
 	}
 
-	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры. Поиздевайся над проигравшим."
+	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры."
+	userMessageCount := this.brain.scriber.GetUserMessageCount(this.chatId, this.user)
+	if userMessageCount < 1000 {
+		gameDescription = gameDescription + "Отрази в своих словах глубокую ненависть к игроку " + this.user
+	} else if userMessageCount < 3000 {
+		gameDescription = gameDescription + "Отрази в своих словах уважение к игроку " + this.user
+	} else if userMessageCount > 5000 {
+		gameDescription = gameDescription + "Отрази в своих словах восхищение и любовь к игроку " + this.user
+	}
 	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
