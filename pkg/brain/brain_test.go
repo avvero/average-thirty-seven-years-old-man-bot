@@ -95,7 +95,7 @@ func Test_SkillCosts(t *testing.T) {
 	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	// when
-	respond, response, _ := brain.Decision(0, "user", "интелекто ебанина текст текст текст")
+	respond, response, _ := brain.Decision(0, "first", "интелекто ебанина текст текст текст")
 	// then
 	expected := `Репутация: 1. Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.`
 	if response != expected {
@@ -109,7 +109,7 @@ func Test_SkillCosts(t *testing.T) {
 		}, 0)
 	}
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
-	respond, response, _ = brain.Decision(0, "user", "интелекто ебанина текст текст текст")
+	respond, response, _ = brain.Decision(0, "first", "интелекто ебанина текст текст текст")
 	// then
 	expected = `Сообщение от AI`
 	if response != expected {
@@ -118,7 +118,7 @@ func Test_SkillCosts(t *testing.T) {
 	// and
 	counter := scriber.GetUserMessageCount(0, "first")
 	if counter != 2 {
-		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 1, counter)
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 2, counter)
 	}
 }
 

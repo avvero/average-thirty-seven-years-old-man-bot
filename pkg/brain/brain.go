@@ -45,7 +45,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("/ai")).say("не веди себя как магл, используй заклинание: интелекто ебанина").
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
-		when(startsWith("интелекто ебанина"), is(brain.scriber.GetUserMessageCount(chatId, user) < 10)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
+		when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 10)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		//
@@ -120,6 +120,16 @@ func (this *Link) replace(from string, to string) *Chain {
 func is(value bool) func(_ string) bool {
 	return func(_ string) bool {
 		return value
+	}
+}
+func cost(brain *Brain, chatId int64, user string, value int) func(_ string) bool {
+	return func(_ string) bool {
+		if brain.scriber.GetUserMessageCount(chatId, user) < value {
+			return true
+		} else {
+			brain.scriber.IncreaseUserMessageStatistics(chatId, user, -value)
+			return false
+		}
 	}
 }
 
