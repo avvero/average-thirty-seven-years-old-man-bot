@@ -49,7 +49,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		//
-		when(is(brain.randomFactor), random(100)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
+		when(is(brain.randomFactor), random(200)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
@@ -319,7 +319,7 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 		return false, ""
 	}
 	message := "Ученик " + this.user
-	score := (utils.RandomUpTo(2) + 1) * 5
+	score := (utils.RandomUpTo(2) + 1) * 50
 	if utils.RandomUpTo(1) == 0 {
 		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
