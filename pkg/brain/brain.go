@@ -318,13 +318,13 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 	if this.brain.openAiClient == nil {
 		return false, ""
 	}
-	message := "Ученик " + this.user + " сказал \"" + text + "\""
+	message := "Ученик " + this.user
 	score := (utils.RandomUpTo(2) + 1) * 5
 	if utils.RandomUpTo(1) == 0 {
-		message += " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
+		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
 	} else {
-		message += " и потерял " + strconv.Itoa(score) + " очков для своего факультета"
+		message += " сказал ерунду \"" + text + "\"" + " и потерял " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -score)
 	}
 	message += ", прокомментируй это будто ты профессор Дамблдор с указанием количества очков и названия факультета Хогвартс, где учится " + this.user + " (придумай смешное название факультету в одно слово)"
