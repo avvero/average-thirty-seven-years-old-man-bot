@@ -1,13 +1,16 @@
 package brain
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/avvero/the_gamers_guild_bot/internal/data"
 	"github.com/avvero/the_gamers_guild_bot/internal/knowledge"
 	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
 )
@@ -48,6 +51,8 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 10)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
+		when(startsWith("напомни")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "напомни ", "")}).
+		when(its("напоминания")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		//
 		when(is(brain.randomFactor), random(200)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
@@ -377,5 +382,44 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
 	} else {
 		return true, response
+	}
+}
+
+type Notify struct {
+	brain  *Brain
+	chatId int64
+	user   string
+	text   string
+}
+
+func (this Notify) Express(ignore string) (has bool, response string) {
+	now := time.Now()
+	nowString := now.Format("2006-01-02 15:04")
+	message := "сейчас " + nowString + ", проанализируй напоминание «" + this.text + "» и представь в json формате с полями: действие, время в формате yyyy-MM-dd hh:mm"
+	err, response := this.brain.openAiClient.Completion(message)
+	if err != nil {
+		fmt.Printf("Could not read data: %s\n", err)
+		return true, "Давай по новой, " + this.user + ", все хуйня!"
+	} else {
+		notification := &data.Notification{}
+		unmarshalError := json.Unmarshal([]byte(response), notification)
+		if unmarshalError != nil {
+			fmt.Printf("Could not read data: %s\n", unmarshalError)
+			return true, "Не могу разобрать, что ты написал, напиши нормально"
+		}
+		if notification.Time == "" || notification.Time == nowString {
+			return true, "Не могу разобрать, что ты написал, напиши нормально"
+		}
+		notificationTime, parseTimeError := time.Parse("2006-01-02 15:04", notification.Time)
+		if parseTimeError != nil {
+			fmt.Printf("Could parse time: %s\n", parseTimeError)
+			return true, "Давай по новой, " + this.user + ", все хуйня!"
+		}
+		if notificationTime.Before(now) {
+			return true, "И как ты себе это представляешь, пес?"
+		}
+		notification.User = this.user
+		this.brain.scriber.AddNotification(this.chatId, *notification)
+		return true, "Готово"
 	}
 }

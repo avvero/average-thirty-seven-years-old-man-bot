@@ -17,12 +17,19 @@ type ChatStatistics struct {
 	UsersStatistics     map[string]*MessageStatistics `json:"userStatistics"`
 	DailyStatistics     map[string]*MessageStatistics `json:"dailyStatistics"`
 	DailyWordStatistics map[string]map[string]int     `json:"-"`
+	Notifications       map[string]*Notification      `json:"notifications"`
 }
 
 type MessageStatistics struct {
 	MessageCounter int     `json:"messageCounter"`
 	ToxicityScore  float64 `json:"toxicityScore"`
 	Tension        int     `json:"tension"`
+}
+
+type Notification struct {
+	User   string
+	Action string
+	Time   string
 }
 
 type JsonBinResponse struct {

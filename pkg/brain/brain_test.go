@@ -287,3 +287,93 @@ func _Test_returnsForLuckyKhaleesifiedText(t *testing.T) {
 		t.Error("Expected and got:", expected, " != ", response)
 	}
 }
+
+func Test_NotificationUnrecognized(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"жопа жопа тра та та\", \"time\": \"\"}"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	// when
+	respond, response, _ := brain.Decision(0, "first", "напомни foo bar")
+	// then
+	expected := `Не могу разобрать, что ты написал, напиши нормально`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_NotificationDeformed(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "неожиданный текст"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	// when
+	respond, response, _ := brain.Decision(0, "first", "напомни foo bar")
+	// then
+	expected := `Не могу разобрать, что ты написал, напиши нормально`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_NotificationOverdue(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"напомни ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 21:07\"}"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	// when
+	respond, response, _ := brain.Decision(0, "first", "напомни ответить Сереге через 1 час и 15 минут назад")
+	// then
+	expected := `И как ты себе это представляешь, пес?`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+}
+
+func Test_NotificationSucceeded(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"напомни ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 23:37\"}"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	// when
+	respond, response, _ := brain.Decision(0, "first", "напомни ответить Сереге через 1 час и 15 минут")
+	// then
+	expected := `Готово`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+	}
+	expectedAction := "напомни ответить Сереге через 1 час и 15 минут"
+	if scriber.GetNotifications(0)["2023-01-24 23:37"].Action != expectedAction {
+		t.Error("Expected: " + expectedAction + ", but got:" + scriber.GetNotifications(0)["2023-01-24 23:37"].Action)
+	}
+	//when
+	respond, response, _ = brain.Decision(0, "first", "напоминания")
+	// then
+	expected = `Notifications:
+ - 2023-01-24 23:37: напомни ответить Сереге через 1 час и 15 минут
+`
+	if response != expected {
+		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
+	}
+
+}

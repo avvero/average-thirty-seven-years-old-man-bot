@@ -274,6 +274,35 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	return sb.String()
 }
 
+func (scriber Scriber) GetNotificationsPrettyPrint(chatId int64) string {
+	sb := strings.Builder{}
+	sb.WriteString("Notifications:\n")
+	notifications := scriber.GetNotifications(chatId)
+	if notifications != nil {
+		for key, value := range notifications {
+			sb.WriteString(" - " + key + ": " + value.Action + "\n")
+		}
+	}
+	return sb.String()
+}
+
+func (scriber Scriber) GetNotifications(chatId int64) map[string]*data.Notification {
+	if scriber.data.ChatStatistics[chatId] == nil {
+		return nil
+	}
+	return scriber.data.ChatStatistics[chatId].Notifications
+}
+
+func (scriber Scriber) AddNotification(chatId int64, notification data.Notification) {
+	if scriber.data.ChatStatistics[chatId] == nil {
+		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+	}
+	if scriber.data.ChatStatistics[chatId].Notifications == nil {
+		scriber.data.ChatStatistics[chatId].Notifications = make(map[string]*data.Notification)
+	}
+	scriber.data.ChatStatistics[chatId].Notifications[notification.Time] = &notification
+}
+
 func sortedKeys(m map[string]*data.MessageStatistics) []string {
 	keys := make([]string, len(m))
 	i := 0
