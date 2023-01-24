@@ -375,5 +375,12 @@ func Test_NotificationSucceeded(t *testing.T) {
 	if response != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
 	}
-
+	//when
+	scriber.RemoveNotification(0, "2023-01-24 23:37")
+	respond, response, _ = brain.Decision(0, "first", "напоминания")
+	// then
+	expected = `Ничего нет, просто ничего, просто 0, ни ху я`
+	if response != expected {
+		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
+	}
 }

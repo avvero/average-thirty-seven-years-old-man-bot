@@ -275,15 +275,18 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 }
 
 func (scriber Scriber) GetNotificationsPrettyPrint(chatId int64) string {
-	sb := strings.Builder{}
-	sb.WriteString("Notifications:\n")
 	notifications := scriber.GetNotifications(chatId)
-	if notifications != nil {
+	if notifications != nil && len(notifications) > 0 {
+		sb := strings.Builder{}
+		sb.WriteString("Notifications:\n")
+
 		for key, value := range notifications {
 			sb.WriteString(" - " + key + ": " + value.Action + "\n")
 		}
+		return sb.String()
+	} else {
+		return "Ничего нет, просто ничего, просто 0, ни ху я"
 	}
-	return sb.String()
 }
 
 func (scriber Scriber) GetNotifications(chatId int64) map[string]*data.Notification {
@@ -291,6 +294,10 @@ func (scriber Scriber) GetNotifications(chatId int64) map[string]*data.Notificat
 		return nil
 	}
 	return scriber.data.ChatStatistics[chatId].Notifications
+}
+
+func (scriber Scriber) GetChatStatistics() map[int64]*data.ChatStatistics {
+	return scriber.data.ChatStatistics
 }
 
 func (scriber Scriber) AddNotification(chatId int64, notification data.Notification) {
@@ -301,6 +308,13 @@ func (scriber Scriber) AddNotification(chatId int64, notification data.Notificat
 		scriber.data.ChatStatistics[chatId].Notifications = make(map[string]*data.Notification)
 	}
 	scriber.data.ChatStatistics[chatId].Notifications[notification.Time] = &notification
+}
+
+func (scriber Scriber) RemoveNotification(chatId int64, time string) {
+	if scriber.data.ChatStatistics[chatId] == nil || scriber.data.ChatStatistics[chatId].Notifications == nil {
+		return
+	}
+	delete(scriber.data.ChatStatistics[chatId].Notifications, time)
 }
 
 func sortedKeys(m map[string]*data.MessageStatistics) []string {

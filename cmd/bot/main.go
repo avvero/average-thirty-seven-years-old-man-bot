@@ -178,6 +178,37 @@ func main() {
 		sendMessage(-1001733786877, 0, "@avveroll, @Gilmar_RU, @wishpering, @justFirst пиздуйте на стэндап")
 	})
 	standupScheduler.StartAsync()
+	// Notifications
+	notificationsTicker := time.NewTicker(1 * time.Minute)
+	notificationDone := make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-notificationDone:
+				ticker.Stop()
+				return
+			case t := <-notificationsTicker.C:
+				fmt.Println("Check notifications", t)
+				for chatId, _ := range scriber.GetChatStatistics() {
+					notifications := scriber.GetNotifications(chatId)
+					if notifications != nil {
+						for _, notification := range notifications {
+							notificationTime, parseTimeError := time.Parse("2006-01-02 15:04", notification.Time)
+							if parseTimeError != nil {
+								fmt.Printf("Could parse time: %s\n", parseTimeError)
+								continue
+							}
+							if notificationTime.Before(t) {
+								fmt.Printf("Time is passed for " + notification.Time + ": " + notification.Action)
+								sendMessage(chatId, 0, "@"+notification.User+", "+notification.Action)
+								scriber.RemoveNotification(chatId, notification.Time)
+							}
+						}
+					}
+				}
+			}
+		}
+	}()
 
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.6")
