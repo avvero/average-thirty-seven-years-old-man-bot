@@ -211,7 +211,7 @@ func main() {
 	}()
 
 	log.Println("Http server started on port " + *httpPort)
-	sendMessage(245851441, 0, "Bot is started, version 1.6")
+	sendMessage(245851441, 0, "Bot is started, version 1.7")
 	err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
 	if err != nil {
 		sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
