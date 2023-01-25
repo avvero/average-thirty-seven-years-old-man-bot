@@ -300,14 +300,15 @@ func (scriber Scriber) GetChatStatistics() map[int64]*data.ChatStatistics {
 	return scriber.data.ChatStatistics
 }
 
-func (scriber Scriber) AddNotification(chatId int64, notification data.Notification) {
+func (scriber Scriber) AddNotification(chatId int64, user string, action string, time string) {
 	if scriber.data.ChatStatistics[chatId] == nil {
 		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
 	}
 	if scriber.data.ChatStatistics[chatId].Notifications == nil {
 		scriber.data.ChatStatistics[chatId].Notifications = make(map[string]*data.Notification)
 	}
-	scriber.data.ChatStatistics[chatId].Notifications[notification.Time] = &notification
+	notification := &data.Notification{User: user, Action: action, Time: time}
+	scriber.data.ChatStatistics[chatId].Notifications[notification.Time] = notification
 }
 
 func (scriber Scriber) RemoveNotification(chatId int64, time string) {

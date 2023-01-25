@@ -299,7 +299,7 @@ func Test_NotificationUnrecognized(t *testing.T) {
 	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
 	// when
-	respond, response, _ := brain.Decision(0, "first", "напомни foo bar")
+	respond, response, _ := brain.Decision(0, "first", "мементо foo bar")
 	// then
 	expected := `Не могу разобрать, что ты написал, напиши нормально`
 	if response != expected {
@@ -318,7 +318,7 @@ func Test_NotificationDeformed(t *testing.T) {
 	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
 	// when
-	respond, response, _ := brain.Decision(0, "first", "напомни foo bar")
+	respond, response, _ := brain.Decision(0, "first", "мементо foo bar")
 	// then
 	expected := `Не могу разобрать, что ты написал, напиши нормально`
 	if response != expected {
@@ -330,14 +330,14 @@ func Test_NotificationOverdue(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"напомни ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 21:07\"}"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"мементо ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 21:07\"}"}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
 	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
 	// when
-	respond, response, _ := brain.Decision(0, "first", "напомни ответить Сереге через 1 час и 15 минут назад")
+	respond, response, _ := brain.Decision(0, "first", "мементо ответить Сереге через 1 час и 15 минут назад")
 	// then
 	expected := `И как ты себе это представляешь, пес?`
 	if response != expected {
@@ -349,38 +349,45 @@ func Test_NotificationSucceeded(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"напомни ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 23:37\"}"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"ответить Сереге через 1 час и 15 минут\", \"time\": \"2030-01-24 23:37\"}"}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
 	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
-	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	brain := NewBrain(true, scriber, &ToxicityDetectorNoop{}, &apiClient)
 	// when
-	respond, response, _ := brain.Decision(0, "first", "напомни ответить Сереге через 1 час и 15 минут")
+	respond, response, _ := brain.Decision(0, "first", "мементо ответить Сереге через 1 час и 15 минут")
 	// then
-	expected := `Готово`
+	expected := `Напомню «ответить Сереге через 1 час и 15 минут» в 2030-01-24 23:37`
 	if response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+		return
 	}
-	expectedAction := "напомни ответить Сереге через 1 час и 15 минут"
-	if scriber.GetNotifications(0)["2023-01-24 23:37"].Action != expectedAction {
-		t.Error("Expected: " + expectedAction + ", but got:" + scriber.GetNotifications(0)["2023-01-24 23:37"].Action)
+	expectedAction := "ответить Сереге через 1 час и 15 минут"
+	gotAction := ""
+	if scriber.GetNotifications(0) != nil && scriber.GetNotifications(0)["2030-01-24 23:37"] != nil {
+		gotAction = scriber.GetNotifications(0)["2030-01-24 23:37"].Action
+	}
+	if gotAction != expectedAction {
+		t.Error("Expected: " + expectedAction + ", but got:" + gotAction)
 	}
 	//when
-	respond, response, _ = brain.Decision(0, "first", "напоминания")
+	respond, response, _ = brain.Decision(0, "first", "мементос ревиленто")
 	// then
 	expected = `Notifications:
- - 2023-01-24 23:37: напомни ответить Сереге через 1 час и 15 минут
+ - 2030-01-24 23:37: ответить Сереге через 1 час и 15 минут
 `
 	if response != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
+		return
 	}
 	//when
-	scriber.RemoveNotification(0, "2023-01-24 23:37")
-	respond, response, _ = brain.Decision(0, "first", "напоминания")
+	scriber.RemoveNotification(0, "2030-01-24 23:37")
+	respond, response, _ = brain.Decision(0, "first", "мементос ревиленто")
 	// then
 	expected = `Ничего нет, просто ничего, просто 0, ни ху я`
 	if response != expected {
 		t.Errorf("Expected: \"%s\" but got: \"%s\"", expected, response)
+		return
 	}
 }

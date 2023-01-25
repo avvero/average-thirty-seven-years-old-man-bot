@@ -51,8 +51,9 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
-		when(startsWith("напомни")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "напомни ", "")}).
-		when(its("напоминания")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
+		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
+		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
+		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
 		//
 		when(is(brain.randomFactor), random(200)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
@@ -390,6 +391,7 @@ type Notify struct {
 	chatId int64
 	user   string
 	text   string
+	action string
 }
 
 func (this Notify) Express(ignore string) (has bool, response string) {
@@ -419,7 +421,12 @@ func (this Notify) Express(ignore string) (has bool, response string) {
 			return true, "И как ты себе это представляешь, пес?"
 		}
 		notification.User = this.user
-		this.brain.scriber.AddNotification(this.chatId, *notification)
-		return true, "Напомню «" + notification.Action + "» в " + notification.Time
+		if this.action != "" {
+			this.brain.scriber.AddNotification(this.chatId, this.user, this.action, notification.Time)
+			return true, "Напомню «" + this.action + "» в " + notification.Time
+		} else {
+			this.brain.scriber.AddNotification(this.chatId, this.user, notification.Action, notification.Time)
+			return true, "Напомню «" + notification.Action + "» в " + notification.Time
+		}
 	}
 }
