@@ -423,7 +423,7 @@ func (this Notify) Express(ignore string) (has bool, response string) {
 			return true, "И как ты себе это представляешь, пес?"
 		}
 		notification.User = this.user
-		if this.action != "" {
+		if -1001733786877 == this.chatId && this.action != "" {
 			this.brain.scriber.AddNotification(this.chatId, this.user, this.action, notification.Time)
 			return true, "Напомню «" + this.action + "» в " + notification.Time
 		} else {
