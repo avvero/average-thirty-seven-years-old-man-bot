@@ -395,7 +395,7 @@ type Notify struct {
 func (this Notify) Express(ignore string) (has bool, response string) {
 	now := time.Now()
 	nowString := now.Format("2006-01-02 15:04")
-	message := "сейчас " + nowString + ", проанализируй напоминание «" + this.text + "» и представь в json формате с полями: действие, время в формате yyyy-MM-dd hh:mm"
+	message := "сейчас " + nowString + ", проанализируй напоминание «" + this.text + "» и представь в json формате с полями: action, time в формате yyyy-MM-dd hh:mm"
 	err, response := this.brain.openAiClient.Completion(message)
 	if err != nil {
 		fmt.Printf("Could not read data: %s\n", err)
