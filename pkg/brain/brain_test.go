@@ -391,3 +391,23 @@ func Test_NotificationSucceeded(t *testing.T) {
 		return
 	}
 }
+
+func Test_NotificationSucceeded2(t *testing.T) {
+	// setup
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		fmt.Fprintln(w, `{"choices": [{"text": "{'action': 'ответить Сереге через 1 час и 15 минут', 'time': '2030-01-24 23:37'}"}]}`)
+	}))
+	defer ts.Close()
+	apiClient := openai.NewApiClient(ts.URL, "key")
+	scriber := statistics.NewScriberWithData(&data.Data{ChatStatistics: make(map[int64]*data.ChatStatistics)}, "http://url")
+	brain := NewBrain(true, scriber, &ToxicityDetectorNoop{}, &apiClient)
+	// when
+	respond, response, _ := brain.Decision(0, "first", "мементо ответить Сереге через 1 час и 15 минут")
+	// then
+	expected := `Напомню «ответить Сереге через 1 час и 15 минут» в 2030-01-24 23:37`
+	if response != expected {
+		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
+		return
+	}
+}

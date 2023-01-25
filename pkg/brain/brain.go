@@ -403,6 +403,8 @@ func (this Notify) Express(ignore string) (has bool, response string) {
 		fmt.Printf("Could not read data: %s\n", err)
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
 	} else {
+		response = strings.ReplaceAll(response, "'", "\"")
+		//
 		notification := &data.Notification{}
 		unmarshalError := json.Unmarshal([]byte(response), notification)
 		if unmarshalError != nil {
