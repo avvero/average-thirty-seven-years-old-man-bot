@@ -420,6 +420,6 @@ func (this Notify) Express(ignore string) (has bool, response string) {
 		}
 		notification.User = this.user
 		this.brain.scriber.AddNotification(this.chatId, *notification)
-		return true, "Готово"
+		return true, "Напомню «" + notification.Action + "» в " + notification.Time
 	}
 }

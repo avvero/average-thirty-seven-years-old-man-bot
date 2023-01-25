@@ -64,6 +64,7 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	}
 	defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)
+	fmt.Println("Response from openai: " + string(body))
 	responseBody := &Response{}
 	unmarshalError := json.Unmarshal(body, responseBody)
 	if unmarshalError != nil {

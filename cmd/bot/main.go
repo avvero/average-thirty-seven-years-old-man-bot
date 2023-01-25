@@ -188,7 +188,7 @@ func main() {
 				ticker.Stop()
 				return
 			case t := <-notificationsTicker.C:
-				fmt.Println("Check notifications", t)
+				fmt.Println("Check notifications, time: ", t)
 				for chatId, _ := range scriber.GetChatStatistics() {
 					notifications := scriber.GetNotifications(chatId)
 					if notifications != nil {
