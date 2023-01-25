@@ -200,7 +200,7 @@ func main() {
 							}
 							if notificationTime.Before(t) {
 								fmt.Printf("Time is passed for " + notification.Time + ": " + notification.Action)
-								sendMessage(chatId, 0, "@"+notification.User+", "+notification.Action)
+								sendMessage(chatId, 0, "Напоминаю по просьбе @"+notification.User+": "+notification.Action)
 								scriber.RemoveNotification(chatId, notification.Time)
 							}
 						}
