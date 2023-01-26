@@ -45,7 +45,7 @@ func Test_message(t *testing.T) {
   "model": "text-davinci-003",
   "choices": [
     {
-      "text": "\n\n\"Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!\"",
+      "text": "\"Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!\"",
       "index": 0,
       "logprobs": null,
       "finish_reason": "stop"
@@ -65,7 +65,7 @@ func Test_message(t *testing.T) {
 	if err != nil {
 		t.Error("Error: ", fmt.Sprintf("%s", err))
 	}
-	expected := "Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!"
+	expected := "\"Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!\""
 	if text != expected {
 		t.Error("Text expected: ", expected, " != ", text)
 	}

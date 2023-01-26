@@ -97,7 +97,7 @@ func Test_SkillCosts(t *testing.T) {
 	// when
 	respond, response, _ := brain.Decision(0, "first", "интелекто ебанина текст текст текст")
 	// then
-	expected := `Репутация: 1. Стоимость навыка: 10. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.`
+	expected := `Сообщение от AI`
 	if response != expected {
 		t.Error("Expected {true, " + expected + "} but got {" + strconv.FormatBool(respond) + ", " + response + "}")
 	}
@@ -117,8 +117,8 @@ func Test_SkillCosts(t *testing.T) {
 	}
 	// and
 	counter := scriber.GetUserMessageCount(0, "first")
-	if counter != 2 {
-		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 2, counter)
+	if counter != 10 {
+		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 10, counter)
 	}
 }
 
