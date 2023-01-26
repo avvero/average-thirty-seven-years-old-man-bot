@@ -297,7 +297,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	// Archived
 	if archivedCounter > 0 {
 		sb.WriteString("\n")
-		sb.WriteString("Archived persons: " + strconv.Itoa(archivedCounter) + "\n")
+		sb.WriteString("Oblivion: " + strconv.Itoa(archivedCounter) + "\n")
 		sb.WriteString(archivedMessage.String())
 	}
 	sb.WriteString("\n")
