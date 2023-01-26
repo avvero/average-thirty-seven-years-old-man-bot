@@ -48,29 +48,31 @@ func (scriber Scriber) process() {
 		case pack := <-scriber.packs:
 			message := pack.message
 			scriber.mutex.Lock()
+			//
+			now := time.Now()
+			date := now.Format("2006-01-02")
 			// By user
 			chatStatistics := scriber.data.ChatStatistics[message.Chat.Id]
 			if chatStatistics == nil {
-				chatStatistics = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+				chatStatistics = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 				scriber.data.ChatStatistics[message.Chat.Id] = chatStatistics
 			}
 			user := scriber.GetUser(message)
 			userStatistics := chatStatistics.UsersStatistics[user]
 			if userStatistics == nil {
-				userStatistics = &data.MessageStatistics{}
+				userStatistics = &data.UserMessageStatistics{}
 				chatStatistics.UsersStatistics[user] = userStatistics
 			}
 			userStatistics.MessageCounter++
+			userStatistics.LastMessageDate = date
 			userStatistics.ToxicityScore = calculateToxicity(userStatistics.ToxicityScore, pack.toxicityScore)
 			// Daily
-			now := time.Now()
-			date := now.Format("2006-01-02")
 			if chatStatistics.DailyStatistics == nil {
-				chatStatistics.DailyStatistics = make(map[string]*data.MessageStatistics)
+				chatStatistics.DailyStatistics = make(map[string]*data.DayMessageStatistics)
 			}
 			dailyStatistics := chatStatistics.DailyStatistics[date]
 			if dailyStatistics == nil {
-				dailyStatistics = &data.MessageStatistics{}
+				dailyStatistics = &data.DayMessageStatistics{}
 				chatStatistics.DailyStatistics[date] = dailyStatistics
 			}
 			dailyStatistics.MessageCounter++
@@ -168,10 +170,10 @@ func (scriber Scriber) GetUserMessageCount(chatId int64, user string) int {
 func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage, messageCounter int) {
 	user := scriber.GetUser(message)
 	if scriber.data.ChatStatistics[message.Chat.Id] == nil {
-		scriber.data.ChatStatistics[message.Chat.Id] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+		scriber.data.ChatStatistics[message.Chat.Id] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
 	if scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] == nil {
-		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] = &data.MessageStatistics{}
+		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] = &data.UserMessageStatistics{}
 	}
 	scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user].MessageCounter = messageCounter
 }
@@ -203,12 +205,20 @@ func (scriber Scriber) SetUserTension(chatId int64, user string, tension int) {
 	defer scriber.mutex.Unlock()
 
 	if scriber.data.ChatStatistics[chatId] == nil {
-		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
 	if scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
-		scriber.data.ChatStatistics[chatId].UsersStatistics[user] = &data.MessageStatistics{}
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] = &data.UserMessageStatistics{}
 	}
 	scriber.data.ChatStatistics[chatId].UsersStatistics[user].Tension = tension
+}
+
+func (scriber Scriber) SetUserLastMessageDate(chatId int64, user string, date string) {
+	if scriber.data.ChatStatistics[chatId] == nil ||
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
+		return
+	}
+	scriber.data.ChatStatistics[chatId].UsersStatistics[user].LastMessageDate = date
 }
 
 func (scriber Scriber) GetStatisticsPage() string {
@@ -227,6 +237,8 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 
 	sb := strings.Builder{}
 	sb.WriteString("Top 10 users:\n")
+	archivedCounter := 0
+	archivedMessage := strings.Builder{}
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
 	usListEnd := len(usKeys)
 	if len(usKeys) >= 10 {
@@ -235,7 +247,20 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	for i := 0; i < usListEnd; i++ {
 		messages := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter)
 		toxicity := fmt.Sprintf("%.2f", chatStatistics.UsersStatistics[usKeys[i]].ToxicityScore)
-		sb.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
+
+		if chatStatistics.UsersStatistics[usKeys[i]].LastMessageDate == "" {
+			archivedCounter++
+			archivedMessage.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + "), last message date: unknown" + "\n")
+		} else {
+			lastMessageDate, _ := time.Parse("2006-01-02", chatStatistics.UsersStatistics[usKeys[i]].LastMessageDate)
+			if time.Now().AddDate(0, 0, -7).After(lastMessageDate) {
+				archivedCounter++
+				archivedMessage.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + "), last message date: " +
+					chatStatistics.UsersStatistics[usKeys[i]].LastMessageDate + "\n")
+			} else {
+				sb.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
+			}
+		}
 	}
 	sb.WriteString("\n")
 	sb.WriteString("Last 10 days:\n")
@@ -268,6 +293,12 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 			tension := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].Tension)
 			sb.WriteString(" - " + usKeys[i] + ": tension = " + tension + "\n")
 		}
+	}
+	// Archived
+	if archivedCounter > 0 {
+		sb.WriteString("\n")
+		sb.WriteString("Archived persons: " + strconv.Itoa(archivedCounter) + "\n")
+		sb.WriteString(archivedMessage.String())
 	}
 	sb.WriteString("\n")
 	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))
@@ -302,7 +333,7 @@ func (scriber Scriber) GetChatStatistics() map[int64]*data.ChatStatistics {
 
 func (scriber Scriber) AddNotification(chatId int64, user string, action string, time string) {
 	if scriber.data.ChatStatistics[chatId] == nil {
-		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.MessageStatistics)}
+		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
 	if scriber.data.ChatStatistics[chatId].Notifications == nil {
 		scriber.data.ChatStatistics[chatId].Notifications = make(map[string]*data.Notification)
@@ -318,7 +349,7 @@ func (scriber Scriber) RemoveNotification(chatId int64, time string) {
 	delete(scriber.data.ChatStatistics[chatId].Notifications, time)
 }
 
-func sortedKeys(m map[string]*data.MessageStatistics) []string {
+func sortedKeys(m map[string]*data.DayMessageStatistics) []string {
 	keys := make([]string, len(m))
 	i := 0
 	for k := range m {
@@ -331,10 +362,10 @@ func sortedKeys(m map[string]*data.MessageStatistics) []string {
 
 type SortByMessageCounterTuple struct {
 	key   string
-	value *data.MessageStatistics
+	value *data.UserMessageStatistics
 }
 
-func sortByMessageCounter(statistics map[string]*data.MessageStatistics) []string {
+func sortByMessageCounter(statistics map[string]*data.UserMessageStatistics) []string {
 	tuples := make([]SortByMessageCounterTuple, len(statistics))
 	i := 0
 	for k := range statistics {

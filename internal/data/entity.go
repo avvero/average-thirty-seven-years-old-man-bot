@@ -14,16 +14,22 @@ type Data struct {
 }
 
 type ChatStatistics struct {
-	UsersStatistics     map[string]*MessageStatistics `json:"userStatistics"`
-	DailyStatistics     map[string]*MessageStatistics `json:"dailyStatistics"`
-	DailyWordStatistics map[string]map[string]int     `json:"-"`
-	Notifications       map[string]*Notification      `json:"notifications,omitempty"`
+	UsersStatistics     map[string]*UserMessageStatistics `json:"userStatistics"`
+	DailyStatistics     map[string]*DayMessageStatistics  `json:"dailyStatistics"`
+	DailyWordStatistics map[string]map[string]int         `json:"-"`
+	Notifications       map[string]*Notification          `json:"notifications,omitempty"`
 }
 
-type MessageStatistics struct {
+type UserMessageStatistics struct {
+	MessageCounter  int     `json:"messageCounter"`
+	ToxicityScore   float64 `json:"toxicityScore"`
+	Tension         int     `json:"tension"`
+	LastMessageDate string  `json:"lastMessageDate,omitempty"`
+}
+
+type DayMessageStatistics struct {
 	MessageCounter int     `json:"messageCounter"`
 	ToxicityScore  float64 `json:"toxicityScore"`
-	Tension        int     `json:"tension"`
 }
 
 type Notification struct {

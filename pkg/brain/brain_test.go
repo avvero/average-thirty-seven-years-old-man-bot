@@ -58,20 +58,35 @@ func Test_responseOnCommandStatistics(t *testing.T) {
 		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "two",
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
 	}, 0)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "fifth"}, Text: "two",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	}, 0)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "fourth"}, Text: "two",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
+	}, 0)
 	time.Sleep(100 * time.Millisecond) // TODO none reliable
 	scriber.SetUserTension(0, "third", 1)
+	scriber.SetUserLastMessageDate(0, "fifth", "")
+	scriber.SetUserLastMessageDate(0, "fourth", "2022-01-01")
+	//
 	brain := NewBrain(false, scriber, &ToxicityDetectorNoop{}, nil)
 	respond, response, _ := brain.Decision(0, "user", "статистика хуистика")
 	date := time.Now().Format("2006-01-02")
 	expected := `Top 10 users:
  - first: 2 (t: 0.00)
- - third: 0 (t: 0.00)
 
 Last 10 days:
- - ` + date + `: 2 (t: 0.00)
+ - ` + date + `: 4 (t: 0.00)
 
 Top 10 infuriating persons:
  - third: tension = 1
+
+Archived persons: 3
+ - fifth: 1 (t: 0.00), last message date: unknown
+ - fourth: 1 (t: 0.00), last message date: 2022-01-01
+ - third: 0 (t: 0.00), last message date: unknown
 
 To get more information visit: http://url?id=0`
 	if !respond || response != expected {
@@ -160,28 +175,28 @@ func Test_returnsOnSomeText(t *testing.T) {
 		"gG": "gg",
 		"Gg": "gg",
 
-		"morrowind":             "Morrowind - одна из лучших игр эва",
-		"моровинд":              "Morrowind - одна из лучших игр эва",
-		"морровинд":             "Morrowind - одна из лучших игр эва",
-		"бла бла бла morrowind": "Morrowind - одна из лучших игр эва",
+		"morrowind":                         "Morrowind - одна из лучших игр эва",
+		"моровинд":                          "Morrowind - одна из лучших игр эва",
+		"морровинд":                         "Morrowind - одна из лучших игр эва",
+		"бла бла бла morrowind":             "Morrowind - одна из лучших игр эва",
 		"бла бла бла morrowind бла бла бла": "Morrowind - одна из лучших игр эва",
 
-		"Elden Ring": "Elden Ring - это величие",
+		"Elden Ring":                         "Elden Ring - это величие",
 		"бла бла бла Elden Ring бла бла бла": "Elden Ring - это величие",
-		"elden ring": "Elden Ring - это величие",
+		"elden ring":                         "Elden Ring - это величие",
 		"бла бла бла elden ring бла бла бла": "Elden Ring - это величие",
-		"ER": "Elden Ring - это величие",
-		"бла бла бла ER бла бла бла": "Elden Ring - это величие",
-		"ЕР": "Elden Ring - это величие",
-		"бла бла бла ЕР бла бла бла": "Elden Ring - это величие",
-		"ЭР": "Elden Ring - это величие",
-		"бла бла бла ЭР бла бла бла": "Elden Ring - это величие",
-		"Элден ринг":                 "Elden Ring - это величие",
-		"Елден РИНГ":                 "Elden Ring - это величие",
+		"ER":                                 "Elden Ring - это величие",
+		"бла бла бла ER бла бла бла":         "Elden Ring - это величие",
+		"ЕР":                                 "Elden Ring - это величие",
+		"бла бла бла ЕР бла бла бла":         "Elden Ring - это величие",
+		"ЭР":                                 "Elden Ring - это величие",
+		"бла бла бла ЭР бла бла бла":         "Elden Ring - это величие",
+		"Элден ринг":                         "Elden Ring - это величие",
+		"Елден РИНГ":                         "Elden Ring - это величие",
 
-		"spotify":  "Эти н'вахи Антону косарик должны за подписку",
-		"Spotify":  "Эти н'вахи Антону косарик должны за подписку",
-		"спотифай": "Эти н'вахи Антону косарик должны за подписку",
+		"spotify":                          "Эти н'вахи Антону косарик должны за подписку",
+		"Spotify":                          "Эти н'вахи Антону косарик должны за подписку",
+		"спотифай":                         "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла spotify бла бла бла":  "Эти н'вахи Антону косарик должны за подписку",
 		"бла бла бла спотифай бла бла бла": "Эти н'вахи Антону косарик должны за подписку",
 
