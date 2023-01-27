@@ -452,6 +452,9 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 		if user == this.user {
 			continue
 		}
+		if user == "bot" {
+			continue
+		}
 		lastMessageDateTime := userActivity[user]
 		if lastMessageDateTime == "" {
 			continue
