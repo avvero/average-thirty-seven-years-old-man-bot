@@ -222,6 +222,16 @@ func (scriber Scriber) SetUserLastMessageDate(chatId int64, user string, date st
 	scriber.data.ChatStatistics[chatId].UsersStatistics[user].LastMessageDate = date
 }
 
+func (scriber Scriber) SetUserLastMessageDateTime(chatId int64, user string, dateTime string) {
+	if scriber.data.ChatStatistics[chatId] == nil {
+		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
+	}
+	if scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
+		scriber.data.ChatStatistics[chatId].UsersStatistics[user] = &data.UserMessageStatistics{}
+	}
+	scriber.data.ChatStatistics[chatId].UsersStatistics[user].LastMessageDateTime = dateTime
+}
+
 func (scriber Scriber) GetStatisticsPage() string {
 	return scriber.statisticsPage
 }
@@ -346,6 +356,16 @@ func (scriber Scriber) RemoveNotification(chatId int64, time string) {
 		return
 	}
 	delete(scriber.data.ChatStatistics[chatId].Notifications, time)
+}
+
+func (scriber Scriber) GetUserActivity(chatId int64) map[string]string {
+	result := make(map[string]string)
+	if scriber.GetStatistics(chatId) != nil {
+		for user, statistics := range scriber.GetStatistics(chatId).UsersStatistics {
+			result[user] = statistics.LastMessageDateTime
+		}
+	}
+	return result
 }
 
 func sortedKeys(m map[string]*data.DayMessageStatistics) []string {

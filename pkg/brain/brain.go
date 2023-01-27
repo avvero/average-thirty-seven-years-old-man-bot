@@ -8,6 +8,7 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -56,9 +57,9 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
 		//
 		when(is(brain.randomFactor), random(200)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.99)).say("токсик").
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.98)).say("на грани щас").
-		when(is(brain.randomFactor), random(10), is(toxicityScore >= 0.92)).say("осторожнее").
+		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&ToxicReparation{brain: brain, chatId: chatId, user: user}).
+		when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
+		when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
 		//when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал остроумный джентльмен."}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(1000), length(5)).then(&HuefyLastWordIntention{}).
@@ -431,4 +432,54 @@ func (this Notify) Express(ignore string) (has bool, response string) {
 			return true, "Напомню «" + notification.Action + "» в " + notification.Time
 		}
 	}
+}
+
+type ToxicReparation struct {
+	brain  *Brain
+	chatId int64
+	user   string
+}
+
+func (this ToxicReparation) Express(ignore string) (has bool, response string) {
+	fiveMinutesAgo := time.Now().UTC().Add(-time.Minute * time.Duration(5))
+	affectedMessage := strings.Builder{}
+	affectedMessage.WriteString("Выражаю глубокую озабоченность касательно токсичного поведения " + this.user +
+		", такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация за моральный ущерб: \n")
+	userActivity := this.brain.scriber.GetUserActivity(this.chatId)
+	usKeys := sortByMessageCounter(userActivity)
+	affected := 0
+	for _, user := range usKeys {
+		lastMessageDateTime := userActivity[user]
+		if lastMessageDateTime == "" {
+			continue
+		}
+		dateTime, err := time.ParseInLocation("2006-01-02 15:04:05", lastMessageDateTime, time.Local)
+		if err != nil {
+			fmt.Printf("Can't parse date %s: %s", lastMessageDateTime, err)
+		}
+		if dateTime.After(fiveMinutesAgo) {
+			affected++
+			affectedMessage.WriteString(" - " + user + ": 10 баллов\n")
+			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, user, 10)
+		}
+	}
+	if affected == 0 {
+		return true, "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение могло " +
+			"нанесло моральный ущерб некоторым гражданам, \nно к счастью все отделались легким негативом."
+	} else {
+		return true, affectedMessage.String()
+	}
+}
+
+func sortByMessageCounter(activity map[string]string) []string {
+	users := make([]string, len(activity))
+	i := 0
+	for k := range activity {
+		users[i] = k
+		i++
+	}
+	sort.Slice(users, func(i, j int) bool {
+		return users[i] < users[j]
+	})
+	return users
 }
