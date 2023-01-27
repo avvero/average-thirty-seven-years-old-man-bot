@@ -95,7 +95,10 @@ func Test_statisticsSerialization(t *testing.T) {
 	}
 	jsonString := utils.PrintJson(scriber.GetStatistics(1))
 	date := time.Now().Format("2006-01-02")
-	expected := `{"userStatistics":{"first":{"messageCounter":1,"toxicityScore":0,"tension":0,"lastMessageDate":"` + date + `"},"second":{"messageCounter":1,"toxicityScore":0,"tension":0,"lastMessageDate":"` + date + `"}},"dailyStatistics":{"` + date + `":{"messageCounter":2,"toxicityScore":0}}}`
+	dateTime := time.Now().Format("2006-01-02 15:04:05")
+	expected := `{"userStatistics":{"first":{"messageCounter":1,"toxicityScore":0,"tension":0,"lastMessageDate":"` +
+		date + `","lastMessageDateTime":"` + dateTime + `"},"second":{"messageCounter":1,"toxicityScore":0,"tension":0,"lastMessageDate":"` +
+		date + `","lastMessageDateTime":"` + dateTime + `"}},"dailyStatistics":{"` + date + `":{"messageCounter":2,"toxicityScore":0}}}`
 	if jsonString != expected {
 		t.Errorf("Test failed.\nExpected: \"%s\" \nbut got : \"%s\"", expected, jsonString)
 	}

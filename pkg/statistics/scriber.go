@@ -65,6 +65,7 @@ func (scriber Scriber) process() {
 			}
 			userStatistics.MessageCounter++
 			userStatistics.LastMessageDate = date
+			userStatistics.LastMessageDateTime = now.Format("2006-01-02 15:04:05")
 			userStatistics.ToxicityScore = calculateToxicity(userStatistics.ToxicityScore, pack.toxicityScore)
 			// Daily
 			if chatStatistics.DailyStatistics == nil {
@@ -295,8 +296,8 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	// Archived
 	if archivedCounter > 0 {
 		sb.WriteString("\n")
-		sb.WriteString("Oblivion: " + strconv.Itoa(archivedCounter) + "\n")
-		sb.WriteString(archivedMessage.String())
+		sb.WriteString("Between-Morrowind-And-Skyrim: " + strconv.Itoa(archivedCounter) + "\n")
+		//sb.WriteString(archivedMessage.String())
 	}
 	sb.WriteString("\n")
 	sb.WriteString("To get more information visit: " + scriber.GetStatisticsPage() + "?id=" + strconv.FormatInt(chatId, 10))

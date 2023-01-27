@@ -83,10 +83,7 @@ Last 10 days:
 Top 10 infuriating persons:
  - third: tension = 1
 
-Oblivion: 3
- - fifth: 1 (t: 0.00), last message date: unknown
- - fourth: 1 (t: 0.00), last message date: 2022-01-01
- - third: 0 (t: 0.00), last message date: unknown
+Between-Morrowind-And-Skyrim: 3
 
 To get more information visit: http://url?id=0`
 	if !respond || response != expected {

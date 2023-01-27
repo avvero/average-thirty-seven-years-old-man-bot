@@ -21,10 +21,11 @@ type ChatStatistics struct {
 }
 
 type UserMessageStatistics struct {
-	MessageCounter  int     `json:"messageCounter"`
-	ToxicityScore   float64 `json:"toxicityScore"`
-	Tension         int     `json:"tension"`
-	LastMessageDate string  `json:"lastMessageDate,omitempty"`
+	MessageCounter      int     `json:"messageCounter"`
+	ToxicityScore       float64 `json:"toxicityScore"`
+	Tension             int     `json:"tension"`
+	LastMessageDate     string  `json:"lastMessageDate,omitempty"`
+	LastMessageDateTime string  `json:"lastMessageDateTime,omitempty"`
 }
 
 type DayMessageStatistics struct {
