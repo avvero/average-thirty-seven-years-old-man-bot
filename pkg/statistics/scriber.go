@@ -152,6 +152,9 @@ func (scriber Scriber) GetUser(message *telegram.WebhookRequestMessage) string {
 }
 
 func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage) int {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	user := scriber.GetUser(message)
 	if scriber.data.ChatStatistics[message.Chat.Id] == nil ||
 		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] == nil {
@@ -161,6 +164,9 @@ func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage
 }
 
 func (scriber Scriber) GetUserMessageCount(chatId int64, user string) int {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil ||
 		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
 		return 0
@@ -169,6 +175,9 @@ func (scriber Scriber) GetUserMessageCount(chatId int64, user string) int {
 }
 
 func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage, messageCounter int) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	user := scriber.GetUser(message)
 	if scriber.data.ChatStatistics[message.Chat.Id] == nil {
 		scriber.data.ChatStatistics[message.Chat.Id] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
@@ -215,6 +224,9 @@ func (scriber Scriber) SetUserTension(chatId int64, user string, tension int) {
 }
 
 func (scriber Scriber) SetUserLastMessageDate(chatId int64, user string, date string) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil ||
 		scriber.data.ChatStatistics[chatId].UsersStatistics[user] == nil {
 		return
@@ -223,6 +235,9 @@ func (scriber Scriber) SetUserLastMessageDate(chatId int64, user string, date st
 }
 
 func (scriber Scriber) SetUserLastMessageDateTime(chatId int64, user string, dateTime string) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil {
 		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
@@ -238,6 +253,9 @@ func (scriber Scriber) GetStatisticsPage() string {
 
 // TODO move to external object
 func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics == nil ||
 		scriber.data.ChatStatistics[chatId] == nil ||
 		scriber.data.ChatStatistics[chatId].UsersStatistics == nil ||
@@ -315,6 +333,9 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 }
 
 func (scriber Scriber) GetNotificationsPrettyPrint(chatId int64) string {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	notifications := scriber.GetNotifications(chatId)
 	if notifications != nil && len(notifications) > 0 {
 		sb := strings.Builder{}
@@ -341,6 +362,9 @@ func (scriber Scriber) GetChatStatistics() map[int64]*data.ChatStatistics {
 }
 
 func (scriber Scriber) AddNotification(chatId int64, user string, action string, time string) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil {
 		scriber.data.ChatStatistics[chatId] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
@@ -352,6 +376,9 @@ func (scriber Scriber) AddNotification(chatId int64, user string, action string,
 }
 
 func (scriber Scriber) RemoveNotification(chatId int64, time string) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
 	if scriber.data.ChatStatistics[chatId] == nil || scriber.data.ChatStatistics[chatId].Notifications == nil {
 		return
 	}
@@ -359,6 +386,9 @@ func (scriber Scriber) RemoveNotification(chatId int64, time string) {
 }
 
 func (scriber Scriber) GetUserActivity(chatId int64) map[string]string {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+	
 	result := make(map[string]string)
 	if scriber.GetStatistics(chatId) != nil {
 		for user, statistics := range scriber.GetStatistics(chatId).UsersStatistics {
