@@ -449,6 +449,9 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 	usKeys := sortByMessageCounter(userActivity)
 	affected := 0
 	for _, user := range usKeys {
+		if user == this.user {
+			continue
+		}
 		lastMessageDateTime := userActivity[user]
 		if lastMessageDateTime == "" {
 			continue

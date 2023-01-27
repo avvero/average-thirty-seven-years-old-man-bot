@@ -48,6 +48,7 @@ func Test_returnsForFullToxic(t *testing.T) {
 		Chat: &telegram.WebhookRequestMessageChat{Id: 0},
 	}, 0)
 	time.Sleep(10 * time.Millisecond) // TODO none reliable
+	scriber.SetUserLastMessageDateTime(0, "user", now.Add(-time.Minute*time.Duration(1)).Format(dateTimeFormat))
 	scriber.SetUserLastMessageDateTime(0, "third", now.Add(-time.Minute*time.Duration(1)).Format(dateTimeFormat))
 	scriber.SetUserLastMessageDateTime(0, "fourth", now.Add(-time.Minute*time.Duration(4)).Format(dateTimeFormat))
 	scriber.SetUserLastMessageDateTime(0, "fifth", now.Add(-time.Minute*time.Duration(5)).Format(dateTimeFormat))
