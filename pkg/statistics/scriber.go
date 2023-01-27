@@ -270,7 +270,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	archivedMessage := strings.Builder{}
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
 	topUsersCounter := 0
-	for i := 0; i < len(usKeys) || topUsersCounter == 10; i++ {
+	for i := 0; i < len(usKeys) && topUsersCounter <= 10; i++ {
 		messages := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter)
 		toxicity := fmt.Sprintf("%.2f", chatStatistics.UsersStatistics[usKeys[i]].ToxicityScore)
 
@@ -388,7 +388,7 @@ func (scriber Scriber) RemoveNotification(chatId int64, time string) {
 func (scriber Scriber) GetUserActivity(chatId int64) map[string]string {
 	scriber.mutex.Lock()
 	defer scriber.mutex.Unlock()
-	
+
 	result := make(map[string]string)
 	if scriber.GetStatistics(chatId) != nil {
 		for user, statistics := range scriber.GetStatistics(chatId).UsersStatistics {
