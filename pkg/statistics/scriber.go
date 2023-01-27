@@ -240,11 +240,8 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 	archivedCounter := 0
 	archivedMessage := strings.Builder{}
 	usKeys := sortByMessageCounter(chatStatistics.UsersStatistics)
-	usListEnd := len(usKeys)
-	if len(usKeys) >= 10 {
-		usListEnd = 10
-	}
-	for i := 0; i < usListEnd; i++ {
+	topUsersCounter := 0
+	for i := 0; i < len(usKeys) || topUsersCounter == 10; i++ {
 		messages := strconv.Itoa(chatStatistics.UsersStatistics[usKeys[i]].MessageCounter)
 		toxicity := fmt.Sprintf("%.2f", chatStatistics.UsersStatistics[usKeys[i]].ToxicityScore)
 
@@ -258,6 +255,7 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 				archivedMessage.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + "), last message date: " +
 					chatStatistics.UsersStatistics[usKeys[i]].LastMessageDate + "\n")
 			} else {
+				topUsersCounter++
 				sb.WriteString(" - " + usKeys[i] + ": " + messages + " (t: " + toxicity + ")" + "\n")
 			}
 		}
