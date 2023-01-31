@@ -138,7 +138,7 @@ func main() {
 			webhookRequest.Message.Chat.Title + ": " + strconv.FormatBool(respond) + ": " + response)
 		if respond {
 			go func() {
-				time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
+				//time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
 				sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
