@@ -59,10 +59,10 @@ func Test_returnsForFullToxic(t *testing.T) {
 	toxicityDetector := &ToxicityDetectorNoop{score: 1.00}
 	brain := NewBrain(true, scriber, toxicityDetector, nil)
 	expected := `Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация за моральный ущерб: 
- - first: 10 баллов
- - fourth: 10 баллов
- - second: 10 баллов
- - third: 10 баллов
+ - first: +10
+ - fourth: +10
+ - second: +10
+ - third: +10
 `
 	respond, response, _ := brain.Decision(0, "user", "any")
 	if !respond || response != expected {
