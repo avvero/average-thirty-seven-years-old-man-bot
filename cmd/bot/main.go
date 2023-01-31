@@ -221,7 +221,7 @@ func main() {
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
 	jsonBinClient.Write(data)
-	sendMessage(245851441, 0, "Bot is stopped, version 1.5")
+	sendMessage(245851441, 0, "Bot is stopped, version 1.6")
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
