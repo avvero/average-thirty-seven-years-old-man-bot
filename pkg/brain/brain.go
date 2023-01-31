@@ -444,7 +444,7 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 	fiveMinutesAgo := time.Now().UTC().Add(-time.Minute * time.Duration(5))
 	affectedMessage := strings.Builder{}
 	affectedMessage.WriteString("Выражаю глубокую озабоченность касательно токсичного поведения " + this.user +
-		", такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация за моральный ущерб: \n")
+		", такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация: \n")
 	userActivity := this.brain.scriber.GetUserActivity(this.chatId)
 	usKeys := sortByMessageCounter(userActivity)
 	affected := 0
@@ -471,7 +471,7 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 		}
 	}
 	if affected == 0 {
-		return true, "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение могло " +
+		return true, "Выражаю глубокую озабоченность касательно токсичного поведения " + this.user + ", такое поведение могло " +
 			"нанесло моральный ущерб некоторым гражданам, \nно к счастью все отделались легким негативом."
 	} else {
 		return true, affectedMessage.String()
