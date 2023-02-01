@@ -20,10 +20,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: latest
-          labels: avvero/gg_bot
+          tags: avvero/gg_bot:latest
 
       - name: REST API with curl
         run: |
           curl --header "X-Webhook-Token: ${{ secrets.REDEPLOY_TOKEN }}" http://213.183.51.37:9000/hooks/redeploy-webhook
-
