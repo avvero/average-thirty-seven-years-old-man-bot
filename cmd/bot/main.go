@@ -164,8 +164,8 @@ func main() {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension+1)
 			} else {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", tension-100)
-				sendMessage(-1001733786877, 0, "@AnimeAnimeAnime123")
-				sendSticker(-1001733786877, 0, "CAACAgIAAxkBAAIenmPJaxAsTOYxV2hkA6sun3veDpHVAAI4EAACBKuASWXqT-PrAoZVLQQ")
+				//sendMessage(-1001733786877, 0, "@AnimeAnimeAnime123")
+				//sendSticker(-1001733786877, 0, "CAACAgIAAxkBAAIenmPJaxAsTOYxV2hkA6sun3veDpHVAAI4EAACBKuASWXqT-PrAoZVLQQ")
 			}
 			if "AnimeAnimeAnime123" == scriber.GetUser(webhookRequest.Message) {
 				scriber.SetUserTension(-1001733786877, "AnimeAnimeAnime123", 0)
