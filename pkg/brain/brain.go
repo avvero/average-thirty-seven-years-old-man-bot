@@ -327,7 +327,7 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 	}
 	message := "Ученик " + this.user
 	score := (utils.RandomUpTo(2) + 1) * 50
-	if utils.RandomUpTo(1) == 0 {
+	if utils.RandomUpTo(2) == 1 {
 		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
 	} else {
@@ -467,7 +467,7 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 			affected++
 			affectedMessage.WriteString(" - " + user + ": +10\n")
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, user, 10)
-			//this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
+			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
 		}
 	}
 	if affected == 0 {
