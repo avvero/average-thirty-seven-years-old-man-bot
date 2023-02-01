@@ -467,7 +467,7 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 			affected++
 			affectedMessage.WriteString(" - " + user + ": +10\n")
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, user, 10)
-			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
+			//this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
 		}
 	}
 	if affected == 0 {
