@@ -134,13 +134,14 @@ func main() {
 		if webhookRequest.Message.NewChatParticipant != nil && "HatefulVadimBot" == webhookRequest.Message.NewChatParticipant.Username {
 			go func() {
 				fmt.Println("HatefulVadimBot is the new participant")
+				sendMessage(webhookRequest.Message.Chat.Id, 0, "Так и кто это?")
 				err, aiResponse := openApiClient.Completion("Есть текст: \"В нашем сообществе есть невыносимо неприятная " +
 					"личность, я не могу больше терпеть его присутствие и просто обязан его выгнать\". Перескажи так, " +
 					"как это бы сделал директор школы профессор Альбус Дамблдор. Не используй оригинальные слова.")
 				if err != nil {
-					sendMessage(245851441, 0, "Не знаю как сказать это красиво, но давайте его нахер выгонем?")
+					sendMessage(webhookRequest.Message.Chat.Id, 0, "Не знаю как сказать это красиво, но давайте его нахер выгонем?")
 				} else {
-					sendMessage(245851441, 0, aiResponse)
+					sendMessage(webhookRequest.Message.Chat.Id, 0, aiResponse)
 				}
 				time.Sleep(time.Duration(utils.RandomUpTo(2)) * time.Second)
 				banChatMember(webhookRequest.Message.Chat.Id, webhookRequest.Message.NewChatParticipant.Id)
