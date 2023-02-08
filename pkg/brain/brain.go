@@ -443,8 +443,16 @@ type ToxicReparation struct {
 func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 	fiveMinutesAgo := time.Now().UTC().Add(-time.Minute * time.Duration(5))
 	affectedMessage := strings.Builder{}
-	affectedMessage.WriteString("Выражаю глубокую озабоченность касательно токсичного поведения " + this.user +
-		", такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация: \n")
+	messageBody := "Есть текст: \"Выражаю глубокую озабоченность касательно токсичного поведения " + this.user + ", такое " +
+		"поведение могло нанесло моральный ущерб некоторым людям и им будет выплачена компенсация.\". " + userRoleDescription(this.user) +
+		"Перескажи так, как это бы сделал директор школы профессор Альбус Дамблдор. Не используй оригинальные слова. Не упоминай название школы."
+	err, aiResponse := this.brain.openAiClient.Completion(messageBody)
+	if err != nil {
+		affectedMessage.WriteString("Выражаю глубокую озабоченность касательно токсичного поведения " + this.user +
+			", такое поведение нанесло моральный ущерб некоторым людям. Им будет выплачена компенсация:\n")
+	} else {
+		affectedMessage.WriteString(aiResponse + "\n")
+	}
 	userActivity := this.brain.scriber.GetUserActivity(this.chatId)
 	usKeys := sortByMessageCounter(userActivity)
 	affected := 0
@@ -471,10 +479,31 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 		}
 	}
 	if affected == 0 {
-		return true, "Выражаю глубокую озабоченность касательно токсичного поведения " + this.user + ", такое поведение могло " +
-			"нанесло моральный ущерб некоторым гражданам, \nно к счастью все отделались легким негативом."
+		messageBody := "Есть текст: \"Выражаю глубокую озабоченность касательно токсичного поведения " + this.user + ", такое " +
+			"поведение могло нанесло моральный ущерб некоторым гражданам, но к счастью ущерб минимальный\". " + userRoleDescription(this.user) +
+			"Перескажи так, как это бы сделал директор школы профессор Альбус Дамблдор. Не используй оригинальные слова. Не упоминай название школы."
+		err, aiResponse := this.brain.openAiClient.Completion(messageBody)
+		if err != nil {
+			return true, "Выражаю глубокую озабоченность касательно токсичного поведения " + this.user + ", такое поведение могло " +
+				"нанесло моральный ущерб некоторым гражданам, \nно к счастью все отделались легким негативом."
+		} else {
+			return true, aiResponse
+		}
 	} else {
 		return true, affectedMessage.String()
+	}
+}
+
+func userRoleDescription(user string) string {
+	switch user {
+	case "saintnk":
+		return "Ученик saintnk представляет факультет Когтевран школы Чародейства и волшебства Хо́гвартс."
+	case "svg1007":
+		return "Ученик svg1007 представляет факультет Слизерин школы Чародейства и волшебства Хо́гвартс."
+	case "avveroll":
+		return "Ученик avveroll представляет факультет Гриффиндор школы Чародейства и волшебства Хо́гвартс."
+	default:
+		return "Человек " + user + " -рядовой сквиб без выдающихся качеств и не имеет отношение к школе Чародейства и волшебства Хо́гвартс. Он не является учеником, не обладает магическими навыками и нужно проявить жалость к этому человеку."
 	}
 }
 
