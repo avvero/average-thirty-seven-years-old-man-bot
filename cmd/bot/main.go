@@ -131,6 +131,11 @@ func main() {
 			fmt.Println("Skip forward message")
 			return
 		}
+		if webhookRequest.Message.NewChatParticipant != nil && "HatefulVadimBot" == webhookRequest.Message.NewChatParticipant.Username {
+			fmt.Println("HatefulVadimBot is the new participant")
+			banChatMember(webhookRequest.Message.Chat.Id, webhookRequest.Message.NewChatParticipant.Id)
+			return
+		}
 		user := scriber.GetUser(webhookRequest.Message)
 		respond, response, toxicityScore := brain.Decision(webhookRequest.Message.Chat.Id, user, webhookRequest.Message.Text)
 		scriber.Keep(webhookRequest.Message, toxicityScore)
@@ -265,6 +270,26 @@ func sendSticker(chatId int64, receivedMessageId int64, fileId string) {
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/sendSticker"
 	fmt.Printf("Request to: %s, sticker: %s\n", url, fileId)
+	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request.Header.Set("Content-Type", "application/json")
+	_, err := client.Do(request)
+	if err != nil {
+		fmt.Printf("Request error: %s\n", err)
+		return
+	}
+}
+
+func banChatMember(chatId int64, userId string) {
+	requestBody, marshalError := json.Marshal(map[string]string{
+		"chat_id": strconv.FormatInt(chatId, 10),
+		"user_id": userId,
+	})
+	if marshalError != nil {
+		fmt.Printf("could not marshal body: %s\n", marshalError)
+	}
+	client := http.Client{Timeout: 5 * time.Second}
+	url := "https://api.telegram.org/bot" + *token + "/banChatMember"
+	fmt.Printf("Request to: %s, user: %s\n", url, userId)
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	_, err := client.Do(request)
