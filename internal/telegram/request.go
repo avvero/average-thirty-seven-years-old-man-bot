@@ -20,7 +20,7 @@ type WebhookRequestMessageSender struct {
 }
 
 type NewChatParticipant struct {
-	Id       string `json:"id"`
+	Id       int64  `json:"id"`
 	Username string `json:"username"`
 }
 

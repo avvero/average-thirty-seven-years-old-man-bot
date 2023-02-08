@@ -279,17 +279,17 @@ func sendSticker(chatId int64, receivedMessageId int64, fileId string) {
 	}
 }
 
-func banChatMember(chatId int64, userId string) {
+func banChatMember(chatId int64, userId int64) {
 	requestBody, marshalError := json.Marshal(map[string]string{
 		"chat_id": strconv.FormatInt(chatId, 10),
-		"user_id": userId,
+		"user_id": strconv.FormatInt(userId, 10),
 	})
 	if marshalError != nil {
 		fmt.Printf("could not marshal body: %s\n", marshalError)
 	}
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/banChatMember"
-	fmt.Printf("Request to: %s, user: %s\n", url, userId)
+	fmt.Printf("Request to: %s, user: %s\n", url, strconv.FormatInt(userId, 10))
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	_, err := client.Do(request)
