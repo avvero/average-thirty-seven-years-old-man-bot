@@ -135,6 +135,7 @@ func main() {
 			go func() {
 				fmt.Println("HatefulVadimBot is the new participant")
 				sendMessage(webhookRequest.Message.Chat.Id, 0, "Так и кто это?")
+				sendChatAction(webhookRequest.Message.Chat.Id, "typing")
 				err, aiResponse := openApiClient.Completion("Есть текст: \"В нашем сообществе есть невыносимо неприятная " +
 					"личность, я не могу больше терпеть его присутствие и просто обязан его выгнать\". Перескажи так, " +
 					"как это бы сделал директор школы профессор Альбус Дамблдор. Не используй оригинальные слова.")
@@ -302,6 +303,26 @@ func banChatMember(chatId int64, userId int64) {
 	client := http.Client{Timeout: 5 * time.Second}
 	url := "https://api.telegram.org/bot" + *token + "/banChatMember"
 	fmt.Printf("Request to: %s, user: %s\n", url, strconv.FormatInt(userId, 10))
+	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request.Header.Set("Content-Type", "application/json")
+	_, err := client.Do(request)
+	if err != nil {
+		fmt.Printf("Request error: %s\n", err)
+		return
+	}
+}
+
+func sendChatAction(chatId int64, action string) {
+	requestBody, marshalError := json.Marshal(map[string]string{
+		"chat_id": strconv.FormatInt(chatId, 10),
+		"action":  action,
+	})
+	if marshalError != nil {
+		fmt.Printf("could not marshal body: %s\n", marshalError)
+	}
+	client := http.Client{Timeout: 5 * time.Second}
+	url := "https://api.telegram.org/bot" + *token + "/sendChatAction"
+	fmt.Printf("Request to: %s, action: %s\n", url, action)
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	_, err := client.Do(request)
