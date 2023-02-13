@@ -331,9 +331,11 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 	if utils.RandomUpTo(2) == 1 {
 		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
+		this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(this.user), score)
 	} else {
 		message += " сказал ерунду \"" + text + "\"" + " и потерял " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -score)
+		this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(this.user), -score)
 	}
 	message += ", прокомментируй это будто ты профессор Дамблдор с указанием количества очков и названия факультета Хогвартс, где учится " + this.user + " (придумай смешное название факультету в одно слово)"
 	err, response := this.brain.openAiClient.Completion(message)
@@ -476,7 +478,9 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 			affected++
 			affectedMessage.WriteString(" - " + user + ": +10\n")
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, user, 10)
+			this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(user), 10)
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
+			this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(user), -10)
 		}
 	}
 	if affected == 0 {
@@ -496,21 +500,36 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 }
 
 func userRoleDescription(user string) string {
+	house := userHouse(user)
+	if house != "" {
+		return "Ученик " + user + " представляет факультет " + house + " школы Чародейства и волшебства Хогвартс."
+	} else {
+		return "Человек " + user + " -рядовой сквиб без выдающихся качеств и не имеет отношение к школе Чародейства и " +
+			"волшебства Хогвартс. Он не является учеником, не обладает магическими навыками и нужно проявить жалость к этому человеку."
+	}
+}
+
+func userHouse(user string) string {
 	switch user {
 	case "saintnk":
-		return "Ученик saintnk представляет факультет Когтевран школы Чародейства и волшебства Хо́гвартс."
+		return "Когтевран"
 	case "svg1007":
-		return "Ученик svg1007 представляет факультет Слизерин школы Чародейства и волшебства Хо́гвартс."
+		return "Слизерин"
 	case "avveroll":
-		return "Ученик avveroll представляет факультет Гриффиндор школы Чародейства и волшебства Хо́гвартс."
+		return "Гриффиндор"
 	case "wishpering":
-		return "Ученик avveroll представляет факультет Гриффиндор школы Чародейства и волшебства Хо́гвартс."
+		return "Гриффиндор"
 	case "MathJay":
-		return "Ученик avveroll представляет факультет Пуффендуй школы Чародейства и волшебства Хо́гвартс."
+		return "Пуффендуй"
 	case "Сторожев Сергей":
-		return "Ученик avveroll представляет факультет Пуффендуй школы Чародейства и волшебства Хо́гвартс."
+		return "Пуффендуй"
+	// for test purposes
+	case "first":
+		return "Пуффендуй"
+	case "second":
+		return "Гриффиндор"
 	default:
-		return "Человек " + user + " -рядовой сквиб без выдающихся качеств и не имеет отношение к школе Чародейства и волшебства Хо́гвартс. Он не является учеником, не обладает магическими навыками и нужно проявить жалость к этому человеку."
+		return ""
 	}
 }
 

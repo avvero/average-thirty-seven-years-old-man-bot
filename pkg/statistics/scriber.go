@@ -199,6 +199,27 @@ func (scriber Scriber) IncreaseUserMessageStatistics(chatId int64, user string, 
 	scriber.data.ChatStatistics[chatId].UsersStatistics[user].MessageCounter += value
 }
 
+func (scriber Scriber) IncreaseHouseScore(chatId int64, house string, value int) {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
+	if house == "" {
+		return
+	}
+	if scriber.data.ChatStatistics[chatId] == nil {
+		return
+	}
+	if scriber.data.ChatStatistics[chatId].HouseStatistics == nil {
+		scriber.data.ChatStatistics[chatId].HouseStatistics = make(map[string]*data.HouseStatistics)
+		return
+	}
+	if scriber.data.ChatStatistics[chatId].HouseStatistics[house] == nil {
+		scriber.data.ChatStatistics[chatId].HouseStatistics[house] = &data.HouseStatistics{}
+		return
+	}
+	scriber.data.ChatStatistics[chatId].HouseStatistics[house].Score += value
+}
+
 func (scriber Scriber) GetUserTension(chatId int64, user string) int {
 	scriber.mutex.Lock()
 	defer scriber.mutex.Unlock()
@@ -321,6 +342,20 @@ func (scriber Scriber) GetStatisticsPrettyPrint(chatId int64) string {
 			sb.WriteString(" - " + usKeys[i] + ": tension = " + tension + "\n")
 		}
 	}
+	// Houses
+	houseKeys := sortByScore(chatStatistics.HouseStatistics)
+	if len(houseKeys) > 0 {
+		sb.WriteString("\n")
+		sb.WriteString("Houses scores:\n")
+		for i := 0; i < len(houseKeys); i++ {
+			if chatStatistics.HouseStatistics[houseKeys[i]].Score == 0 {
+				continue
+			}
+			score := strconv.Itoa(chatStatistics.HouseStatistics[houseKeys[i]].Score)
+			sb.WriteString(" - " + houseKeys[i] + ": " + score + "\n")
+		}
+	}
+
 	// Archived
 	if archivedCounter > 0 {
 		sb.WriteString("\n")
@@ -423,6 +458,29 @@ func sortByMessageCounter(statistics map[string]*data.UserMessageStatistics) []s
 	}
 	sort.Slice(tuples, func(i, j int) bool {
 		return tuples[i].value.MessageCounter > tuples[j].value.MessageCounter
+	})
+	// take keys
+	keys := make([]string, len(tuples))
+	for i, tuple := range tuples {
+		keys[i] = tuple.key
+	}
+	return keys
+}
+
+type SortByScoreTuple struct {
+	key   string
+	value *data.HouseStatistics
+}
+
+func sortByScore(statistics map[string]*data.HouseStatistics) []string {
+	tuples := make([]SortByScoreTuple, len(statistics))
+	i := 0
+	for k := range statistics {
+		tuples[i] = SortByScoreTuple{key: k, value: statistics[k]}
+		i++
+	}
+	sort.Slice(tuples, func(i, j int) bool {
+		return tuples[i].value.Score > tuples[j].value.Score
 	})
 	// take keys
 	keys := make([]string, len(tuples))
