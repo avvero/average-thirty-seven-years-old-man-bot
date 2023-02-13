@@ -77,6 +77,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), random(50), contains("devops", "девопс")).say("Девопсы не нужны").
 		when(contains("scrum")).say("Скрам - это пережиток").
 		when(contains("скрам")).say("Скрам - это пережиток").
+		when(contains("предание")).say("Предание - это когда наебали").
 		when(is(brain.randomFactor), random(100), contains("трансформациями")).replace("трансформациями", "пертурбациями").
 		when(is(brain.randomFactor), random(100), contains("трансформация")).replace("трансформация", "пертурбация").
 		when(is(brain.randomFactor), random(100), contains("трансформацию")).replace("трансформацию", "пертурбацию").
