@@ -150,12 +150,12 @@ func main() {
 			return
 		}
 		user := scriber.GetUser(webhookRequest.Message)
-		respond, response, toxicityScore := brain.Decision(webhookRequest.Message.Chat.Id, user, webhookRequest.Message.Text)
-		scriber.Keep(webhookRequest.Message, toxicityScore)
-		fmt.Println("Message to " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
-			webhookRequest.Message.Chat.Title + ": " + strconv.FormatBool(respond) + ": " + response)
-		if respond {
-			go func() {
+		go func() {
+			respond, response, toxicityScore := brain.Decision(webhookRequest.Message.Chat.Id, user, webhookRequest.Message.Text)
+			scriber.Keep(webhookRequest.Message, toxicityScore)
+			fmt.Println("Message to " + strconv.FormatInt(webhookRequest.Message.Chat.Id, 10) + " " +
+				webhookRequest.Message.Chat.Title + ": " + strconv.FormatBool(respond) + ": " + response)
+			if respond {
 				//time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
 				sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
 				// wrap
@@ -166,8 +166,9 @@ func main() {
 					Text:      response,
 				}
 				scriber.Keep(botMessage, 0)
-			}()
-		}
+			}
+		}()
+
 		//
 		if scriber.GetUserStatistics(webhookRequest.Message) >= 10000 {
 			user := scriber.GetUser(webhookRequest.Message)
