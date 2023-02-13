@@ -480,7 +480,7 @@ func (this ToxicReparation) Express(ignore string) (has bool, response string) {
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, user, 10)
 			this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(user), 10)
 			this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -10)
-			this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(user), -10)
+			this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(this.user), -10)
 		}
 	}
 	if affected == 0 {
