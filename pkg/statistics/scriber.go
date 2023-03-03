@@ -211,11 +211,9 @@ func (scriber Scriber) IncreaseHouseScore(chatId int64, house string, value int)
 	}
 	if scriber.data.ChatStatistics[chatId].HouseStatistics == nil {
 		scriber.data.ChatStatistics[chatId].HouseStatistics = make(map[string]*data.HouseStatistics)
-		return
 	}
 	if scriber.data.ChatStatistics[chatId].HouseStatistics[house] == nil {
 		scriber.data.ChatStatistics[chatId].HouseStatistics[house] = &data.HouseStatistics{}
-		return
 	}
 	scriber.data.ChatStatistics[chatId].HouseStatistics[house].Score += value
 }
