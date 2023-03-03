@@ -95,7 +95,7 @@ func Test_SkillCosts(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "Сообщение от AI"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "Сообщение от AI"}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
@@ -342,7 +342,7 @@ func Test_NotificationOverdue(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"мементо ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 21:07\"}"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "{\"action\": \"мементо ответить Сереге через 1 час и 15 минут\", \"time\": \"2023-01-24 21:07\"}"}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
@@ -361,7 +361,7 @@ func Test_NotificationSucceeded(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "{\"action\": \"ответить Сереге через 1 час и 15 минут\", \"time\": \"2030-01-24 23:37\"}"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "{\"action\": \"ответить Сереге через 1 час и 15 минут\", \"time\": \"2030-01-24 23:37\"}"}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
@@ -408,7 +408,7 @@ func Test_NotificationSucceeded2(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "{'action': 'ответить Сереге через 1 час и 15 минут', 'time': '2030-01-24 23:37'}"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "{'action': 'ответить Сереге через 1 час и 15 минут', 'time': '2030-01-24 23:37'}"}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")

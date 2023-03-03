@@ -42,7 +42,7 @@ func Test_returnsForFullToxic(t *testing.T) {
 	// setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация:"}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение нанесло моральный ущерб некоторым гражданам. Им будет выплачена компенсация:"}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
@@ -94,7 +94,8 @@ Last 10 days:
  - ` + date + `: 3 (t: 0.00)
 
 Houses scores:
- - Гриффиндор: -10
+ - Пуффендуй: 10
+ - Гриффиндор: 10
 
 Between-Morrowind-And-Skyrim: 6
 
@@ -107,8 +108,8 @@ func Test_returnsForFullToxicNoReparation(t *testing.T) {
 	//setup
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprintln(w, `{"choices": [{"text": "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение могло нанесло моральный ущерб некоторым гражданам, 
-но к счастью все отделались легким негативом."}]}`)
+		fmt.Fprintln(w, `{"choices": [{"message": {"content": "Выражаю глубокую озабоченность касательно токсичного поведения user, такое поведение могло нанесло моральный ущерб некоторым гражданам, 
+но к счастью все отделались легким негативом."}}]}`)
 	}))
 	defer ts.Close()
 	apiClient := openai.NewApiClient(ts.URL, "key")
