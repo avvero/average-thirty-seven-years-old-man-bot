@@ -17,13 +17,13 @@ type OpenAiClient struct {
 }
 
 type Request struct {
-	Model            string  `json:"model"`
-	Prompt           string  `json:"prompt"`
-	Temperature      float64 `json:"temperature"`
-	MaxTokens        int     `json:"max_tokens"`
-	TopP             int     `json:"top_p"`
-	FrequencyPenalty int     `json:"frequency_penalty"`
-	PresencePenalty  float64 `json:"presence_penalty"`
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
+}
+
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
 }
 
 type Response struct {
@@ -32,7 +32,7 @@ type Response struct {
 }
 
 type Choice struct {
-	Text string `json:"text"`
+	Message Message `json:"message"`
 }
 
 type Error struct {
@@ -49,8 +49,12 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	fmt.Printf("Request to: %s\n with text: %s\n", apiClient.url, text)
 	client := http.Client{Timeout: 500 * time.Second}
 
-	requestBody, marshalError := json.Marshal(Request{Model: "text-davinci-003", Prompt: text, Temperature: 0.9,
-		MaxTokens: 4097 - len(text), TopP: 1, FrequencyPenalty: 0.0, PresencePenalty: 0.6})
+	requestBody, marshalError := json.Marshal(Request{
+		Model: "gpt-3.5-turbo",
+		Messages: []Message{
+			{Role: "user", Content: text},
+		},
+	})
 	if marshalError != nil {
 		return marshalError, ""
 	}
@@ -74,5 +78,5 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 		return errors.New(fmt.Sprintf("Response from: %s: %d: %s", apiClient.url, response.StatusCode,
 			responseBody.Error.Message)), ""
 	}
-	return err, responseBody.Choice[0].Text
+	return err, responseBody.Choice[0].Message.Content
 }

@@ -93,7 +93,7 @@ func main() {
 	if found {
 		openApiKey = &openApiKeyEnv
 	}
-	openApiClient := openai.NewApiClient("https://api.openai.com/v1/completions", openApiKeyEnv)
+	openApiClient := openai.NewApiClient("https://api.openai.com/v1/chat/completions", openApiKeyEnv)
 	//
 	brain := brain.NewBrain(true, scriber, toxicityDetector, &openApiClient)
 

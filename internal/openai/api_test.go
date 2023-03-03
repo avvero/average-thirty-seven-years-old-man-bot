@@ -39,23 +39,25 @@ func Test_message(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		fmt.Fprintln(w, `{
-  "id": "cmpl-6QE2gKc8rObBwj6M3f1tQ5JLmpk9f",
-  "object": "text_completion",
-  "created": 1671708526,
-  "model": "text-davinci-003",
+  "id": "chatcmpl-6pqeGmrLomEyv9nCElEakuX9jXaja",
+  "object": "chat.completion",
+  "created": 1677815128,
+  "model": "gpt-3.5-turbo-0301",
+  "usage": {
+    "prompt_tokens": 209,
+    "completion_tokens": 97,
+    "total_tokens": 306
+  },
   "choices": [
     {
-      "text": "\"Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!\"",
-      "index": 0,
-      "logprobs": null,
-      "finish_reason": "stop"
+      "message": {
+        "role": "assistant",
+        "content": "Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!"
+      },
+      "finish_reason": "stop",
+      "index": 0
     }
-  ],
-  "usage": {
-    "prompt_tokens": 179,
-    "completion_tokens": 96,
-    "total_tokens": 275
-  }
+  ]
 }`)
 	}))
 	defer ts.Close()
@@ -65,7 +67,7 @@ func Test_message(t *testing.T) {
 	if err != nil {
 		t.Error("Error: ", fmt.Sprintf("%s", err))
 	}
-	expected := "\"Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!\""
+	expected := "Ну тогда давай будем ты и дети вместе вставать раньше утром, а то гамаляться будет некому!"
 	if text != expected {
 		t.Error("Text expected: ", expected, " != ", text)
 	}
