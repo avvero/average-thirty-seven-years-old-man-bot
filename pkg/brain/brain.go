@@ -329,6 +329,13 @@ func (this DumbledoreScore) Express(text string) (has bool, response string) {
 	}
 	message := "Ученик " + this.user
 	score := (utils.RandomUpTo(2) + 1) * 50
+	if "Гриффиндор" == userHouse(this.user) {
+		score *= 3
+		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
+		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
+		this.brain.scriber.IncreaseHouseScore(this.chatId, userHouse(this.user), score)
+		return
+	}
 	if utils.RandomUpTo(2) == 1 {
 		message += " сказал \"" + text + "\"" + " и заработал " + strconv.Itoa(score) + " очков для своего факультета"
 		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, score)
