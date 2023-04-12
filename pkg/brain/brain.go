@@ -57,11 +57,11 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
 		//
-		when(is(brain.randomFactor), random(100)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
+		when(is(brain.randomFactor), random(500)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&ToxicReparation{brain: brain, chatId: chatId, user: user}).
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
-		when(is(brain.randomFactor), random(100), length(20)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал остроумный джентльмен."}).
+		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал остроумный стендапер."}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(1000), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
