@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	httpPort             = flag.String("httpPort", "8080", "http server port")
+	httpPort             = flag.String("httpPort", "8081", "http server port")
 	token                = flag.String("token", "PROVIDE", "bot token")
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
@@ -111,6 +111,12 @@ func main() {
 
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, utils.PrintJson(scriber.GetStatistics(chatId)))
+	})
+
+	http.HandleFunc("/discord", func(w http.ResponseWriter, r *http.Request) {
+		guildId := r.URL.Query().Get("guildId")
+		channelId := r.URL.Query().Get("channelId")
+		http.Redirect(w, r, fmt.Sprintf("discord://-/channels/%s/%s", guildId, channelId), 301)
 	})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +233,7 @@ func main() {
 	discord.AddHandler(messageCreate)
 	discord.AddHandler(presenceUpdate(&openApiClient))
 	discord.AddHandler(PresencesReplace)
-	discord.AddHandler(VoiceStateUpdate)
+	discord.AddHandler(VoiceStateUpdate(*statisticsPage)) //
 	discord.Identify.Intents = discordgo.IntentsAll
 
 	err = discord.Open()
@@ -303,16 +309,17 @@ func PresencesReplace(s *discordgo.Session, presencies []*discordgo.Presence) {
 	fmt.Printf("presencies %#v\n", string(payload))
 }
 
-func VoiceStateUpdate(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
-	payload, _ := json.Marshal(event)
-	if event.ChannelID != "" {
-		user, _ := s.User(event.UserID)
-		channel, _ := s.Channel(event.ChannelID)
-		fmt.Printf("VoiceStateUpdate %s\n", string(payload))
-		//
-		link := fmt.Sprintf("https://discordapp.com/channels/%s/%s", channel.GuildID, channel.ID)
-		sendMessage(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: %s - %s", user.Username,
-			channel.Name, link))
+func VoiceStateUpdate(domain string) func(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
+	return func(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
+		payload, _ := json.Marshal(event)
+		if event.ChannelID != "" {
+			user, _ := s.User(event.UserID)
+			channel, _ := s.Channel(event.ChannelID)
+			fmt.Printf("VoiceStateUpdate %s\n", string(payload))
+			//
+			sendMessage(245851441, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: %s - %s", user.Username,
+				channel.Name, fmt.Sprintf("%s/discord?guildId=%s&channelId=%s", domain, channel.GuildID, channel.ID)))
+		}
 	}
 }
 
