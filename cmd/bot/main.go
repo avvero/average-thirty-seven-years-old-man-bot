@@ -259,25 +259,29 @@ func messageCreate(s *discordgo.Session, event *discordgo.MessageCreate) {
 }
 
 func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+	activityMap := make(map[string]string)
 	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 		payload, _ := json.Marshal(event)
 		fmt.Printf("Incoming event %s\n", string(payload))
 		// Set the playing status.
-		user, _ := s.User(event.Presence.User.ID)
+		userId := event.Presence.User.ID
+		user, _ := s.User(userId)
 		if len(event.Presence.Activities) > 0 {
-			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name)
-			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame {
-				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом в едкой форме.",
-					user.Username, event.Presence.Activities[0].Name)
+			game := event.Presence.Activities[0].Name
+			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
+			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом в едкой форме.", user.Username, game)
 				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
 				} else {
 					sendMessage(-1001733786877, 0, aiResponse)
+					activityMap[userId] = game
 				}
 			}
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
+			activityMap[userId] = ""
 			//sendMessage(245851441, 0, fmt.Sprint("Discord activity stop: ", user.Username))
 		}
 	}
