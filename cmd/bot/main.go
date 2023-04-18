@@ -225,7 +225,7 @@ func main() {
 	discord, err := discordgo.New("Bot " + discordBoyKeyEnv)
 	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { log.Println("Bot is up!") })
 	discord.AddHandler(messageCreate)
-	discord.AddHandler(presenceUpdate)
+	discord.AddHandler(presenceUpdate(&openApiClient))
 	discord.AddHandler(PresencesReplace)
 	discord.Identify.Intents = discordgo.IntentsAll
 
@@ -253,22 +253,33 @@ func main() {
 func messageCreate(s *discordgo.Session, event *discordgo.MessageCreate) {
 	payload, _ := json.Marshal(event)
 	// Set the playing status.
-	fmt.Printf("Incoming event %#v\n", string(payload))
-	fmt.Printf("Discord message: %#v: %#v\n", event.Author.Username, event.Content)
-	sendMessage(245851441, 0, fmt.Sprintf("Discord message: %#v: %#v\n", event.Author.Username, event.Content))
+	fmt.Printf("Incoming event %s\n", string(payload))
+	fmt.Printf("Discord message: %s: %s\n", event.Author.Username, event.Content)
+	sendMessage(245851441, 0, fmt.Sprintf("Discord message: %s: %s\n", event.Author.Username, event.Content))
 }
 
-func presenceUpdate(s *discordgo.Session, event *discordgo.PresenceUpdate) {
-	payload, _ := json.Marshal(event)
-	fmt.Printf("Incoming event %#v\n", string(payload))
-	// Set the playing status.
-	user, _ := s.User(event.Presence.User.ID)
-	if len(event.Presence.Activities) > 0 {
-		fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name)
-		sendMessage(245851441, 0, fmt.Sprint("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name))
-	} else {
-		fmt.Println("Discord activity stop: ", user.Username)
-		sendMessage(245851441, 0, fmt.Sprint("Discord activity stop: ", user.Username))
+func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+		payload, _ := json.Marshal(event)
+		fmt.Printf("Incoming event %s\n", string(payload))
+		// Set the playing status.
+		user, _ := s.User(event.Presence.User.ID)
+		if len(event.Presence.Activities) > 0 {
+			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name)
+			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame {
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом в едкой форме.",
+					user.Username, event.Presence.Activities[0].Name)
+				err, aiResponse := openAiClient.Completion(message)
+				if err != nil {
+					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				} else {
+					sendMessage(245851441, 0, aiResponse)
+				}
+			}
+		} else {
+			fmt.Println("Discord activity stop: ", user.Username)
+			//sendMessage(245851441, 0, fmt.Sprint("Discord activity stop: ", user.Username))
+		}
 	}
 }
 
