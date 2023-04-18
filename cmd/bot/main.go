@@ -317,7 +317,7 @@ func VoiceStateUpdate(domain string) func(s *discordgo.Session, event *discordgo
 			channel, _ := s.Channel(event.ChannelID)
 			fmt.Printf("VoiceStateUpdate %s\n", string(payload))
 			//
-			sendMessage(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: %s - %s", user.Username,
+			sendMessage(245851441, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: [%s](%s)", user.Username,
 				channel.Name, fmt.Sprintf("%s/discord?guildId=%s&channelId=%s", domain, channel.GuildID, channel.ID)))
 		}
 	}
@@ -332,6 +332,7 @@ func sendMessage(chatId int64, receivedMessageId int64, message string) {
 		"reply_to_message_id": replyToMessageId,
 		"chat_id":             strconv.FormatInt(chatId, 10),
 		"text":                message,
+		"parse_mode":          "markdown",
 	})
 	if marshalError != nil {
 		fmt.Printf("could not marshal body: %s\n", marshalError)
