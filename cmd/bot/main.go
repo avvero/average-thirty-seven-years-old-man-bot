@@ -310,7 +310,7 @@ func VoiceStateUpdate(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
 		channel, _ := s.Channel(event.ChannelID)
 		fmt.Printf("VoiceStateUpdate %s\n", string(payload))
 		//
-		sendMessage(-1001733786877, 0, fmt.Sprintf("[discord] %s зашел в голосовой канал %s", user.Username, channel.Name))
+		sendMessage(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: %s", user.Username, channel.Name))
 	}
 }
 
