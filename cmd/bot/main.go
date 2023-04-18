@@ -273,7 +273,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 				if err != nil {
 					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
 				} else {
-					sendMessage(245851441, 0, aiResponse)
+					sendMessage(-1001733786877, 0, aiResponse)
 				}
 			}
 		} else {
