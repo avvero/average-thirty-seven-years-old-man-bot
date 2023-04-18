@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	httpPort             = flag.String("httpPort", "8081", "http server port")
+	httpPort             = flag.String("httpPort", "8080", "http server port")
 	token                = flag.String("token", "PROVIDE", "bot token")
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
