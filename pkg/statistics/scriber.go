@@ -391,6 +391,9 @@ func (scriber Scriber) GetNotifications(chatId int64) map[string]*data.Notificat
 }
 
 func (scriber Scriber) GetChatStatistics() map[int64]*data.ChatStatistics {
+	if scriber.data == nil {
+		return nil
+	}
 	return scriber.data.ChatStatistics
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
 	"github.com/avvero/the_gamers_guild_bot/internal/openai"
 	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
+	"github.com/bwmarrin/discordgo"
 	"github.com/go-co-op/gocron"
 	"io"
 	"log"
@@ -215,6 +216,26 @@ func main() {
 		}
 	}()
 
+	// discord api
+	discordBoyKeyEnv, found := os.LookupEnv("discord-bot-key")
+	if !found {
+		fmt.Println("Can't find discord bot api key")
+		os.Exit(0)
+	}
+	discord, err := discordgo.New("Bot " + discordBoyKeyEnv)
+	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { log.Println("Bot is up!") })
+	discord.AddHandler(messageCreate)
+	discord.AddHandler(presenceUpdate)
+	discord.AddHandler(PresencesReplace)
+	discord.Identify.Intents = discordgo.IntentsAll
+
+	err = discord.Open()
+	if err != nil {
+		fmt.Println("Error opening Discord session: ", err)
+		panic(err)
+	}
+	defer discord.Close()
+
 	log.Println("Http server started on port " + *httpPort)
 	sendMessage(245851441, 0, "Bot is started, version 1.7")
 	err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
@@ -227,6 +248,33 @@ func main() {
 	<-gracefullShutdown
 	jsonBinClient.Write(data)
 	sendMessage(245851441, 0, "Bot is stopped, version 1.7")
+}
+
+func messageCreate(s *discordgo.Session, event *discordgo.MessageCreate) {
+	payload, _ := json.Marshal(event)
+	// Set the playing status.
+	fmt.Printf("Incoming event %#v\n", string(payload))
+	fmt.Printf("Discord message: %#v: %#v\n", event.Author.Username, event.Content)
+	sendMessage(245851441, 0, fmt.Sprintf("Discord message: %#v: %#v\n", event.Author.Username, event.Content))
+}
+
+func presenceUpdate(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+	payload, _ := json.Marshal(event)
+	fmt.Printf("Incoming event %#v\n", string(payload))
+	// Set the playing status.
+	user, _ := s.User(event.Presence.User.ID)
+	if len(event.Presence.Activities) > 0 {
+		fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name)
+		sendMessage(245851441, 0, fmt.Sprint("Discord activity start: ", user.Username, event.Presence.Status, event.Presence.Activities[0].Name))
+	} else {
+		fmt.Println("Discord activity stop: ", user.Username)
+		sendMessage(245851441, 0, fmt.Sprint("Discord activity stop: ", user.Username))
+	}
+}
+
+func PresencesReplace(s *discordgo.Session, presencies []*discordgo.Presence) {
+	payload, _ := json.Marshal(presencies)
+	fmt.Printf("presencies %#v\n", string(payload))
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
