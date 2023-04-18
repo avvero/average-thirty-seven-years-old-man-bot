@@ -227,6 +227,7 @@ func main() {
 	discord.AddHandler(messageCreate)
 	discord.AddHandler(presenceUpdate(&openApiClient))
 	discord.AddHandler(PresencesReplace)
+	discord.AddHandler(VoiceStateUpdate)
 	discord.Identify.Intents = discordgo.IntentsAll
 
 	err = discord.Open()
@@ -300,6 +301,17 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 func PresencesReplace(s *discordgo.Session, presencies []*discordgo.Presence) {
 	payload, _ := json.Marshal(presencies)
 	fmt.Printf("presencies %#v\n", string(payload))
+}
+
+func VoiceStateUpdate(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
+	payload, _ := json.Marshal(event)
+	if event.ChannelID != "" {
+		user, _ := s.User(event.UserID)
+		channel, _ := s.Channel(event.ChannelID)
+		fmt.Printf("VoiceStateUpdate %s\n", string(payload))
+		//
+		sendMessage(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой конал %s", user.Username, channel.Name))
+	}
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
