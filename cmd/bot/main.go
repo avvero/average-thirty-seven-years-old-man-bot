@@ -113,11 +113,11 @@ func main() {
 		io.WriteString(w, utils.PrintJson(scriber.GetStatistics(chatId)))
 	})
 
-	http.HandleFunc("/discord", func(w http.ResponseWriter, r *http.Request) {
-		guildId := r.URL.Query().Get("guildId")
-		channelId := r.URL.Query().Get("channelId")
-		http.Redirect(w, r, fmt.Sprintf("discord://-/channels/%s/%s", guildId, channelId), 301)
-	})
+	//http.HandleFunc("/discord", func(w http.ResponseWriter, r *http.Request) {
+	//	guildId := r.URL.Query().Get("guildId")
+	//	channelId := r.URL.Query().Get("channelId")
+	//	http.Redirect(w, r, fmt.Sprintf("discord://-/channels/%s/%s", guildId, channelId), 301)
+	//})
 
 	http.HandleFunc("/main", func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
