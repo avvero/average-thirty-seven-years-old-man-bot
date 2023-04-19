@@ -277,7 +277,8 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
-				sendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, activityMap[userId]))
+				sendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, game))
+				activityMap[userId] = game
 			}
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
