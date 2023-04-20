@@ -303,13 +303,38 @@ func VoiceStateUpdate(domain string) func(s *discordgo.Session, event *discordgo
 			channel, _ := s.Channel(event.ChannelID)
 			fmt.Printf("VoiceStateUpdate %s\n", string(payload))
 			//
-			sendMessage(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: [%s](%s)", user.Username,
+			sendMessage2(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: [%s](%s)", user.Username,
 				channel.Name, fmt.Sprintf("%s/discord?guildId=%s&channelId=%s", domain, channel.GuildID, channel.ID)))
 		}
 	}
 }
 
 func sendMessage(chatId int64, receivedMessageId int64, message string) {
+	replyToMessageId := ""
+	if receivedMessageId != 0 {
+		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
+	}
+	requestBody, marshalError := json.Marshal(map[string]string{
+		"reply_to_message_id": replyToMessageId,
+		"chat_id":             strconv.FormatInt(chatId, 10),
+		"text":                message,
+	})
+	if marshalError != nil {
+		fmt.Printf("could not marshal body: %s\n", marshalError)
+	}
+	client := http.Client{Timeout: 5 * time.Second}
+	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
+	fmt.Printf("Request to: %s, message: %s\n", url, message)
+	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request.Header.Set("Content-Type", "application/json")
+	_, err := client.Do(request)
+	if err != nil {
+		fmt.Printf("Request error: %s\n", err)
+		return
+	}
+}
+
+func sendMessage2(chatId int64, receivedMessageId int64, message string) {
 	replyToMessageId := ""
 	if receivedMessageId != 0 {
 		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
