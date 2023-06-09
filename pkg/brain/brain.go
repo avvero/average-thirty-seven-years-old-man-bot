@@ -69,6 +69,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(is(brain.randomFactor), random(1000)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
 		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
+		when(contains("мнени")).say("Мнение автора может не совпадать с мнением общественности").
 		when(its("gg")).say("gg").
 		when(its("нет")).then(&NoThenPhraseIntention{}).
 		when(contains("morrowind", "морровинд", "моровинд")).say("Morrowind - одна из лучших игр эва").
