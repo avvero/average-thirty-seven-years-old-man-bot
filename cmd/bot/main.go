@@ -187,7 +187,7 @@ func main() {
 	// Scheduler
 	standupScheduler := gocron.NewScheduler(time.UTC)
 	standupScheduler.Cron("13 7 * * 1-5").Do(func() {
-		sendMessage(-1001733786877, 0, "@avveroll, @wishpering, @justFirst пиздуйте на стэндап")
+		//sendMessage(-1001733786877, 0, "@avveroll, @wishpering, @justFirst пиздуйте на стэндап")
 	})
 	standupScheduler.StartAsync()
 	// Notifications
