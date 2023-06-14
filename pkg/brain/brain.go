@@ -65,11 +65,11 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
 		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему в грубой форме с подколкой, как это бы сделал стендап-комик Джимми Карр"}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
-		when(is(brain.randomFactor), random(1000), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
-		when(is(brain.randomFactor), random(1000), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(500), length(14)).then(NewKhaleesifyIntention()).
 		//when(is(brain.randomFactor), random(1000)).then(&ConfuciusPhrasesIntention{}).
-		when(is(brain.randomFactor), random(100), contains("опять")).say("не опять, а снова").
+		when(is(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
 		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
 		when(contains("мнени")).say("Мнение автора может не совпадать с мнением общественности").
 		when(its("gg")).say("gg").
