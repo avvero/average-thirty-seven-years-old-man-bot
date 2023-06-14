@@ -49,9 +49,9 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("/ai")).say("не веди себя как магл, используй заклинание: интелекто ебанина").
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
-		when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
-		when(startsWith("интелекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интелекто ебанина", "")}).
-		when(startsWith("интеллекто ебанина")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "интеллекто ебанина", "")}).
+		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
+		when(startsWith("интелекто ебанина")).say("больше нет, теперь поебот").
+		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
 		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
 		when(startsWith("Рик ")).then(&OpenApiIntentionWithError{brain: brain, text: text + ". Ответить будто ты Рик из мультфильма Рик и Морти."}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
