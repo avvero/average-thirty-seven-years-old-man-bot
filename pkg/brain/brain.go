@@ -523,6 +523,8 @@ func userHouse(user string) string {
 		return "Гриффиндор"
 	case "wishpering":
 		return "Гриффиндор"
+	case "justFirst":
+		return "Гриффиндор"
 	case "MathJay":
 		return "Пуффендуй"
 	case "Сторожев Сергей":
