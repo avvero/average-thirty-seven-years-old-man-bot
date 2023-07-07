@@ -50,7 +50,7 @@ func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	client := http.Client{Timeout: 500 * time.Second}
 
 	requestBody, marshalError := json.Marshal(Request{
-		Model: "gpt-3.5-turbo",
+		Model: "gpt-4",
 		Messages: []Message{
 			{Role: "user", Content: text},
 		},
