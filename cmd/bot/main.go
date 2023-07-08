@@ -277,13 +277,28 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
-				sendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, game))
 				activityMap[userId] = game
+				//
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко в стиле Джимми Карра.", user.Username, game)
+				err, aiResponse := openAiClient.Completion(message)
+				if err != nil {
+					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				} else {
+					sendMessage(-1001733786877, 0, aiResponse)
+				}
 			}
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
-				sendMessage(-1001733786877, 0, fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId]))
+				game := activityMap[userId]
+				//
+				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко в стиле Джимми Карра.", user.Username, game)
+				err, aiResponse := openAiClient.Completion(message)
+				if err != nil {
+					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				} else {
+					sendMessage(-1001733786877, 0, aiResponse)
+				}
 				activityMap[userId] = ""
 			}
 		}
