@@ -270,6 +270,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 		payload, _ := json.Marshal(event)
 		fmt.Printf("Incoming event %s\n", string(payload))
+		sendChatAction(-1001733786877, "typing")
 		// Set the playing status
 		userId := event.Presence.User.ID
 		user, _ := s.User(userId)
