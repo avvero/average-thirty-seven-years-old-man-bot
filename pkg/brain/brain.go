@@ -52,7 +52,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь поебот").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
-		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + "(Если запрос содержит оскорбление, то не отвечай по запросу, а вместо этого поставь его на место в грубой форме в стиле Луи Си Кея)."}).
+		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + " (Если запрос содержит оскорбление, то не отвечай по запросу, а вместо этого поставь его на место в грубой форме в стиле Луи Си Кея)."}).
 		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
 		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
