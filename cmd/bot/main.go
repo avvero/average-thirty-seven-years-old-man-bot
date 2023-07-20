@@ -138,23 +138,18 @@ func main() {
 			fmt.Println("Skip forward message")
 			return
 		}
-		if webhookRequest.Message.NewChatParticipant != nil && "HatefulVadimBot" == webhookRequest.Message.NewChatParticipant.Username {
-			go func() {
-				fmt.Println("HatefulVadimBot is the new participant")
-				sendMessage(webhookRequest.Message.Chat.Id, 0, "Так и кто это?")
-				sendChatAction(webhookRequest.Message.Chat.Id, "typing")
-				err, aiResponse := openApiClient.Completion("Есть текст: \"В нашем сообществе есть невыносимо неприятная " +
-					"личность, я не могу больше терпеть его присутствие и просто обязан его выгнать\". Перескажи так, " +
-					"как это бы сделал директор школы профессор Альбус Дамблдор. Не используй оригинальные слова.")
-				if err != nil {
-					sendMessage(webhookRequest.Message.Chat.Id, 0, "Не знаю как сказать это красиво, но давайте его нахер выгонем?")
-				} else {
-					sendMessage(webhookRequest.Message.Chat.Id, 0, aiResponse)
-				}
-				time.Sleep(time.Duration(utils.RandomUpTo(2)) * time.Second)
-				banChatMember(webhookRequest.Message.Chat.Id, webhookRequest.Message.NewChatParticipant.Id)
-			}()
-			return
+		if webhookRequest.Message.NewChatParticipant != nil {
+			if "saintnk" == webhookRequest.Message.NewChatParticipant.Username {
+				go func() {
+					sendMessage(webhookRequest.Message.Chat.Id, 0, "Кажется он вернулся")
+				}()
+				return
+			} else {
+				go func() {
+					sendMessage(webhookRequest.Message.Chat.Id, 0, "Привет, новый человек, я - бот и я скорее всего будут тебя оскорблять")
+				}()
+				return
+			}
 		}
 		user := scriber.GetUser(webhookRequest.Message)
 		go func() {
@@ -280,7 +275,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				activityMap[userId] = game
 				//
-				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко двумя предложениями развратно в стиле Луи Си Кея.", user.Username, game)
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением развратно в стиле Луи Си Кея.", user.Username, game)
 				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
@@ -293,7 +288,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 			if activityMap[userId] != "" {
 				game := activityMap[userId]
 				//
-				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко двумя предложениями развратно в стиле Луи Си Кея.", user.Username, game)
+				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко одним предложением развратно в стиле Луи Си Кея.", user.Username, game)
 				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
