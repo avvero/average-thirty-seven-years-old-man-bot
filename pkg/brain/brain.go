@@ -65,7 +65,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
 		when(is(brain.randomFactor), random(50), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему, как это бы сделал коротко и грубо в стиле Луи Си Кея."}).
-		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: user + " играет в Dungeons & Dragons, кидает 1d12 кубик. Ты гейммастер, придумай ситуацию, рассчитай сколько на кубике выпало у " + user + ", опиши ситуацию и исход, согласно тому сколько на кубике выпало, учитывая то, что сказал " + user + ". " + user + " сказал: \"" + text + "\""}).
+		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: user + " играет в Dungeons & Dragons, кидает 1d12 кубик. Ты гейммастер, придумай ситуацию, рассчитай сколько на кубике выпало у " + user + ", опиши ситуацию и исход в одно-два предложения, согласно тому сколько на кубике выпало, учитывая то, что сказал " + user + ". " + user + " сказал: \"" + text + "\""}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
