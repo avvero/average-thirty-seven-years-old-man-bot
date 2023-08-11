@@ -3,6 +3,7 @@ package data
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -70,8 +71,7 @@ func (apiClient *JsonBinApiClient) Read() (*Data, error) {
 		return nil, err
 	}
 	if response.StatusCode != 200 {
-		fmt.Printf("Response code: %d\n", response.StatusCode)
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("response code: %d\n", response.StatusCode))
 	}
 	defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -30,6 +29,7 @@ import (
 
 var (
 	httpPort             = flag.String("httpPort", "8080", "http server port")
+	telegramHost         = flag.String("telegram-host", "https://api.telegram.org", "telegram host")
 	token                = flag.String("token", "PROVIDE", "bot token")
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
@@ -55,6 +55,12 @@ func main() {
 	if found {
 		statisticsPage = &statisticsPageEnv
 	}
+	// telegram api client
+	telegramHostEnv, found := os.LookupEnv("telegram-host")
+	if found {
+		telegramHost = &telegramHostEnv
+	}
+	telegramApiClient := telegram.NewTelegramApiClient(*telegramHost, *token)
 	//Data
 	jsonBinClient := data.NewJsonBinApiClient(*jsonBinMasterKey)
 	data, err := jsonBinClient.Read()
@@ -75,7 +81,7 @@ func main() {
 				//sendMessage(245851441, 0, "Write data to bin")
 				err := jsonBinClient.Write(data)
 				if err != nil {
-					sendMessage(245851441, 0, "Write data to bin erro: "+err.Error())
+					telegramApiClient.SendMessage(245851441, 0, "Write data to bin erro: "+err.Error())
 				}
 			}
 		}
@@ -89,7 +95,7 @@ func main() {
 	url := "https://api-inference.huggingface.co/models/apanc/russian-inappropriate-messages"
 	huggingFaceApiClient := huggingface.NewApiClient(url, huggingfaceAccessKeyEnv)
 	toxicityDetector := brain.NewToxicityDetector(huggingFaceApiClient)
-	// open api
+	// open api client
 	openApiKeyEnv, found := os.LookupEnv("open-api-key")
 	if found {
 		openApiKey = &openApiKeyEnv
@@ -141,12 +147,12 @@ func main() {
 		if webhookRequest.Message.NewChatParticipant != nil {
 			if "saintnk" == webhookRequest.Message.NewChatParticipant.Username {
 				go func() {
-					sendMessage(webhookRequest.Message.Chat.Id, 0, "Кажется он вернулся")
+					telegramApiClient.SendMessage(webhookRequest.Message.Chat.Id, 0, "Кажется он вернулся")
 				}()
 				return
 			} else {
 				go func() {
-					sendMessage(webhookRequest.Message.Chat.Id, 0, "Привет, новый человек, я - бот и я скорее всего будут тебя оскорблять")
+					telegramApiClient.SendMessage(webhookRequest.Message.Chat.Id, 0, "Привет, новый человек, я - бот и я скорее всего будут тебя оскорблять")
 				}()
 				return
 			}
@@ -159,7 +165,7 @@ func main() {
 				webhookRequest.Message.Chat.Title + ": " + strconv.FormatBool(respond) + ": " + response)
 			if respond {
 				//time.Sleep(time.Duration(utils.RandomUpTo(15)) * time.Second)
-				sendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
+				telegramApiClient.SendMessage(webhookRequest.Message.Chat.Id, webhookRequest.Message.MessageId, response)
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
 					MessageId: 0,
@@ -174,7 +180,7 @@ func main() {
 		//
 		if scriber.GetUserStatistics(webhookRequest.Message) >= 10000 {
 			user := scriber.GetUser(webhookRequest.Message)
-			sendMessage(webhookRequest.Message.Chat.Id, 0, "Пользователь "+user+" достиг величия и начинает свой новый цикл восхождения. Путем унижения он пройдет вновь от низших и бесполезных к великим и бесценным.")
+			telegramApiClient.SendMessage(webhookRequest.Message.Chat.Id, 0, "Пользователь "+user+" достиг величия и начинает свой новый цикл восхождения. Путем унижения он пройдет вновь от низших и бесполезных к великим и бесценным.")
 			scriber.SetUserStatistics(webhookRequest.Message, 0)
 			jsonBinClient.Write(data)
 		}
@@ -207,7 +213,7 @@ func main() {
 							}
 							if notificationTime.Before(t) {
 								fmt.Printf("Time is passed for " + notification.Time + ": " + notification.Action)
-								sendMessage(chatId, 0, "Напоминаю по просьбе @"+notification.User+": "+notification.Action)
+								telegramApiClient.SendMessage(chatId, 0, "Напоминаю по просьбе @"+notification.User+": "+notification.Action)
 								scriber.RemoveNotification(chatId, notification.Time)
 							}
 						}
@@ -225,10 +231,10 @@ func main() {
 	}
 	discord, err := discordgo.New("Bot " + discordBoyKeyEnv)
 	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { log.Println("Bot is up!") })
-	discord.AddHandler(messageCreate)
-	discord.AddHandler(presenceUpdate(&openApiClient))
+	discord.AddHandler(messageCreate(telegramApiClient))
+	discord.AddHandler(presenceUpdate(&openApiClient, telegramApiClient))
 	discord.AddHandler(PresencesReplace)
-	discord.AddHandler(VoiceStateUpdate(*statisticsPage)) //
+	discord.AddHandler(VoiceStateUpdate(*statisticsPage, telegramApiClient)) //
 	discord.Identify.Intents = discordgo.IntentsAll
 
 	err = discord.Open()
@@ -239,33 +245,35 @@ func main() {
 	defer discord.Close()
 
 	log.Println("Http server started on port " + *httpPort)
-	sendMessage(245851441, 0, "Bot is started, version 1.7")
+	telegramApiClient.SendMessage(245851441, 0, "Bot is started, version 1.7")
 	err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
 	if err != nil {
-		sendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+		telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
 	} else {
-		sendMessage(245851441, 0, aiResponse)
+		telegramApiClient.SendMessage(245851441, 0, aiResponse)
 	}
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
 	jsonBinClient.Write(data)
-	sendMessage(245851441, 0, "Bot is stopped, version 1.7")
+	telegramApiClient.SendMessage(245851441, 0, "Bot is stopped, version 1.7")
 }
 
-func messageCreate(s *discordgo.Session, event *discordgo.MessageCreate) {
-	payload, _ := json.Marshal(event)
-	// Set the playing status.
-	fmt.Printf("Incoming event %s\n", string(payload))
-	fmt.Printf("Discord message: %s: %s\n", event.Author.Username, event.Content)
-	sendMessage(245851441, 0, fmt.Sprintf("Discord message: %s: %s\n", event.Author.Username, event.Content))
+func messageCreate(telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.MessageCreate) {
+	return func(s *discordgo.Session, event *discordgo.MessageCreate) {
+		payload, _ := json.Marshal(event)
+		// Set the playing status.
+		fmt.Printf("Incoming event %s\n", string(payload))
+		fmt.Printf("Discord message: %s: %s\n", event.Author.Username, event.Content)
+		telegramApiClient.SendMessage(245851441, 0, fmt.Sprintf("Discord message: %s: %s\n", event.Author.Username, event.Content))
+	}
 }
 
-func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+func presenceUpdate(openAiClient *openai.OpenAiClient, telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 	activityMap := make(map[string]string)
 	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 		payload, _ := json.Marshal(event)
 		fmt.Printf("Incoming event %s\n", string(payload))
-		sendChatAction(-1001733786877, "typing")
+		telegramApiClient.SendChatAction(-1001733786877, "typing")
 		// Set the playing status
 		userId := event.Presence.User.ID
 		user, _ := s.User(userId)
@@ -273,13 +281,13 @@ func presenceUpdate(openAiClient *openai.OpenAiClient) func(s *discordgo.Session
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
-				sendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, game))
+				telegramApiClient.SendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, game))
 				activityMap[userId] = game
 			}
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
-				sendMessage(-1001733786877, 0, fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId]))
+				telegramApiClient.SendMessage(-1001733786877, 0, fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId]))
 				activityMap[userId] = ""
 			}
 		}
@@ -291,7 +299,7 @@ func PresencesReplace(s *discordgo.Session, presencies []*discordgo.Presence) {
 	fmt.Printf("presencies %#v\n", string(payload))
 }
 
-func VoiceStateUpdate(domain string) func(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
+func VoiceStateUpdate(domain string, telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
 	return func(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
 		payload, _ := json.Marshal(event)
 		if event.ChannelID != "" {
@@ -299,124 +307,8 @@ func VoiceStateUpdate(domain string) func(s *discordgo.Session, event *discordgo
 			channel, _ := s.Channel(event.ChannelID)
 			fmt.Printf("VoiceStateUpdate %s\n", string(payload))
 			//
-			sendMessage2(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: [%s](%s)", user.Username,
+			telegramApiClient.SendMessage2(-1001733786877, 0, fmt.Sprintf("%s зашел в голосовой канал discord сервера: [%s](%s)", user.Username,
 				channel.Name, fmt.Sprintf("%s/discord?guildId=%s&channelId=%s", domain, channel.GuildID, channel.ID)))
 		}
-	}
-}
-
-func sendMessage(chatId int64, receivedMessageId int64, message string) {
-	replyToMessageId := ""
-	if receivedMessageId != 0 {
-		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
-	}
-	requestBody, marshalError := json.Marshal(map[string]string{
-		"reply_to_message_id": replyToMessageId,
-		"chat_id":             strconv.FormatInt(chatId, 10),
-		"text":                message,
-	})
-	if marshalError != nil {
-		fmt.Printf("could not marshal body: %s\n", marshalError)
-	}
-	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
-	fmt.Printf("Request to: %s, message: %s\n", url, message)
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
-		return
-	}
-}
-
-func sendMessage2(chatId int64, receivedMessageId int64, message string) {
-	replyToMessageId := ""
-	if receivedMessageId != 0 {
-		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
-	}
-	requestBody, marshalError := json.Marshal(map[string]string{
-		"reply_to_message_id": replyToMessageId,
-		"chat_id":             strconv.FormatInt(chatId, 10),
-		"text":                message,
-		"parse_mode":          "markdown",
-	})
-	if marshalError != nil {
-		fmt.Printf("could not marshal body: %s\n", marshalError)
-	}
-	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/sendMessage"
-	fmt.Printf("Request to: %s, message: %s\n", url, message)
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
-		return
-	}
-}
-
-func sendSticker(chatId int64, receivedMessageId int64, fileId string) {
-	replyToMessageId := ""
-	if receivedMessageId != 0 {
-		replyToMessageId = strconv.FormatInt(receivedMessageId, 10)
-	}
-	requestBody, marshalError := json.Marshal(map[string]string{
-		"reply_to_message_id": replyToMessageId,
-		"chat_id":             strconv.FormatInt(chatId, 10),
-		"sticker":             fileId,
-	})
-	if marshalError != nil {
-		fmt.Printf("could not marshal body: %s\n", marshalError)
-	}
-	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/sendSticker"
-	fmt.Printf("Request to: %s, sticker: %s\n", url, fileId)
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
-		return
-	}
-}
-
-func banChatMember(chatId int64, userId int64) {
-	requestBody, marshalError := json.Marshal(map[string]string{
-		"chat_id": strconv.FormatInt(chatId, 10),
-		"user_id": strconv.FormatInt(userId, 10),
-	})
-	if marshalError != nil {
-		fmt.Printf("could not marshal body: %s\n", marshalError)
-	}
-	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/banChatMember"
-	fmt.Printf("Request to: %s, user: %s\n", url, strconv.FormatInt(userId, 10))
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
-		return
-	}
-}
-
-func sendChatAction(chatId int64, action string) {
-	requestBody, marshalError := json.Marshal(map[string]string{
-		"chat_id": strconv.FormatInt(chatId, 10),
-		"action":  action,
-	})
-	if marshalError != nil {
-		fmt.Printf("could not marshal body: %s\n", marshalError)
-	}
-	client := http.Client{Timeout: 5 * time.Second}
-	url := "https://api.telegram.org/bot" + *token + "/sendChatAction"
-	fmt.Printf("Request to: %s, action: %s\n", url, action)
-	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("Request error: %s\n", err)
-		return
 	}
 }

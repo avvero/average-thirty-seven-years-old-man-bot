@@ -156,7 +156,8 @@ func (scriber Scriber) GetUserStatistics(message *telegram.WebhookRequestMessage
 	defer scriber.mutex.Unlock()
 
 	user := scriber.GetUser(message)
-	if scriber.data.ChatStatistics[message.Chat.Id] == nil ||
+	if scriber.data.ChatStatistics == nil ||
+		scriber.data.ChatStatistics[message.Chat.Id] == nil ||
 		scriber.data.ChatStatistics[message.Chat.Id].UsersStatistics[user] == nil {
 		return 0
 	}
@@ -179,6 +180,9 @@ func (scriber Scriber) SetUserStatistics(message *telegram.WebhookRequestMessage
 	defer scriber.mutex.Unlock()
 
 	user := scriber.GetUser(message)
+	if scriber.data.ChatStatistics == nil {
+		scriber.data.ChatStatistics = make(map[int64]*data.ChatStatistics)
+	}
 	if scriber.data.ChatStatistics[message.Chat.Id] == nil {
 		scriber.data.ChatStatistics[message.Chat.Id] = &data.ChatStatistics{UsersStatistics: make(map[string]*data.UserMessageStatistics)}
 	}
