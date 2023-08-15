@@ -366,7 +366,7 @@ func (this Dice) Express(ignore string) (has bool, response string) {
 	}
 
 	userRoll := utils.RandomUpTo(20) + 1
-	gameDescription := "Мы играем в DnD и игрок " + this.user + " бросает кубик 1d20 на ситуацию: '" + this.text + "'. На кубике выпало " + strconv.Itoa(userRoll) + ". Ты гейм-мастер. Придумай, что произойдет и напиши то, что скажет гейм-мастер. Приведи прямую цитату."
+	gameDescription := "Мы играем в DnD и игрок " + this.user + " бросает кубик 1d20 на ситуацию: '" + this.text + "'. На кубике выпало " + strconv.Itoa(userRoll) + ". Ты гейм-мастер. Придумай, что произойдет и напиши кратко то, что скажет гейм-мастер. Приведи прямую цитату."
 	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
