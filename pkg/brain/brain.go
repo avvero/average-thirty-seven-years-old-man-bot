@@ -359,36 +359,13 @@ type Dice struct {
 	user   string
 }
 
-func (this Dice) Express(ignore string) (has bool, response string) {
+func (this Dice) Express(action string) (has bool, response string) {
 	if this.brain.openAiClient == nil {
 		return false, ""
 	}
 
-	cost := 100
-	botRoll := utils.RandomUpTo(20) + 1
 	userRoll := utils.RandomUpTo(20) + 1
-	gameDescription := "Игра в кости. Игрок " + this.user + " выбросил на кубике " + strconv.Itoa(userRoll) + ", Игрок bot выбросил на кубике " + strconv.Itoa(botRoll) + "."
-	if userRoll == botRoll {
-		gameDescription = gameDescription + ". Результат: Ничья."
-	} else if userRoll > botRoll {
-		gameDescription = gameDescription + ". Результат: " + this.user + " выиграл " + strconv.Itoa(cost) + " очков."
-		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, cost)
-	} else {
-		gameDescription = gameDescription + ". Результат: " + this.user + " проиграл " + strconv.Itoa(cost) + " очков."
-		this.brain.scriber.IncreaseUserMessageStatistics(this.chatId, this.user, -cost)
-	}
-
-	gameDescription = "прокомментируй игру, будто ты диктор: \"" + gameDescription + "\". Опиши ход игры."
-	userMessageCount := this.brain.scriber.GetUserMessageCount(this.chatId, this.user)
-	if userMessageCount < 100 {
-		gameDescription = gameDescription + "Отрази в своих словах презрение к игроку " + this.user + ", игрок ничто и никто, отрази это."
-	} else if userMessageCount < 1000 {
-		gameDescription = gameDescription + "Отрази в своих словах глубокую ненависть к игроку " + this.user
-	} else if userMessageCount < 3000 {
-		gameDescription = gameDescription + "Отрази в своих словах уважение к игроку " + this.user
-	} else if userMessageCount > 5000 {
-		gameDescription = gameDescription + "Отрази в своих словах восхищение и любовь к игроку " + this.user
-	}
+	gameDescription := "Мы играем в DnD и игрок " + this.user + " бросает кубик 1d20 на ситуацию: '" + action + "'. На кубике выпало " + strconv.Itoa(userRoll) + ". Ты гейм-мастер. Придумай, что произошло и прокомментируй."
 	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
