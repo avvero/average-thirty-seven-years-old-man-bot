@@ -54,7 +54,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
 		when(is(brain.randomFactor), random(50), startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
 		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
-		when(its("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user}).
+		when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
 		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
@@ -357,15 +357,16 @@ type Dice struct {
 	brain  *Brain
 	chatId int64
 	user   string
+	text   string
 }
 
-func (this Dice) Express(action string) (has bool, response string) {
+func (this Dice) Express(ignore string) (has bool, response string) {
 	if this.brain.openAiClient == nil {
 		return false, ""
 	}
 
 	userRoll := utils.RandomUpTo(20) + 1
-	gameDescription := "Мы играем в DnD и игрок " + this.user + " бросает кубик 1d20 на ситуацию: '" + action + "'. На кубике выпало " + strconv.Itoa(userRoll) + ". Ты гейм-мастер. Придумай, что произошло и прокомментируй."
+	gameDescription := "Мы играем в DnD и игрок " + this.user + " бросает кубик 1d20 на ситуацию: '" + this.text + "'. На кубике выпало " + strconv.Itoa(userRoll) + ". Ты гейм-мастер. Придумай, что произошло и прокомментируй."
 	err, response := this.brain.openAiClient.Completion(gameDescription)
 	if err != nil {
 		return true, "Давай по новой, " + this.user + ", все хуйня!"
