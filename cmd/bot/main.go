@@ -273,7 +273,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, telegramApiClient *telegr
 	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 		payload, _ := json.Marshal(event)
 		fmt.Printf("Incoming event %s\n", string(payload))
-		telegramApiClient.SendChatAction(-1001733786877, "typing")
+		//telegramApiClient.SendChatAction(-1001733786877, "typing")
 		// Set the playing status
 		userId := event.Presence.User.ID
 		user, _ := s.User(userId)
