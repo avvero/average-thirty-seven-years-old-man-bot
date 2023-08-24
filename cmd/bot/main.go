@@ -35,7 +35,7 @@ var (
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
 	statisticsPage       = flag.String("statistics-page", "PROVIDE", "statistics-page")
-	openApiHost          = flag.String("open-api-host", "https://api.telegram.org", "open ai host")
+	openApiHost          = flag.String("open-api-host", "https://api.openai.com", "open ai host")
 	openApiKey           = flag.String("open-api-key", "PROVIDE", "open-api-key")
 )
 
