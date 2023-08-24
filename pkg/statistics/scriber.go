@@ -98,7 +98,11 @@ func (scriber Scriber) process() {
 				messages = make([]*data.Message, 100)
 				scriber.data.ChatStatistics[message.Chat.Id].Messages = messages
 			}
-			appendLimited(&messages, &data.Message{User: user, Text: message.Text})
+			if len(message.Text) > 300 {
+				appendLimited(&messages, &data.Message{User: user, Text: message.Text[0:100]})
+			} else {
+				appendLimited(&messages, &data.Message{User: user, Text: message.Text})
+			}
 			scriber.mutex.Unlock()
 		}
 	}
