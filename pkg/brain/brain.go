@@ -332,13 +332,13 @@ type Digest struct {
 }
 
 func (this Digest) Express(ignore string) (has bool, response string) {
-	log := this.brain.scriber.GetChatLog(this.chatId, 100)
+	log := this.brain.scriber.GetChatLog(this.chatId, 500)
 	if log == "" {
 		return true, "Ничего не происходило"
 	}
 
 	err, response := this.brain.openAiClient.CompletionByModel("gpt-3.5-turbo-16k",
-		"Сделай на русском краткий пересказ переписки, представленной ниже:\n"+log)
+		"Сделай на русском краткий (не больше 100 слов) пересказ переписки, представленной ниже:\n"+log)
 	if err != nil {
 		return true, "Ошибка обработки: " + err.Error()
 	} else {
