@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
 	"time"
@@ -128,6 +129,64 @@ func Test_increaseMessageCounter(t *testing.T) {
 	if counter != 1 {
 		t.Errorf("Test failed.\nExpected: \"%d\" \nbut got : \"%d\"", 1, counter)
 	}
+}
+
+func appendLimitedTest(slice *[]int, elem int) {
+	if len(*slice) == 0 {
+		return
+	}
+
+	for i := 0; i < len(*slice)-1; i++ {
+		(*slice)[i] = (*slice)[i+1]
+	}
+	(*slice)[len(*slice)-1] = elem
+}
+
+func Test_messageLogSlicing(t *testing.T) {
+	messages := make([]int, 5, 5)
+	appendLimitedTest(&messages, 1)
+	appendLimitedTest(&messages, 2)
+	appendLimitedTest(&messages, 3)
+	appendLimitedTest(&messages, 4)
+	appendLimitedTest(&messages, 5)
+	assert.Equal(t, 5, len(messages), "Length should by 5")
+	assert.Equal(t, 5, len(messages), "Capacity should by 5")
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, messages, "Messages should be [1, 2, 3, 4, 5]")
+	appendLimitedTest(&messages, 6)
+	assert.Equal(t, 5, len(messages), "Length should by 5")
+	assert.Equal(t, 5, len(messages), "Capacity should by 5")
+	assert.Equal(t, []int{2, 3, 4, 5, 6}, messages, "Messages should be [2, 3, 4, 5, 6]")
+	appendLimitedTest(&messages, 7)
+	assert.Equal(t, 5, len(messages), "Length should by 5")
+	assert.Equal(t, 5, len(messages), "Capacity should by 5")
+	assert.Equal(t, []int{3, 4, 5, 6, 7}, messages, "Messages should be [3, 4, 5, 6, 7]")
+	appendLimitedTest(&messages, 8)
+	assert.Equal(t, 5, len(messages), "Length should by 5")
+	assert.Equal(t, 5, len(messages), "Capacity should by 5")
+	assert.Equal(t, []int{4, 5, 6, 7, 8}, messages, "Messages should be [4, 5, 6, 7, 8]")
+}
+
+func Test_messageLog(t *testing.T) {
+	scriber := NewScriber()
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "first"}, Text: "one",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+	}, 0)
+	scriber.Keep(&telegram.WebhookRequestMessage{
+		From: &telegram.WebhookRequestMessageSender{Username: "second"}, Text: "two",
+		Chat: &telegram.WebhookRequestMessageChat{Id: 1},
+	}, 0)
+	for len(scriber.packs) != 0 {
+		time.Sleep(10 * time.Millisecond) // TODO none reliable
+	}
+	assert.Equal(t, `first: one
+second: two
+`, scriber.GetChatLog(1, 10))
+	assert.Equal(t, `first: one
+second: two
+`, scriber.GetChatLog(1, 2))
+	assert.Equal(t, `second: two
+`, scriber.GetChatLog(1, 1))
 }
 
 func Test_statisticsPrettyPrint(t *testing.T) {

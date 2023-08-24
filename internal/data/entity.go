@@ -20,6 +20,7 @@ type ChatStatistics struct {
 	DailyStatistics     map[string]*DayMessageStatistics  `json:"dailyStatistics"`
 	DailyWordStatistics map[string]map[string]int         `json:"-"`
 	Notifications       map[string]*Notification          `json:"notifications,omitempty"`
+	Messages            []*Message                        `json:"-"`
 }
 
 type UserMessageStatistics struct {
@@ -52,6 +53,11 @@ type JsonBinResponse struct {
 type JsonBinApiClient struct {
 	binId     string
 	masterKey string
+}
+
+type Message struct {
+	User string
+	Text string
 }
 
 func NewJsonBinApiClient(masterKey string) *JsonBinApiClient {

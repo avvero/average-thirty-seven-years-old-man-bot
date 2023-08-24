@@ -4,12 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/avvero/the_gamers_guild_bot/internal/data"
-	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
-	"github.com/avvero/the_gamers_guild_bot/internal/openai"
-	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
-	"github.com/bwmarrin/discordgo"
-	"github.com/go-co-op/gocron"
 	"io"
 	"log"
 	"net/http"
@@ -19,6 +13,13 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/avvero/the_gamers_guild_bot/internal/data"
+	"github.com/avvero/the_gamers_guild_bot/internal/huggingface"
+	"github.com/avvero/the_gamers_guild_bot/internal/openai"
+	"github.com/avvero/the_gamers_guild_bot/pkg/statistics"
+	"github.com/bwmarrin/discordgo"
+	"github.com/go-co-op/gocron"
 
 	"github.com/avvero/the_gamers_guild_bot/internal/telegram"
 	"github.com/avvero/the_gamers_guild_bot/internal/utils"
@@ -34,6 +35,7 @@ var (
 	jsonBinMasterKey     = flag.String("jsonBinMasterKey", "PROVIDE", "jsonBinMasterKey")
 	huggingfaceAccessKey = flag.String("huggingfaceAccessKey", "PROVIDE", "huggingfaceAccessKey")
 	statisticsPage       = flag.String("statistics-page", "PROVIDE", "statistics-page")
+	openApiHost          = flag.String("open-api-host", "https://api.telegram.org", "open ai host")
 	openApiKey           = flag.String("open-api-key", "PROVIDE", "open-api-key")
 )
 
@@ -100,7 +102,11 @@ func main() {
 	if found {
 		openApiKey = &openApiKeyEnv
 	}
-	openApiClient := openai.NewApiClient("https://api.openai.com/v1/chat/completions", openApiKeyEnv)
+	openApiHostEnv, found := os.LookupEnv("open-api-host")
+	if found {
+		openApiHost = &openApiHostEnv
+	}
+	openApiClient := openai.NewApiClient(*openApiHost+"/v1/chat/completions", openApiKeyEnv)
 	//
 	brain := brain.NewBrain(true, scriber, toxicityDetector, &openApiClient)
 

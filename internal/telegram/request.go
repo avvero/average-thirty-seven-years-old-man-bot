@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -62,14 +63,22 @@ func (apiClient TelegramApiClient) SendMessage(chatId int64, receivedMessageId i
 	}
 	client := http.Client{Timeout: 5 * time.Second}
 	url := apiClient.host + "/bot" + apiClient.token + "/sendMessage"
-	fmt.Printf("Request to: %s, message: %s\n", url, message)
+	fmt.Printf("Request to: %s, message: %s\n", url, requestBody)
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	request.Header.Set("Content-Type", "application/json")
-	_, err := client.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("Request error: %s\n", err)
 		return
 	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("could not read response body: %s\n", err)
+		return
+	}
+	fmt.Println("Telegram Response body " + string(body))
+	//	webhookRequest := &telegram.WebhookRequest{}
+	//	json.Unmarshal(body, webhookRequest)
 }
 
 func (apiClient TelegramApiClient) SendMessage2(chatId int64, receivedMessageId int64, message string) {

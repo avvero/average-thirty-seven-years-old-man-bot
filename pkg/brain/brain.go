@@ -54,6 +54,8 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
 		when(is(brain.randomFactor), random(50), startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
 		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
+		when(startsWith("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
+		when(its("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
 		when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
 		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
@@ -316,6 +318,26 @@ func (this OpenApiIntentionWithError) Express(ignore string) (has bool, response
 		return false, ""
 	}
 	err, response := this.brain.openAiClient.Completion(this.text)
+	if err != nil {
+		return true, "Ошибка обработки: " + err.Error()
+	} else {
+		return true, response
+	}
+}
+
+type Digest struct {
+	brain  *Brain
+	chatId int64
+	text   string
+}
+
+func (this Digest) Express(ignore string) (has bool, response string) {
+	log := this.brain.scriber.GetChatLog(this.chatId, 100)
+	if log == "" {
+		return true, "Ничего не происходило"
+	}
+
+	err, response := this.brain.openAiClient.Completion("Сделай краткий пересказ переписки, представленной ниже:\n" + log)
 	if err != nil {
 		return true, "Ошибка обработки: " + err.Error()
 	} else {

@@ -92,9 +92,26 @@ func (scriber Scriber) process() {
 					chatStatistics.DailyWordStatistics[date][key] = chatStatistics.DailyWordStatistics[date][key] + 1
 				}
 			}
+			//
+			messages := scriber.data.ChatStatistics[message.Chat.Id].Messages
+			if messages == nil {
+				messages = make([]*data.Message, 100)
+				scriber.data.ChatStatistics[message.Chat.Id].Messages = messages
+			}
+			appendLimited(&messages, &data.Message{User: user, Text: message.Text})
 			scriber.mutex.Unlock()
 		}
 	}
+}
+
+func appendLimited(slice *[]*data.Message, elem *data.Message) {
+	if len(*slice) == 0 {
+		return
+	}
+	for i := 0; i < len(*slice)-1; i++ {
+		(*slice)[i] = (*slice)[i+1]
+	}
+	(*slice)[len(*slice)-1] = elem
 }
 
 func calculateToxicity(prev float64, new float64) float64 {
@@ -436,6 +453,30 @@ func (scriber Scriber) GetUserActivity(chatId int64) map[string]string {
 		}
 	}
 	return result
+}
+
+func (scriber Scriber) GetChatLog(chatId int64, size int) string {
+	scriber.mutex.Lock()
+	defer scriber.mutex.Unlock()
+
+	if scriber.GetStatistics(chatId) == nil {
+		return ""
+	}
+
+	var result strings.Builder
+	messages := scriber.GetStatistics(chatId).Messages
+	start := len(messages) - size
+
+	for i, message := range messages {
+		if i < start {
+			continue
+		}
+		if message == nil {
+			continue
+		}
+		result.WriteString(message.User + ": " + message.Text + "\n")
+	}
+	return result.String()
 }
 
 func sortedKeys(m map[string]*data.DayMessageStatistics) []string {
