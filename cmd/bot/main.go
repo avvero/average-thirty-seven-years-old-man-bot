@@ -238,7 +238,7 @@ func main() {
 	discord, err := discordgo.New("Bot " + discordBoyKeyEnv)
 	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { log.Println("Bot is up!") })
 	discord.AddHandler(messageCreate(telegramApiClient))
-	discord.AddHandler(presenceUpdate(&openApiClient, telegramApiClient))
+	discord.AddHandler(presenceUpdate(&openApiClient, scriber, telegramApiClient))
 	discord.AddHandler(PresencesReplace)
 	discord.AddHandler(VoiceStateUpdate(*statisticsPage, telegramApiClient)) //
 	discord.Identify.Intents = discordgo.IntentsAll
@@ -274,7 +274,7 @@ func messageCreate(telegramApiClient *telegram.TelegramApiClient) func(s *discor
 	}
 }
 
-func presenceUpdate(openAiClient *openai.OpenAiClient, telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
+func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scriber, telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 	activityMap := make(map[string]string)
 	return func(s *discordgo.Session, event *discordgo.PresenceUpdate) {
 		payload, _ := json.Marshal(event)
@@ -287,14 +287,32 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, telegramApiClient *telegr
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
-				telegramApiClient.SendMessage(-1001733786877, 0, fmt.Sprintf("%s начал играть в %s", user.Username, game))
+				message := fmt.Sprintf("%s начал играть в %s", user.Username, game)
+				telegramApiClient.SendMessage(-1001733786877, 0, message)
 				activityMap[userId] = game
+				// wrap
+				botMessage := &telegram.WebhookRequestMessage{
+					MessageId: 0,
+					From:      &telegram.WebhookRequestMessageSender{Username: "bot"},
+					Chat:      &telegram.WebhookRequestMessageChat{Id: -1001733786877},
+					Text:      message,
+				}
+				scriber.Keep(botMessage, 0)
 			}
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
-				telegramApiClient.SendMessage(-1001733786877, 0, fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId]))
+				message := fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId])
+				telegramApiClient.SendMessage(-1001733786877, 0, message)
 				activityMap[userId] = ""
+				// wrap
+				botMessage := &telegram.WebhookRequestMessage{
+					MessageId: 0,
+					From:      &telegram.WebhookRequestMessageSender{Username: "bot"},
+					Chat:      &telegram.WebhookRequestMessageChat{Id: -1001733786877},
+					Text:      message,
+				}
+				scriber.Keep(botMessage, 0)
 			}
 		}
 	}
