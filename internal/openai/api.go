@@ -44,13 +44,17 @@ func NewApiClient(url string, accessKey string) OpenAiClient {
 }
 
 func (apiClient OpenAiClient) Completion(text string) (error, string) {
+	return apiClient.CompletionByModel("gpt-3.5-turbo", text)
+}
+
+func (apiClient OpenAiClient) CompletionByModel(model string, text string) (error, string) {
 	text = strings.ReplaceAll(text, "\"", "\\\"")
 
 	fmt.Printf("Request to: %s\n with text: %s\n", apiClient.url, text)
 	client := http.Client{Timeout: 500 * time.Second}
 
 	requestBody, marshalError := json.Marshal(Request{
-		Model: "gpt-3.5-turbo",
+		Model: model,
 		Messages: []Message{
 			{Role: "user", Content: text},
 		},

@@ -337,7 +337,8 @@ func (this Digest) Express(ignore string) (has bool, response string) {
 		return true, "Ничего не происходило"
 	}
 
-	err, response := this.brain.openAiClient.Completion("Сделай краткий пересказ переписки, представленной ниже:\n" + log)
+	err, response := this.brain.openAiClient.CompletionByModel("gpt-3.5-turbo-16k",
+		"Сделай на русском краткий пересказ переписки, представленной ниже:\n"+log)
 	if err != nil {
 		return true, "Ошибка обработки: " + err.Error()
 	} else {
