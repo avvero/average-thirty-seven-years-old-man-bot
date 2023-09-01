@@ -332,7 +332,7 @@ type Digest struct {
 }
 
 func (this Digest) Express(ignore string) (has bool, response string) {
-	log := this.brain.scriber.GetChatLog(this.chatId, 100)
+	log := this.brain.scriber.GetChatLog(this.chatId, 200)
 	if log == "" {
 		return true, "Ничего не происходило"
 	}

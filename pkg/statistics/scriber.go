@@ -95,11 +95,11 @@ func (scriber Scriber) process() {
 			//
 			messages := scriber.data.ChatStatistics[message.Chat.Id].Messages
 			if messages == nil {
-				messages = make([]*data.Message, 100)
+				messages = make([]*data.Message, 200)
 				scriber.data.ChatStatistics[message.Chat.Id].Messages = messages
 			}
 			if len(message.Text) > 300 {
-				appendLimited(&messages, &data.Message{User: user, Text: message.Text[0:100]})
+				appendLimited(&messages, &data.Message{User: user, Text: message.Text[0:200]})
 			} else {
 				appendLimited(&messages, &data.Message{User: user, Text: message.Text})
 			}
