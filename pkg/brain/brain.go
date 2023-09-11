@@ -53,10 +53,12 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь поебот").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
 		when(is(brain.randomFactor), random(50), startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
-		when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
-		when(startsWith("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
-		when(its("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
-		when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
+		when(startsWith("поебот")).say("С уходом персонажа нить вашей судьбы обрывается. Загрузите сохранённую игру дабы восстановить течение судьбы, или живите дальше в проклятом мире, который сами и создали").
+		when(startsWith("дайджест")).say("С уходом персонажа нить вашей судьбы обрывается. Загрузите сохранённую игру дабы восстановить течение судьбы, или живите дальше в проклятом мире, который сами и создали").
+		//when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
+		//when(startsWith("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
+		//when(its("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
+		//when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
 		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
@@ -66,8 +68,8 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\", дай свою оценку его словам и совет согласно тому, что написано в Nonviolent Communication: A Language of Life: Life-Changing Tools for Healthy Relationships. Уложись в пару предложений, не упоминай название книги. А в конце сделай вывод в 1 предложение в стиле  Луи Си Кея, чтобы поставить обидчика на место в грубой форме, не упоминай  Луи Си Кея."}).
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
-		when(is(brain.randomFactor), random(100), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему, как это бы сделал коротко и грубо в стиле Луи Си Кея."}).
-		when(is(brain.randomFactor), random(50), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , прокомментируй это с издевкой используя морские термины, будто ты пират."}).
+		//when(is(brain.randomFactor), random(100), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , ответить ему, как это бы сделал коротко и грубо в стиле Луи Си Кея."}).
+		//when(is(brain.randomFactor), random(50), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , прокомментируй это с издевкой используя морские термины, будто ты пират."}).
 		//when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: user + " играет в Dungeons & Dragons, кидает 1d12 кубик. Ты гейммастер, придумай ситуацию, рассчитай сколько на кубике выпало у " + user + ", опиши ситуацию и исход в одно-два предложения, согласно тому сколько на кубике выпало, учитывая то, что сказал " + user + ". " + user + " сказал: \"" + text + "\""}).
 		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(500), length(5)).then(&HuefyLastWordIntention{}).
@@ -332,16 +334,16 @@ type Digest struct {
 }
 
 func (this Digest) Express(ignore string) (has bool, response string) {
-	log := this.brain.scriber.GetChatLog(this.chatId, 200)
-	if log == "" {
+	chatLog := this.brain.scriber.GetChatLog(this.chatId, 200)
+	if chatLog == "" {
 		return true, "Ничего не происходило"
 	}
 
 	err, response := this.brain.openAiClient.CompletionByModel("gpt-3.5-turbo-16k",
 		"Сделай на русском пересказ переписки. Пересказ должен быть информативным, количество слов 200-300. "+
-			"Сделай выводы по основным моментам обсуждений. Переписка представлена ниже:\n"+log)
+			"Сделай выводы по основным моментам обсуждений. Переписка представлена ниже:\n"+chatLog)
 	if err != nil {
-		return true, "Ошибка обработки: " + err.Error()
+		return false, "Ошибка обработки: " + err.Error()
 	} else {
 		return true, response
 	}
