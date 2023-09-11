@@ -252,12 +252,12 @@ func main() {
 
 	log.Println("Http server started on port " + *httpPort)
 	telegramApiClient.SendMessage(245851441, 0, "Bot is started, version 1.7")
-	err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
-	if err != nil {
-		telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
-	} else {
-		telegramApiClient.SendMessage(245851441, 0, aiResponse)
-	}
+	//err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
+	//if err != nil {
+	//	telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+	//} else {
+	//	telegramApiClient.SendMessage(245851441, 0, aiResponse)
+	//}
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
 	jsonBinClient.Write(data)
