@@ -238,7 +238,7 @@ func main() {
 	discord, err := discordgo.New("Bot " + discordBoyKeyEnv)
 	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { log.Println("Bot is up!") })
 	discord.AddHandler(messageCreate(telegramApiClient))
-	discord.AddHandler(presenceUpdate(&openApiClient, scriber, telegramApiClient))
+	//discord.AddHandler(presenceUpdate(&openApiClient, scriber, telegramApiClient))
 	discord.AddHandler(PresencesReplace)
 	discord.AddHandler(VoiceStateUpdate(*statisticsPage, telegramApiClient)) //
 	discord.Identify.Intents = discordgo.IntentsAll
