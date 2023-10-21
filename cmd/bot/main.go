@@ -283,6 +283,11 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 		// Set the playing status
 		userId := event.Presence.User.ID
 		user, _ := s.User(userId)
+
+		if user.Username == "saintnk" || user.Username == "tea.for.one" || user.Username == "jf1rst" {
+			return
+		}
+
 		if len(event.Presence.Activities) > 0 {
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
