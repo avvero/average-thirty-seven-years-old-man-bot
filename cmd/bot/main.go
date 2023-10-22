@@ -284,7 +284,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 		userId := event.Presence.User.ID
 		user, _ := s.User(userId)
 
-		if user.Username == "saintnk" || user.Username == "tea.for.one" || user.Username == "jf1rst" {
+		if user.Username == "saintnk" || user.Username == "tea.for.one" || user.Username == "jf1rst" || user.Username == "psickey" {
 			return
 		}
 
