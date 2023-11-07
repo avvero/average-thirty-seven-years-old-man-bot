@@ -54,6 +54,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
 		when(is(brain.randomFactor), random(50), startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
 		when(startsWith("поебот")).say("Я теперь Ботян").
+		when(its("ботян")).say(user+"?").
 		when(startsWith("ботян")).say("Я пока ничего не умею").
 		when(startsWith("дайджест")).say("С уходом персонажа нить вашей судьбы обрывается. Загрузите сохранённую игру дабы восстановить течение судьбы, или живите дальше в проклятом мире, который сами и создали").
 		//when(startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "")}).
