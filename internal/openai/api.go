@@ -56,7 +56,7 @@ func (apiClient OpenAiClient) CompletionByModel(model string, text string) (erro
 	requestBody, marshalError := json.Marshal(Request{
 		Model: model,
 		Messages: []Message{
-			{Role: "user", Content: text},
+			{Role: "user", Content: "Представьте, что вы женщина, отвечающая на следующий запрос. " + text},
 		},
 	})
 	if marshalError != nil {
