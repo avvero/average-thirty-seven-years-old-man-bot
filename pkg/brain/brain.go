@@ -50,12 +50,13 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
-		when(startsWith("интелекто ебанина")).say("больше нет, теперь поебот").
-		when(startsWith("интеллекто ебанина")).say("больше нет, теперь поебот").
-		when(is(brain.randomFactor), random(50), startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
-		when(startsWith("поебот")).say("С уходом персонажа нить вашей судьбы обрывается. Загрузите сохранённую игру дабы восстановить течение судьбы, или живите дальше в проклятом мире, который сами и создали").
+		when(startsWith("интелекто ебанина")).say("больше нет, теперь ботян").
+		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
+		when(is(brain.randomFactor), random(50), startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
+		when(startsWith("поебот")).say("Я теперь Ботян").
+		when(startsWith("ботян")).say("Я пока ничего не умею").
 		when(startsWith("дайджест")).say("С уходом персонажа нить вашей судьбы обрывается. Загрузите сохранённую игру дабы восстановить течение судьбы, или живите дальше в проклятом мире, который сами и создали").
-		//when(startsWith("поебот")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "поебот", "")}).
+		//when(startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "")}).
 		//when(startsWith("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
 		//when(its("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
 		//when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
