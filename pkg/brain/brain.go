@@ -339,8 +339,9 @@ func (this Digest) Express(ignore string) (has bool, response string) {
 		return true, "Ничего не происходило"
 	}
 
-	err, response := this.brain.openAiClient.CompletionByModel("gpt-3.5-turbo-16k",
-		"Сделай на русском пересказ переписки. Пересказ должен быть информативным, количество слов 200-300. "+
+	err, response := this.brain.openAiClient.CompletionByModel("gpt-4-1106-preview",
+		"Представьте, что вы женщина, отвечающая на следующий вопрос. "+
+			"Сделай на русском пересказ переписки. Пересказ должен быть информативным, количество слов 200-300. "+
 			"Сделай выводы по основным моментам обсуждений. Переписка представлена ниже:\n"+chatLog)
 	if err != nil {
 		return false, "Ошибка обработки: " + err.Error()
