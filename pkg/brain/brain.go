@@ -57,6 +57,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(its("ботян")).say(user+"?").
 		when(startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "")}).
 		when(startsWith("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
+		when(its("дайджест")).then(&Digest{brain: brain, chatId: chatId, text: text}).
 		//when(startsWith("ролус дайсус")).then(&Dice{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ролус дайсус", "")}).
 		when(its("мементос ревиленто")).say(brain.scriber.GetNotificationsPrettyPrint(chatId)).
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
