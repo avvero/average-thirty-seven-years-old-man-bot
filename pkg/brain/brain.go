@@ -47,6 +47,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(its("/statistics")).say("не веди себя как магл, используй заклинание: статистика хуистика").
 		when(startsWith("/toxicity")).say("не веди себя как магл, используй заклинание: токсик ревиленто").
 		when(startsWith("/ai")).say("не веди себя как магл, используй заклинание: интелекто ебанина").
+		when(its("статистика хуистика")).say("aхалай махалай, иди сам и посчитай").
 		when(its("статистика хуистика")).say(brain.scriber.GetStatisticsPrettyPrint(chatId)).
 		when(startsWith("токсик ревиленто")).say(describeToxicity(toxicityScore, toxicityDetectionErr)).
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
