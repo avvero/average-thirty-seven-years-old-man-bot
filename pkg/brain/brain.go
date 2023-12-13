@@ -53,7 +53,23 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь ботян").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
-		when(is(brain.randomFactor), random(50), startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "") + ". Ответь грубо, в стиле Луи Си Кея и скажи, что ты не будешь отвечать на запрос."}).
+		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
+		"Дай ему краткий ответ в стиле выражений:\n" +
+		"Мне похую, я так чувствую\nБлять я заплакал!\n" +
+		"Я реально прихуел.\n" +
+		"Это было не просто смело, это было пиздец как смело.\n" +
+		"Круто! Да это ж круто!\n" +
+		"Какое-то величие, какая-то хуйня блять, мне вообще они не интересны\n" +
+		"Я уважаю то, что они делают, нооо...\n" +
+		"Итс окэй.\n" +
+		"Сомнительно, но... Окэй?\n" +
+		"Нуууу...\n" +
+		"Какая разница?.. Ну вот какая разница?..\n" +
+		"Это, конечно, печально. Это печально.\n" +
+		"Ни. Хуя. Я. Вот просто: Ни. Хуя. Я.\n" +
+		"Ну что это за пиздец такой?\n" +
+		"Ну это пиздец какой-то просто! Ну сколько можно?!\n" +
+		"Конечно, мы все виноваты в этом пиздеце.."}).
 		when(startsWith("поебот")).say("Я теперь Ботян").
 		when(its("ботян")).say(user+"?").
 		when(startsWith("ботян")).then(&OpenApiIntentionWithError{brain: brain, text: strings.ReplaceAll(text, "ботян", "")}).
