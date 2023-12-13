@@ -292,8 +292,14 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
-				message := fmt.Sprintf("%s начал играть в %s", user.Username, game)
-				telegramApiClient.SendMessage(-1001733786877, 0, message)
+				//
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением двумя предложениями оскорбительно в стиле Луи Си Кея.", user.Username, game)
+				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
+				if err != nil {
+					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				} else {
+					telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
+				}
 				activityMap[userId] = game
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
@@ -307,8 +313,14 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 		} else {
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
-				message := fmt.Sprintf("%s закончил играть в %s", user.Username, activityMap[userId])
-				telegramApiClient.SendMessage(-1001733786877, 0, message)
+				game := activityMap[userId]
+				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко одним предложением двумя предложениями оскорбительно в стиле Луи Си Кея.", user.Username, game)
+				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
+				if err != nil {
+					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				} else {
+					telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
+				}
 				activityMap[userId] = ""
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
