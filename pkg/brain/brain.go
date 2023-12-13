@@ -53,7 +53,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь ботян").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
-		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
+		when(is(false), random(50)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
 		"Дай ему краткий ответ в стиле выражений:\n" +
 		"Мне похую, я так чувствую\nБлять я заплакал!\n" +
 		"Я реально прихуел.\n" +
