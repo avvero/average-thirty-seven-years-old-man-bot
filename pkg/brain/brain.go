@@ -53,7 +53,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//when(startsWith("интелекто ебанина"), cost(brain, chatId, user, 1)).say("Репутация: "+strconv.Itoa(brain.scriber.GetUserMessageCount(chatId, user))+". Стоимость навыка: 1. У вас недостаточно репутации для этого этого. Чтобы ее накопить общайтесь или поиграйте с ботом в кости: ролус дайсус.").
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь ботян").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
-		when(is(false), random(50)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
+		when(random(50)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: user + " говорит \"" + text + "\". " +
 		"Дай ему краткий ответ в стиле выражений:\n" +
 		"Мне похую, я так чувствую\nБлять я заплакал!\n" +
 		"Я реально прихуел.\n" +
@@ -314,13 +314,21 @@ func (this ComposeOpinion) Express(text string) (has bool, response string) {
 type OpenApiIntention struct {
 	brain *Brain
 	text  string
+	model string
 }
 
-func (this OpenApiIntention) Express(ignore string) (has bool, response string) {
+func (this OpenApiIntention) Express(ignore string) (bool, string) {
 	if this.brain.openAiClient == nil {
 		return false, ""
 	}
-	err, response := this.brain.openAiClient.Completion(this.text)
+	var err error
+	var response string
+	if this.model != "" {
+		err, response = this.brain.openAiClient.CompletionByModel(this.model, this.text)
+
+	} else {
+		err, response = this.brain.openAiClient.Completion(this.text)
+	}
 	if err != nil {
 		return false, ""
 	} else {
