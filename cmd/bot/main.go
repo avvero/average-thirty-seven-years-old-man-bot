@@ -293,7 +293,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				//
-				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением двумя предложениями оскорбительно в стиле Луи Си Кея.", user.Username, game)
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением двумя предложениями возмутительно в стиле Луи Си Кея.", user.Username, game)
 				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
