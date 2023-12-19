@@ -83,7 +83,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//
 		when(is(brain.randomFactor), random(30), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". Проверь на грамотность, предложи исправления одной ошибки. " +
 		"Учти неформальный стиль общения и не будь строг. Если сообщение содержит ошибку, то сообщи об этом. " +
-		"Если сообщение не содержит ошибок, то скажи \"ignore\"."}).
+		"Если сообщение не содержит ошибок, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), random(500)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&ToxicReparation{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: user + " говорит \"" + text + "\", дай свою оценку его словам и совет согласно тому, что написано в Nonviolent Communication: A Language of Life: Life-Changing Tools for Healthy Relationships. Уложись в пару предложений, не упоминай название книги. А в конце сделай вывод в 1 предложение в стиле  Луи Си Кея, чтобы поставить обидчика на место в грубой форме, не упоминай  Луи Си Кея."}).
@@ -332,7 +332,7 @@ func (this OpenApiIntention) Express(ignore string) (bool, string) {
 	} else {
 		err, response = this.brain.openAiClient.Completion(this.text)
 	}
-	if err != nil || strings.Contains(response, "ignore") {
+	if err != nil || strings.Contains(strings.ToLower(response), "ignore it for me") {
 		return false, ""
 	} else {
 		return true, response
