@@ -83,5 +83,10 @@ func (apiClient OpenAiClient) CompletionByModel(model string, text string) (erro
 		return errors.New(fmt.Sprintf("Response from: %s: %d: %s", apiClient.url, response.StatusCode,
 			responseBody.Error.Message)), ""
 	}
-	return err, responseBody.Choice[0].Message.Content
+	content := responseBody.Choice[0].Message.Content
+	if strings.Contains(strings.ToLower(content), "ignore it for me") {
+		return errors.New("prompt is ignored"), ""
+	} else {
+		return nil, content
+	}
 }

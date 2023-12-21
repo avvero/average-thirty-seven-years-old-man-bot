@@ -86,10 +86,17 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		"Если сообщение не содержит ошибок, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), random(500)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
 		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&ToxicReparation{brain: brain, chatId: chatId, user: user}).
-		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: user + " говорит \"" + text + "\", дай свою оценку его словам и совет согласно тому, что написано в Nonviolent Communication: A Language of Life: Life-Changing Tools for Healthy Relationships. Уложись в пару предложений, не упоминай название книги. А в конце сделай вывод в 1 предложение в стиле  Луи Си Кея, чтобы поставить обидчика на место в грубой форме, не упоминай  Луи Си Кея."}).
+		when(is(brain.randomFactor), is(toxicityScore >= 0.99)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo",
+		text: user + " говорит \"" + text + "\", дай свою оценку его словам и совет согласно тому, " +
+			"что написано в Nonviolent Communication: A Language of Life: Life-Changing Tools for Healthy Relationships. " +
+			"Уложись в пару предложений, не упоминай название книги. А в конце сделай вывод в 1 предложение в стиле " +
+			"Луи Си Кея, чтобы поставить обидчика на место в грубой форме, не упоминай  Луи Си Кея. " +
+			"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
-		when(is(brain.randomFactor), random(100), length(300)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: "Он говорит \"" + text + "\". , ответить ему, как это бы сделал Джимми Карр."}).
+		when(is(brain.randomFactor), random(100), length(300)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo",
+		text: "Он говорит \"" + text + "\". , ответить ему, как это бы сделал Джимми Карр. " +
+			"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), random(50), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , прокомментируй это с издевкой используя морские термины, будто ты пират."}).
 		//when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: user + " играет в Dungeons & Dragons, кидает 1d12 кубик. Ты гейммастер, придумай ситуацию, рассчитай сколько на кубике выпало у " + user + ", опиши ситуацию и исход в одно-два предложения, согласно тому сколько на кубике выпало, учитывая то, что сказал " + user + ". " + user + " сказал: \"" + text + "\""}).
 		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
@@ -328,11 +335,10 @@ func (this OpenApiIntention) Express(ignore string) (bool, string) {
 	var response string
 	if this.model != "" {
 		err, response = this.brain.openAiClient.CompletionByModel(this.model, this.text)
-
 	} else {
 		err, response = this.brain.openAiClient.Completion(this.text)
 	}
-	if err != nil || strings.Contains(strings.ToLower(response), "ignore it for me") {
+	if err != nil {
 		return false, ""
 	} else {
 		return true, response

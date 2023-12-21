@@ -293,7 +293,9 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				//
-				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением двумя предложениями возмутительно в стиле Луи Си Кея.", user.Username, game)
+				message := fmt.Sprintf("Есть новость: %s начал играть в %s. Расскажи об этом коротко одним предложением "+
+					"двумя предложениями возмутительно в стиле Луи Си Кея."+
+					"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\".", user.Username, game)
 				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
@@ -314,7 +316,9 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
 				game := activityMap[userId]
-				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко одним предложением двумя предложениями оскорбительно в стиле Луи Си Кея.", user.Username, game)
+				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. Расскажи об этом коротко одним предложением "+
+					"двумя предложениями оскорбительно в стиле Луи Си Кея."+
+					"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\".", user.Username, game)
 				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
