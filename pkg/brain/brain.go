@@ -55,7 +55,8 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
 		when(random(50)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: user + " говорит \"" + text + "\". " +
 		"Дай ему краткий ответ в стиле выражений:\n" +
-		"Мне похую, я так чувствую\nБлять я заплакал!\n" +
+		"Мне похую, я так чувствую\n" +
+		"Блять я заплакал!\n" +
 		"Я реально прихуел.\n" +
 		"Это было не просто смело, это было пиздец как смело.\n" +
 		"Круто! Да это ж круто!\n" +
