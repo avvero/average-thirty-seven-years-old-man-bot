@@ -295,7 +295,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 				//
 				message := fmt.Sprintf("Есть новость: %s начал играть в %s. "+
 					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик.", user.Username, game)
-				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
+				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
 				} else {
@@ -317,7 +317,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 				game := activityMap[userId]
 				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. "+
 					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик.", user.Username, game)
-				err, aiResponse := openAiClient.CompletionByModel("gpt-3.5-turbo", message)
+				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
 				} else {
