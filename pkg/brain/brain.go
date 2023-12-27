@@ -82,6 +82,18 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
 		when(startsWith("ботян напомни")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ботян напомни", "")}).
 		//
+		when(is(brain.randomFactor), random(50), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
+		"Ответить на реплику в стиле шаблона ниже, опираясь на глагол из оригинальной реплики.\n" +
+		"---\n" +
+		"Шаблон: \n" +
+		"- Реплика:  слово $глагол слово \n" +
+		"- Ответ:  $глагол тебе за щеку.\n" +
+		", где $глагол - глагол в в реплике.\n" +
+		"---\n" +
+		"Пример\n" +
+		"- Реплика: кинь мне денег\n" +
+		"- Ответ: я кинул тебе за щеку, проверяй"}).
+		//
 		when(is(brain.randomFactor), random(30), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". Проверь на грамотность, предложи исправления одной ошибки. " +
 		"Учти неформальный стиль общения и не будь строг. Если сообщение содержит ошибку, то сообщи об этом. " +
 		"Если сообщение не содержит ошибок, то скажи \"ignore it for me\"."}).
