@@ -294,7 +294,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				//
 				message := fmt.Sprintf("Есть новость: %s начал играть в %s. "+
-					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик.", user.Username, game)
+					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
 				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
@@ -316,7 +316,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			if activityMap[userId] != "" {
 				game := activityMap[userId]
 				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. "+
-					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик.", user.Username, game)
+					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
 				err, aiResponse := openAiClient.Completion(message)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
