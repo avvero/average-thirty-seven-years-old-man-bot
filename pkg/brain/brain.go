@@ -110,10 +110,11 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//	"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
-		when(is(brain.randomFactor), random(100), length(300)).then(&OpenApiIntention{brain: brain,
+		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain,
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик."}).
-		//when(is(brain.randomFactor), random(50), length(300)).then(&OpenApiIntention{brain: brain, text: "Он говорит \"" + text + "\". , прокомментируй это с издевкой используя морские термины, будто ты пират."}).
-		//when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain, text: user + " играет в Dungeons & Dragons, кидает 1d12 кубик. Ты гейммастер, придумай ситуацию, рассчитай сколько на кубике выпало у " + user + ", опиши ситуацию и исход в одно-два предложения, согласно тому сколько на кубике выпало, учитывая то, что сказал " + user + ". " + user + " сказал: \"" + text + "\""}).
+		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain,
+		text: "Он говорит \"" + text + "\". , Ответить ему кратко так, как ответил бы Йозеф Швейк"}).
+		when(is(brain.randomFactor), random(100)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
 		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
