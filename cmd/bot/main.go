@@ -293,15 +293,17 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				//
-				message := fmt.Sprintf("Есть новость: %s начал играть в %s. "+
-					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
-				err, aiResponse := openAiClient.Completion(message)
-				if err != nil {
-					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
-				} else {
-					telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
-				}
+				//message := fmt.Sprintf("Есть новость: %s начал играть в %s. "+
+				//	"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
+				//err, aiResponse := openAiClient.Completion(message)
+				//if err != nil {
+				//	telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				//} else {
+				//	telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
+				//}
 				activityMap[userId] = game
+				//
+				message := fmt.Sprintf("%s начал играть в %s", user.Username, game)
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
 					MessageId: 0,
@@ -315,14 +317,15 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 			fmt.Println("Discord activity stop: ", user.Username)
 			if activityMap[userId] != "" {
 				game := activityMap[userId]
-				message := fmt.Sprintf("Есть новость: %s закончил играть в %s. "+
-					"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
-				err, aiResponse := openAiClient.Completion(message)
-				if err != nil {
-					telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
-				} else {
-					telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
-				}
+				//message := fmt.Sprintf("Есть новость: %s закончил играть в %s. "+
+				//	"Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик. Упомяни название игры.", user.Username, game)
+				//err, aiResponse := openAiClient.Completion(message)
+				//if err != nil {
+				//	telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
+				//} else {
+				//	telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
+				//}
+				message := fmt.Sprintf("%s закончил играть в %s", user.Username, game)
 				activityMap[userId] = ""
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
