@@ -304,6 +304,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 				activityMap[userId] = game
 				//
 				message := fmt.Sprintf("%s начал играть в %s", user.Username, game)
+				telegramApiClient.SendMessage(-1001733786877, 0, message)
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
 					MessageId: 0,
@@ -326,6 +327,7 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 				//	telegramApiClient.SendMessage(-1001733786877, 0, aiResponse)
 				//}
 				message := fmt.Sprintf("%s закончил играть в %s", user.Username, game)
+				telegramApiClient.SendMessage(-1001733786877, 0, message)
 				activityMap[userId] = ""
 				// wrap
 				botMessage := &telegram.WebhookRequestMessage{
