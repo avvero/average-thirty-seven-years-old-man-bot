@@ -54,7 +54,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("интелекто ебанина")).say("больше нет, теперь ботян").
 		when(startsWith("интеллекто ебанина")).say("больше нет, теперь ботян").
 		when(random(50)).then(&OpenApiIntention{brain: brain, model: "gpt-3.5-turbo", text: user + " говорит \"" + text + "\". " +
-		"Дай ему краткий ответ в стиле выражений:\n" +
+		"Дай ему краткий ответ в стиле выражений, описанных ниже. Используй в ответе только одно выражение из списка. Выражения:\n" +
 		"Мне похую, я так чувствую\n" +
 		"Блять я заплакал!\n" +
 		"Я реально прихуел.\n" +
@@ -110,11 +110,11 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		//	"Если не можешь выполнить запрос по любой из причин, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.98)).say("на грани щас").
 		//when(is(brain.randomFactor), is(toxicityScore >= 0.92)).say("осторожнее").
-		when(is(brain.randomFactor), random(50), length(100)).then(&OpenApiIntention{brain: brain,
+		when(is(brain.randomFactor), random(100), length(100)).then(&OpenApiIntention{brain: brain,
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик."}).
 		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain,
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко так, как ответил бы Йозеф Швейк"}).
-		when(is(brain.randomFactor), random(100)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
+		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
 		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
