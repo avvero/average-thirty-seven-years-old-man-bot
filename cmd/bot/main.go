@@ -251,7 +251,7 @@ func main() {
 	defer discord.Close()
 
 	log.Println("Http server started on port " + *httpPort)
-	telegramApiClient.SendMessage(245851441, 0, "Bot is started, version 1.8")
+	telegramApiClient.SendMessage(245851441, 0, "Bot is started, version 1.9")
 	//err, aiResponse := openApiClient.Completion("Придумай остроумное приветствие")
 	//if err != nil {
 	//	telegramApiClient.SendMessage(245851441, 0, "Ошибка AI: "+err.Error())
@@ -261,7 +261,7 @@ func main() {
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
 	jsonBinClient.Write(data)
-	telegramApiClient.SendMessage(245851441, 0, "Bot is stopped, version 1.8")
+	telegramApiClient.SendMessage(245851441, 0, "Bot is stopped, version 1.9")
 }
 
 func messageCreate(telegramApiClient *telegram.TelegramApiClient) func(s *discordgo.Session, event *discordgo.MessageCreate) {
