@@ -64,8 +64,8 @@ func main() {
 	}
 	telegramApiClient := telegram.NewTelegramApiClient(*telegramHost, *token)
 	//Data
-	jsonBinClient := data.NewJsonBinApiClient(*jsonBinMasterKey)
-	data, err := jsonBinClient.Read()
+	storage := data.NewLocalStorage()
+	data, err := storage.Read()
 	if err != nil {
 		fmt.Printf("Could not read data: %s\n", err)
 		panic(err)
@@ -81,7 +81,7 @@ func main() {
 			case t := <-ticker.C:
 				fmt.Println("Write data to bin", t)
 				//sendMessage(245851441, 0, "Write data to bin")
-				err := jsonBinClient.Write(data)
+				err := storage.Write(data)
 				if err != nil {
 					telegramApiClient.SendMessage(245851441, 0, "Write data to bin erro: "+err.Error())
 				}
@@ -188,7 +188,7 @@ func main() {
 			user := scriber.GetUser(webhookRequest.Message)
 			telegramApiClient.SendMessage(webhookRequest.Message.Chat.Id, 0, "Пользователь "+user+" достиг величия и начинает свой новый цикл восхождения. Путем унижения он пройдет вновь от низших и бесполезных к великим и бесценным.")
 			scriber.SetUserStatistics(webhookRequest.Message, 0)
-			jsonBinClient.Write(data)
+			storage.Write(data)
 		}
 	})
 	// Scheduler
@@ -260,7 +260,7 @@ func main() {
 	//}
 	http.ListenAndServe(":"+*httpPort, nil)
 	<-gracefullShutdown
-	jsonBinClient.Write(data)
+	storage.Write(data)
 	telegramApiClient.SendMessage(245851441, 0, "Bot is stopped, version 1.9")
 }
 
