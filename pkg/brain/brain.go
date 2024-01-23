@@ -83,7 +83,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(startsWith("ботян напомни")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "ботян напомни", "")}).
 		//
 		when(is(brain.randomFactor), random(50), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
-		"Ответить на реплику в стиле шаблона ниже, опираясь на глагол из оригинальной реплики. Глагол должен быть в прошедшем времени. Верни только ответ, реплику повторять не нужно.\n" +
+		"Ответить на реплику в стиле шаблона ниже, опираясь на глагол из оригинальной реплики. Глагол должен быть в прошедшем совершенном времени. Верни только ответ, реплику повторять не нужно.\n" +
 		"---\n" +
 		"Шаблон: \n" +
 		"- Реплика:  слово $глагол слово \n" +
