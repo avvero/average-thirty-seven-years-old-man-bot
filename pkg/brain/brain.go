@@ -114,7 +114,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко двумя предложениями будто ты инквизитор Эйзенхорн и перед тобой еретик."}).
 		when(is(brain.randomFactor), random(100)).then(&OpenApiIntention{brain: brain,
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко так, как ответил бы Йозеф Швейк"}).
-		when(is(brain.randomFactor), random(100)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
+		when(is(brain.randomFactor), random(200)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
 		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
 		when(is(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
