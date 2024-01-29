@@ -291,6 +291,9 @@ func presenceUpdate(openAiClient *openai.OpenAiClient, scriber *statistics.Scrib
 		if len(event.Presence.Activities) > 0 {
 			game := event.Presence.Activities[0].Name
 			fmt.Println("Discord activity start: ", user.Username, event.Presence.Status, game)
+			if game == "League of Legends" {
+				return
+			}
 			if event.Presence.Activities[0].Type == discordgo.ActivityTypeGame && activityMap[userId] != game {
 				//
 				//message := fmt.Sprintf("Есть новость: %s начал играть в %s. "+
