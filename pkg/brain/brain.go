@@ -372,7 +372,7 @@ func (this OpenApiIntentionWithError) Express(ignore string) (has bool, response
 	}
 	err, response := this.brain.openAiClient.Completion(this.text)
 	if err != nil {
-		return true, "Ошибка обработки: " + err.Error()
+		return true, "Я не буду на это отвечать - я брезгую"
 	} else {
 		return true, response
 	}
