@@ -82,7 +82,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), random(20), startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", ""), action: "Выгнать Вадима"}).
 		when(startsWith("мементо")).then(&Notify{brain: brain, chatId: chatId, user: user, text: strings.ReplaceAll(text, "мементо ", "")}).
 		//
-		when(is(brain.randomFactor), random(150), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
+		when(is(brain.randomFactor), random(400), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". " +
 		"Ответить на реплику в стиле шаблона ниже, опираясь на глагол из оригинальной реплики. Глагол должен быть в прошедшем совершенном времени. Верни только ответ, реплику повторять не нужно.\n" +
 		"---\n" +
 		"Шаблон: \n" +
@@ -97,7 +97,7 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		"- Реплика: передай мне конфету\n" +
 		"- Ответ: передал тебе за щеку, проверяй."}).
 		//
-		when(is(brain.randomFactor), random(150), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". Проверь на грамотность, предложи исправления одной ошибки. " +
+		when(is(brain.randomFactor), random(300), length(30)).then(&OpenApiIntention{brain: brain, text: user + " говорит \"" + text + "\". Проверь на грамотность, предложи исправления одной ошибки. " +
 		"Учти неформальный стиль общения и не будь строг. Если сообщение содержит ошибку, то сообщи об этом. " +
 		"Если сообщение не содержит ошибок, то скажи \"ignore it for me\"."}).
 		//when(is(brain.randomFactor), random(500)).then(&DumbledoreScore{brain: brain, chatId: chatId, user: user}).
@@ -115,10 +115,10 @@ func (brain *Brain) Decision(chatId int64, user string, text string) (respond bo
 		when(is(brain.randomFactor), random(50)).then(&OpenApiIntention{brain: brain,
 		text: "Он говорит \"" + text + "\". , Ответить ему кратко так, как ответил бы Йозеф Швейк"}).
 		//when(is(brain.randomFactor), random(200)).then(&OpenApiIntention{brain: brain, text: "Расскажи короткую дурацкую байку так, как это бы сделал Йозеф Швейк"}).
-		when(is(brain.randomFactor), random(100)).then(&SenselessPhrasesIntention{}).
-		when(is(brain.randomFactor), random(200), length(5)).then(&HuefyLastWordIntention{}).
+		when(is(brain.randomFactor), random(200)).then(&SenselessPhrasesIntention{}).
+		when(is(brain.randomFactor), random(400), length(5)).then(&HuefyLastWordIntention{}).
 		//when(is(brain.randomFactor), random(300), length(14)).then(&HuefyIntention{}).
-		when(is(brain.randomFactor), random(100), length(14)).then(NewKhaleesifyIntention()).
+		when(is(brain.randomFactor), random(400), length(14)).then(NewKhaleesifyIntention()).
 		//when(is(brain.randomFactor), random(1000)).then(&ConfuciusPhrasesIntention{}).
 		when(is(brain.randomFactor), random(10), contains("опять")).say("не опять, а снова").
 		when(contains("мог быть", "могли быть", "могла быть", "могло быть")).say("словами либерашки").
