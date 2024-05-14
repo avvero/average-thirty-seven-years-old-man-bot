@@ -45,7 +45,8 @@ func NewApiClient(url string, accessKey string) OpenAiClient {
 
 func (apiClient OpenAiClient) Completion(text string) (error, string) {
 	//return apiClient.CompletionByModel("gpt-3.5-turbo", text)
-	return apiClient.CompletionByModel("gpt-4-1106-preview", text)
+	//return apiClient.CompletionByModel("gpt-4-1106-preview", text)
+	return apiClient.CompletionByModel("gpt-4o", text)
 }
 
 func (apiClient OpenAiClient) CompletionByModel(model string, text string) (error, string) {
